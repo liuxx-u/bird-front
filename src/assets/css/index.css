@@ -1,0 +1,119 @@
+body{
+    min-height: 100%;
+    font-family: 'Microsoft YaHei';
+    font-size: 13px;
+    color: #444;
+    line-height: 1.42857143;
+    background-color: #f3f3f3;
+}
+
+.navbar {
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+    min-height: 45px;
+    position: relative;
+    background: #2dc3e8;
+}
+.main-container{
+    position: static;
+    margin-right: auto;
+    margin-left: auto;
+    background: #f3f3f3;
+}
+.main-container>.page-container {
+    position: relative;
+}
+.page-sidebar {
+    position: absolute;
+    width: 240px;
+    display: block;
+    background: #fff;
+}
+.page-sidebar .sidebar-header-wrapper {
+    margin-left: 5px;
+    height: 40px;
+    margin-bottom: 0;
+    position: relative;
+}
+.page-sidebar .sidebar-menu {
+    list-style: none;
+}
+.page-sidebar .sidebar-menu>li {
+    border-top: 1px solid #f3f3f3;
+}
+.page-sidebar .sidebar-menu>li:last-child {
+    border-bottom: 1px solid #f3f3f3;
+}
+
+.page-content {
+    display: block;
+    margin-left: 240px;
+    margin-right: 0;
+    margin-top: 0;
+    min-height: 100%;
+    padding: 0;
+}
+
+.page-breadcrumbs {
+    position: relative;
+    background: #f3f3f3;
+    min-height: 40px;
+    line-height: 39px;
+    padding-left: 12px;
+    display: block;
+    z-index: 1;
+    -webkit-box-shadow: 0 2px 4px 0 rgba(0,0,0,.15);
+    -moz-box-shadow: 0 2px 4px 0 rgba(0,0,0,.15);
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.15);
+}
+
+.page-body {
+    background: #fff;
+    padding: 18px 20px 24px;
+}
+
+table thead .sorting {
+    cursor: pointer;
+    background: #f7f7f7 url('../img/sort_both.png') no-repeat center right;
+}
+table thead .sorting_asc {
+    cursor: pointer;
+    background: #f7f7f7 url('../img/sort_asc.png') no-repeat center right;
+}
+table thead .sorting_desc {
+    cursor: pointer;
+    background: #f7f7f7 url('../img/sort_desc.png') no-repeat center right;
+}
+.ant-table td, .ant-table th{
+    padding: 12px 8px;
+}
+
+.ant-table-row td a{
+    margin-right: 5px;
+}
+
+.table-operations {
+    font-size: 12px;
+    text-align: right;
+    margin-bottom: 12px;
+    padding-right: 5px;
+    min-height: 28px;
+}
+.table-operations button {
+    margin-left: 5px;
+}
+ .bode-table-pagination{
+     margin: 12px 0;
+     float: right;
+ }
+ .table-title{
+     float: left;
+     margin-left: 5px;
+     font-size: 14px;
+     font-weight:bold;
+     color: #666;
+ }
+.ant-checkbox-wrapper{
+    margin-left:8px;
+}

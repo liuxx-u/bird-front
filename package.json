@@ -1,0 +1,29 @@
+{
+  "name": "component-adminHead",
+  "version": "0.1.0",
+  "description": "No description yet",
+  "main": "es5/component.js",
+  "es6": "index.js",
+  "scripts": {
+    "test": "gulp test",
+    "cover": "gulp cover",
+    "start": "gulp",
+    "build": "gulp build",
+    "prepublish": "npm run build"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "antd": "^1.6.2",
+    "postal": "^1.0.6",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "react-router": "^2.4.1"
+  },
+  "devDependencies": {
+    "bootstrap": "^3.3.4",
+    "gulp": "^3.8.11",
+    "turris-gulp-tasks": "^0.4.0",
+    "turris-test-helpers": "^0.1.3"
+  }
+}

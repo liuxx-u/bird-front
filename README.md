@@ -1,4 +1,4 @@
-bird-front是基于react的后台管理系统前端项目，框架严重借鉴于antd管理系统解决方案antd-admin，其项目地址：[https://github.com/zuiidea/antd-admin](http://note.youdao.com/)
+bird-front是基于react的后台管理系统前端项目，框架严重借鉴于antd管理系统解决方案antd-admin，其项目地址：[https://github.com/zuiidea/antd-admin](https://github.com/zuiidea/antd-admin)
 
 bird-front对常用的数据组件进行了封装，使其简单易用，包括：
 - 下拉选择器：bird-selector。[查看文档](https://github.com/liuxx001/bird-front/blob/master/doc/bird-selector.md)

@@ -89,6 +89,7 @@ delete | 数据删除url | string | ''
 items中对象的字段对应表格中的列。
 
 **columns相关API：**
+
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
 title | 列名称 | string | 
@@ -107,6 +108,7 @@ editor | 列的编辑设置 | object | null
 - 
 
 **editor相关API：**
+
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
 ep | 编辑模式。default、hide、disabled | string | default
@@ -118,6 +120,7 @@ validateRegular | 验证的正则表达式 | string |
 isRequired、validateRegular逻辑未完成。
 
 **actions相关API：**
+
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
 name | 按钮名称 | string | 
@@ -133,6 +136,7 @@ permissionName | 所需权限名 | string |
 - permissionName实现按钮级权限控制。（未完成）
 
 **customRules相关API：**
+
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
 field | 列字段名称 | string | 

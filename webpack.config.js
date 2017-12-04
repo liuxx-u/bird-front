@@ -1,97 +1,59 @@
-var path = require('path');
-var webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpack = require('webpack')
 
-module.exports = {
-    devtool: 'inline-source-map',
-    debug: true,
-    context: path.resolve(__dirname),
-    entry: [
-        'webpack-dev-server/client?http://0.0.0.0:8080', // WebpackDevServer host and port
-        'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
-        './src/index.js',
-    ],
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        publicPath: '/',
-        filename: 'app.min.js',
-    },
-    resolve: {
-        root: path.resolve(__dirname),
-        extensions: ['', '.js', '.jsx'],
-        modulesDirectories: ['node_modules'],
-    },
-    node: {
-        fs: 'empty',
-    },
-    /*eslint: {
-        configFile: path.join(__dirname, '.eslintrc'),
-    },*/
-    module: {
-        preLoaders: [
-            /*{
-                test: /\.jsx?$/,
-                exclude: /node_modules/,
-                loader: 'eslint'
-            },*/
-        ],
-        loaders: [
-            {
-                test: /\.css$/,
-                loaders: ['style', 'css'],
-            },
-            {
-                test: /\.json$/,
-                loader: 'json',
-            },
-            {
-                test: /\.less$/,
-                loaders: ['style', 'css', 'less'],
-            },
-            {
-                test: /\.scss$/,
-                loaders: ['style', 'css', 'sass'],
-            },
-            {
-                test: /\.styl$/,
-                loaders: ['style', 'css', 'stylus'],
-            },
-            {
-                test: /\.jsx?$/,
-                exclude: /node_modules/,
-                loaders: ['react-hot', 'babel'],
-            },
-            {
-                test: /\.woff\d?(\?.+)?$/,
-                loader: 'url?limit=10000&minetype=application/font-woff',
-            },
-            {
-                test: /\.ttf(\?.+)?$/,
-                loader: 'url?limit=10000&minetype=application/octet-stream',
-            },
-            {
-                test: /\.eot(\?.+)?$/,
-                loader: 'url?limit=10000',
-            },
-            {
-                test: /\.svg(\?.+)?$/,
-                loader: 'url?limit=10000&minetype=image/svg+xml',
-            },
-            {
-                test: /\.png$/,
-                loader: 'url?limit=10000&mimetype=image/png',
+module.exports = (webpackConfig, env) => {
+  const production = env === 'production'
+  // FilenameHash
+  webpackConfig.output.chunkFilename = '[name].[chunkhash].js'
 
-            },
-            {
-                test: /\.jpg$/,
-                loader: 'url?limit=10000&mimetype=image/jpg',
-            },
-            {
-                test: /\.gif$/,
-                loader: 'url?limit=10000&mimetype=image/gif'
-            }
-        ],
-    },
-    plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-    ],
-};
+  if (production) {
+    if (webpackConfig.module) {
+      // ClassnameHash
+      webpackConfig.module.rules.map((item) => {
+        if (String(item.test) === '/\\.less$/' || String(item.test) === '/\\.css/') {
+          item.use.filter(iitem => iitem.loader === 'css')[0].options.localIdentName = '[hash:base64:5]'
+        }
+        return item
+      })
+    }
+    webpackConfig.plugins.push(
+      new webpack.LoaderOptionsPlugin({
+        minimize: true,
+        debug: false,
+      })
+    )
+  }
+
+  webpackConfig.plugins = webpackConfig.plugins.concat([
+    new CopyWebpackPlugin([
+      {
+        from: 'src/public',
+        to: production ? '../' : webpackConfig.output.outputPath,
+      },
+    ]),
+    new HtmlWebpackPlugin({
+      template: `${__dirname}/src/entry.ejs`,
+      filename: production ? '../index.html' : 'index.html',
+      minify: production ? {
+        collapseWhitespace: true,
+      } : null,
+      hash: true,
+      headScripts: production ? null : ['/roadhog.dll.js'],
+    }),
+  ])
+
+  // Alias
+  webpackConfig.resolve.alias = {
+    components: `${__dirname}/src/components`,
+    utils: `${__dirname}/src/utils`,
+    config: `${__dirname}/src/utils/config`,
+    enums: `${__dirname}/src/utils/enums`,
+    services: `${__dirname}/src/services`,
+    models: `${__dirname}/src/models`,
+    routes: `${__dirname}/src/routes`,
+    themes: `${__dirname}/src/themes`,
+  }
+
+  return webpackConfig
+}

@@ -53,10 +53,10 @@ customRules | 自定义筛选条件 | array | []
 **url相关API：**
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
-read | 数据读取url | string |
-add | 数据新增url | string |
-edit | 数据编辑url | string | 
-delete | 数据删除url | string | 
+read | 数据读取url | string | ''
+add | 数据新增url | string | ''
+edit | 数据编辑url | string | ''
+delete | 数据删除url | string | ''
 
 注：所有接口均使用POST提交，read为必填项，其他配置均选填，不配置则不显示相关的操作按钮。
 

@@ -27,7 +27,7 @@ width | 宽度,支持数字和百分比 | string | 100%
 getPopupContainer | 渲染容器，对应antd中Selector的getPopupContainer | function(node) | ()=>document.body
 onChange | 下拉框值改变事件 | function(value) |
 
-关于dicKey的说明，服务端会对系统中所有的下拉选项进行管理，俗称==字典管理==。这个key对应相关字典的Key，服务端需要实现通过key返回对应的下拉选项数组的功能。
+关于dicKey的说明，服务端会对系统中所有的下拉选项进行管理，俗称“字典管理”。这个key对应相关字典的Key，服务端需要实现通过key返回对应的下拉选项数组的功能。
 
 
 **数据源data相关API：**
@@ -37,5 +37,3 @@ onChange | 下拉框值改变事件 | function(value) |
 value | 选项的值 | string |
 label | 选项的显示文本 | string |
 disabled | 选项是否可选 | bool | false
-
-

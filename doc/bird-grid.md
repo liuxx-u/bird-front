@@ -105,7 +105,6 @@ editor | 列的编辑设置 | object | null
 说明：
 - render(v,d){}方法第一个参数表示当前行当前列的数据，第二个参数表示整行的数据。
 - scource:{key:’’,data:[]}。其中key、data分别对应bird-selector中的dicKey，data。
-- 
 
 **editor相关API：**
 
@@ -139,7 +138,7 @@ permissionName | 所需权限名 | string |
 
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
-field | 列字段名称 | string | 
-value | 值 | string | 
-说明：
+field | 列字段名称 | string | ''
+value | 值 | string | ''
+
 customRules是在表格初始化之前为表格添加自定义查询条件，可用于url上不同参数对于表格数据的控制。

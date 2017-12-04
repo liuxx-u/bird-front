@@ -27,6 +27,7 @@ npm install
 npm run start
 ```
 
+浏览器打开：http://localhost:8000/
 登录名：admin
 登录密码：admin
 

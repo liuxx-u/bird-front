@@ -8,7 +8,6 @@ class SysUserPage extends React.Component {
     }
   }
 
-
   render() {
     let gridOption = {
       title: "用户列表",

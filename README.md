@@ -24,7 +24,7 @@ npm install
 **启动项目：**
 
 ```
-npm start
+npm run start
 ```
 
 登录名：admin

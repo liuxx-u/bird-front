@@ -6,7 +6,7 @@ import BirdGridQuery from './BirdGridQuery';
 import { request,config,util,permission } from 'utils';
 import styles from './BirdGrid.less';
 import {DropdownRender,SwitchRender} from './render';
-import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Tag,Checkbox } from 'antd';
+import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Tag,Checkbox,Button } from 'antd';
 
 const operatorMap = {
   "equal":"等于",
@@ -174,7 +174,7 @@ class BirdGrid extends React.Component {
   /* 表单保存 */
   saveClick() {
     let self = this;
-    if(!self.refs.autoForm.validate())return;
+    if (!self.refs.autoForm.validate()) return;
 
     self.setState({
       formConfirmLoading: true
@@ -433,7 +433,9 @@ class BirdGrid extends React.Component {
           </Col>
           <Col span={12}>
             <div className={styles.action}>
-              {actions}
+              <Button.Group>
+                {actions}
+              </Button.Group>
             </div>
           </Col>
         </Row>

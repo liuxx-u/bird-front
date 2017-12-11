@@ -3,14 +3,11 @@ import PropTypes from 'prop-types'
 import { Switch, Route, Redirect, routerRedux } from 'dva/router'
 import dynamic from 'dva/dynamic'
 import App from 'routes/app'
+import Exception from 'components/Exception'
 
 const { ConnectedRouter } = routerRedux
 
 const Routers = function ({ history, app }) {
-  const error = dynamic({
-    app,
-    component: () => import('./routes/error')
-  });
   const routes = [
     {
       path: '/dashboard',
@@ -25,6 +22,26 @@ const Routers = function ({ history, app }) {
     {
       path:'/sys/authorize/user',
       component:()=>import('./routes/sys/authorize/user')
+    },
+    {
+      path:'/demo/bird-grid',
+      component:()=>import('./routes/demo/bird-grid')
+    },
+    {
+      path:'/demo/bird-selector',
+      component:()=>import('./routes/demo/bird-selector')
+    },
+    {
+      path:'/demo/bird-form',
+      component:()=>import('./routes/demo/bird-form')
+    },
+    {
+      path:'/demo/bird-tree',
+      component:()=>import('./routes/demo/bird-tree')
+    },
+    {
+      path:'/demo/bird-button',
+      component:()=>import('./routes/demo/bird-button')
     }
   ]
 
@@ -45,7 +62,7 @@ const Routers = function ({ history, app }) {
               />
             ))
           }
-          <Route component={error} />
+          <Route component={()=>{return <Exception type={404} />}} />
         </Switch>
       </App>
     </ConnectedRouter>

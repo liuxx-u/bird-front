@@ -23,7 +23,7 @@ bird-front对常用的数据组件进行了封装，使其简单易用，包括�
 - 全自动表单：bird-form。[查看文档](https://github.com/liuxx001/bird-front/blob/master/doc/bird-form.md)
 - 权限按钮：bird-button。[查看文档](https://github.com/liuxx001/bird-front/blob/master/doc/bird-button.md)
 
-所有业务组件的理念均是结合服务端接口进行组件的封装，牺牲部分灵活性以获取更优的业务开发速度。
+所有业务组件的理念均是结合服务端接口进行组件的封装，兼顾灵活性的同时保证更优的业务开发速度。
 
 
 **项目获取：**

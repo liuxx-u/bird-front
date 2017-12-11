@@ -23,6 +23,53 @@ let database = [
     "parentId": "2",
     "permissionName":"sys:authorize:user",
     "url": "/sys/authorize/user"
+  },
+  {
+    "icon": "share-alt",
+    "id": "4",
+    "name": "示例",
+    "parentId": "0",
+    "url": ""
+  },
+  {
+    "icon": "",
+    "id": "5",
+    "name": "bird-grid示例",
+    "parentId": "4",
+    "permissionName":"",
+    "url": "/demo/bird-grid"
+  },
+  {
+    "icon": "",
+    "id": "6",
+    "name": "bird-selector示例",
+    "parentId": "4",
+    "permissionName":"",
+    "url": "/demo/bird-selector"
+  },
+  {
+    "icon": "",
+    "id": "7",
+    "name": "bird-form示例",
+    "parentId": "4",
+    "permissionName":"",
+    "url": "/demo/bird-form"
+  },
+  {
+    "icon": "",
+    "id": "8",
+    "name": "bird-tree示例",
+    "parentId": "4",
+    "permissionName":"",
+    "url": "/demo/bird-tree"
+  },
+  {
+    "icon": "",
+    "id": "9",
+    "name": "bird-button示例",
+    "parentId": "4",
+    "permissionName":"",
+    "url": "/demo/bird-button"
   }
 ]
 

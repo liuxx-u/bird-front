@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { request,config } from 'utils';
 import {Select} from 'antd';
-const Option = Select.Option;
 
 class BirdSelector extends React.Component {
   constructor(props) {
@@ -44,8 +43,8 @@ class BirdSelector extends React.Component {
       <Select style={{width: self.props.width}} getPopupContainer={self.props.getPopupContainer}
               onChange={value => self.onPropsChange(value)} value={self.state.selectedValue}>
         {this.state.options.map((option, index) => (
-          <Option key={'selector_' + self.props.dicKey + '_' + index} value={option.value}
-                  disabled={option.disable == 'true'}>{option.label}</Option>
+          <Select.Option key={'selector_' + self.props.dicKey + '_' + index} value={option.value}
+                         disabled={option.disable == 'true'}>{option.label}</Select.Option>
         ))}
       </Select>
     )
@@ -58,7 +57,6 @@ BirdSelector.propTypes = {
   disabled:PropTypes.bool,
   size:PropTypes.string,
   selectedValue:PropTypes.string,
-  width:PropTypes.string,
   getPopupContainer:PropTypes.func,
   onChange:PropTypes.func
 };

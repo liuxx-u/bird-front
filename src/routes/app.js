@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet'
 import { withRouter } from 'dva/router'
 import '../themes/index.less'
 import './app.less'
-import Error from './error'
+import Exception from 'components/Exception';
 
 const { prefix, openPages } = config
 
@@ -90,7 +90,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
     <div>
       <Loader fullScreen spinning={loading.effects['app/query']} />
       <Helmet>
-        <title>bird</title>
+        <title>bird-front</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href={logo} type="image/x-icon" />
         <link rel="stylesheet" href="/antd/antd.min.css" type="text/css" />
@@ -106,7 +106,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
           <Bread {...breadProps} />
           <div className={styles.container}>
             <div className={styles.content}>
-              {hasPermission ? children : <Error />}
+              {hasPermission ? children : <Exception type={403}/>}
             </div>
           </div>
           <Footer />

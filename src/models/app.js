@@ -4,9 +4,11 @@
 import { routerRedux } from 'dva/router'
 import { parse } from 'qs'
 import config from 'config'
+import {permission} from 'utils'
 import { EnumRoleType } from 'enums'
 import { query, logout } from 'services/app'
 import * as menusService from 'services/menus'
+import * as permissionsService from 'services/permissions'
 import queryString from 'query-string'
 
 const { prefix } = config
@@ -69,25 +71,18 @@ export default {
       const { locationPathname } = yield select(_ => _.app)
       if (success && user) {
         const { list } = yield call(menusService.query)
-        const { permissions } = user
         let menu = list
-        // if (permissions.role === EnumRoleType.ADMIN || permissions.role === EnumRoleType.DEVELOPER) {
-        //   permissions.visit = list.map(item => item.id)
-        // } else {
-        //   menu = list.filter((item) => {
-        //     const cases = [
-        //       permissions.visit.includes(item.id),
-        //       item.mpid ? permissions.visit.includes(item.mpid) || item.mpid === '-1' : true,
-        //       item.bpid ? permissions.visit.includes(item.bpid) : true,
-        //     ]
-        //     return cases.every(_ => _)
-        //   })
-        // }
+
+        let permissions = permission.getPermissions();
+        if (!permissions) {
+          permissions = yield call(permissionsService.query);
+          permission.setPermissions(permissions.list)
+        }
+
         yield put({
           type: 'updateState',
           payload: {
             user,
-            permissions,
             menu,
           },
         })

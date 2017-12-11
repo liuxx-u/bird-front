@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import BirdButton from '../Form/BirdButton';
 import AutoForm from './BirdGridForm';
 import BirdGridQuery from './BirdGridQuery';
-import { request,config,util } from 'utils';
+import { request,config,util,permission } from 'utils';
 import styles from './BirdGrid.less';
 import {DropdownRender,SwitchRender} from './render';
-import {Pagination,Modal,Card,Popconfirm,Button,message,Row, Col,Tag } from 'antd';
+import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Tag,Checkbox } from 'antd';
 
 const operatorMap = {
   "equal":"等于",
@@ -47,15 +48,31 @@ class BirdGrid extends React.Component {
       sourceKeyMap: {},//下拉选择器key与data的映射
       fieldTitleMap: {},
 
-      primaryKey: primaryKey//标识列名称
+      primaryKey: primaryKey,//标识列名称
+      tablePermission: {},
+
+      checkedValues: []
     };
   }
 
   /* 初始化渲染执行之前执行 */
   componentWillMount() {
     let self = this;
+
+    let p = self.props.gridOption.permission;
+    let tp = {};
+    if (typeof (p) === 'string') {
+      tp = {
+        add: p + ':add',
+        edit: p + ':edit',
+        delete: p + ':delete'
+      }
+    } else {
+      tp = p || {};
+    }
+
     let defaultActions = [];
-    if (self.props.gridOption.url.add) {
+    if (self.props.gridOption.url.add && permission.check(tp.add)) {
       defaultActions.push({
         name: "新增",
         icon: "plus",
@@ -92,7 +109,8 @@ class BirdGrid extends React.Component {
     self.setState({
       actions: optionActions,
       sourceKeyMap: sourceKeyMap,
-      fieldTitleMap: fieldTitleMap
+      fieldTitleMap: fieldTitleMap,
+      tablePermission: tp
     }, self.query);
   }
 
@@ -156,10 +174,11 @@ class BirdGrid extends React.Component {
   /* 表单保存 */
   saveClick() {
     let self = this;
+    if(!self.refs.autoForm.validate())return;
+
     self.setState({
       formConfirmLoading: true
     });
-
     self.refs.autoForm.saveClick(function () {
       self.setState({
         formVisiable: false,
@@ -169,7 +188,7 @@ class BirdGrid extends React.Component {
     });
   }
 
-  //弹出框取消事件
+  /*弹出框取消事件 */
   cancelClick() {
     this.setState({
       formVisiable: false,
@@ -187,6 +206,33 @@ class BirdGrid extends React.Component {
       sortField: sortField,
       sortDirection: sortDirection
     }, this.query);
+  }
+
+  /* 全选点击事件 */
+  checkAllClick() {
+    if (this.state.checkedValues.length == this.state.gridDatas.items.length) {
+      this.setState({checkedValues: []})
+    } else {
+      let checkValues = this.state.gridDatas.items.map(p => p[this.state.primaryKey]);
+      this.setState({checkedValues: checkValues})
+    }
+  }
+
+  /* 选择框点击事件 */
+  checkClick(value) {
+    let checkValues = this.state.checkedValues;
+    let index = checkValues.findIndex(p => p == value);
+    if (index < 0) {
+      checkValues.push(value);
+    } else {
+      checkValues.splice(index, 1);
+    }
+    this.setState({checkedValues: checkValues})
+  }
+
+  /* 获取选择的值*/
+  getCheckValues() {
+    return this.state.checkedValues;
   }
 
   /* 数据查询 */
@@ -298,6 +344,8 @@ class BirdGrid extends React.Component {
     let trs = self.state.gridDatas.items.map(function (data) {
       let primaryKey = self.state.primaryKey;
       return <tr className="ant-table-row  ant-table-row-level-0" key={'tr_' + data[primaryKey]}>
+        {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0}
+                                               onChange={() => self.checkClick(data[primaryKey])}/></td>}
         {
           gridOption.columns.map(function (col) {
             if (col.hide) return;
@@ -306,20 +354,26 @@ class BirdGrid extends React.Component {
               let tdActions = col.actions || [];
 
               return <td key={'tr_' + data[primaryKey] + '_td_' + col.data}>
-                {self.props.gridOption.url.edit && <a href="#" onClick={() => self.editClick(data)}>编辑</a>}
+                {self.props.gridOption.url.edit && permission.check(self.state.tablePermission.edit) &&
+                <a href="#" onClick={() => self.editClick(data)}>编辑</a>}
 
                 {
                   tdActions.map(function (action, aIndex) {
-                    if (action.hideFunc && action.hideFunc(data)) return <span></span>;
+                    if (!permission.check(action.permissionName)) return;
+                    if (action.hideFunc && action.hideFunc(data)) return;
                     var actionName = action.nameFormat ? action.nameFormat(data) : action.name;
                     return <span key={'tr_' + data[primaryKey] + '_action_' + aIndex}>
                       <span className="ant-divider"></span>
-                      <a href="javascript:void(0);" onClick={() => action.onClick(data)}>{actionName}</a>
+                      {action.confirm ? <Popconfirm title={'确定要' + actionName + '吗？'} onConfirm={() => {
+                          action.onClick(data)
+                        }}><a href="#">{actionName}</a></Popconfirm> :
+                        <a href="javascript:void(0);" onClick={() => action.onClick(data)}>{actionName}</a>}
+
                     </span>
                   })
                 }
 
-                {self.props.gridOption.url.delete &&
+                {self.props.gridOption.url.delete && permission.check(self.state.tablePermission.delete) &&
                 <Popconfirm title="确定要删除这条记录吗？" onConfirm={() => {
                   self.deleteClick(data[primaryKey])
                 }}>
@@ -353,9 +407,10 @@ class BirdGrid extends React.Component {
     });
 
     let actions = self.state.actions.map(function (action, index) {
-      return <Button key={"action_" + index} icon={action.icon} type="primary" onClick={() => {
-        action.onClick()
-      }}>{action.name}</Button>
+      return <BirdButton permissionName={action.permissionName} key={"action_" + index} icon={action.icon}
+                         type="primary" onClick={() => {
+        action.onClick(self.state.checkedValues)
+      }}>{action.name}</BirdButton>
     });
 
     let filters = self.state.filterRules.map(filter => {
@@ -387,6 +442,9 @@ class BirdGrid extends React.Component {
             <table>
               <thead className={styles.bird_table_thead}>
               <tr>
+                {gridOption.checkable && <th style={{width: 15}}><Checkbox
+                  checked={this.state.checkedValues.length == this.state.gridDatas.items.length}
+                  onChange={() => this.checkAllClick()}/></th>}
                 {ths}
               </tr>
               </thead>

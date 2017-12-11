@@ -33,6 +33,7 @@ class SysUserPage extends React.Component {
         {
           title: "操作选项", type: "command", actions: [{
           name: '查看行数据',
+          permissionName:'sys:authorize:user:test',
           onClick: (data) => {
             console.log(data);
           }

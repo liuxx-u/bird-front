@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { request, deepClone } from 'utils';
+import { request, deepClone, util } from 'utils';
 import AutoField from '../Form/AutoField';
 import {Form,message} from 'antd';
 
@@ -31,8 +31,27 @@ class BirdGridForm extends React.Component {
     });
   }
 
+  validate() {
+    let dto = this.state.initValue;
+
+    //验证数据合法性
+    for (let field of this.props.formOption.fields) {
+      if (!field.editor) continue;
+      if (field.editor.isRequired && util.string.isEmpty(dto[field.data])) {
+        message.error('`' + field.title + '`不能为空.');
+        return false;
+      }
+      if (field.editor.validateRegular && !field.editor.validateRegular.test(dto[field.data])) {
+        message.error('`' + field.title + '`数据格式不正确.');
+        return false;
+      }
+    }
+    return true;
+  }
+
   saveClick(callback) {
     let dto = this.state.initValue;
+
     let extraParams = this.state.extraParams;
     for (let i = 0; i < extraParams.length; i++) {
       dto[extraParams[i].field] = extraParams[i].value;
@@ -64,6 +83,7 @@ class BirdGridForm extends React.Component {
         key: field.data,
         tips: field.editor.tips,
         isRequired: field.editor.isRequired,
+        validateRegular: field.editor.validateRegular,
         fieldType: field.type,
         value: self.state.initValue[field.data],
         disabled: pattern === 'disabled',

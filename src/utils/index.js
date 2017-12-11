@@ -4,6 +4,7 @@ import lodash from 'lodash';
 import config from './config';
 import request from './request';
 import util from './util';
+import permission from './permission';
 import { color } from './theme';
 
 /**
@@ -96,5 +97,6 @@ export default  {
   queryArray,
   arrayToTree,
   deepClone,
-  util
+  util,
+  permission
 }

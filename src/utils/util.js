@@ -1,3 +1,7 @@
+import store from 'store';
+
+const tokenKey="sso.token";
+
 let util= {
   object: {
     deepClone: function (p, c) {
@@ -22,7 +26,7 @@ let util= {
   },
   number: {
     getDiscount: function (price, originPrice) {
-      if (price <= 0 || originPrice <= 0 || price >= originPrice)return "";
+      if (price <= 0 || originPrice <= 0 || price >= originPrice) return "";
       var d = (price / originPrice * 10).toFixed(2);
       while (d[d.length - 1] === "0" || d[d.length - 1] == ".") {
         d = d.substring(0, d.length - 1);
@@ -85,25 +89,33 @@ let util= {
   string: {
     // 最大显示长度
     truncate: function (str, max, postfix) {
+      if(typeof (str) !== "string"){
+        return str;
+      }
       if (typeof(postfix) === "undefined") {
         postfix = "...";
       }
-      if (str.length <= max)return str;
+      if (str.length <= max) return str;
       return str.substring(0, max) + postfix;
     },
     // 连字符转驼峰
-    hyphenToHump : function (str) {
+    hyphenToHump: function (str) {
       return str.replace(/-(\w)/g, (...args) => {
         return args[1].toUpperCase()
       })
     },
     // 驼峰转连字符
-    humpToHyphen : function (str) {
+    humpToHyphen: function (str) {
       return str.replace(/([A-Z])/g, '-$1').toLowerCase()
+    },
+    isEmpty:function(str) {
+      if (typeof (str) === "undefined") return true;
+      if (str.replace(/(^s*)|(s*$)/g, "").length === 0) return true;
+      return false;
     }
   },
-  date:{
-    format:function (date,format) {
+  date: {
+    format: function (date, format) {
       {
         const o = {
           'M+': date.getMonth() + 1,
@@ -125,6 +137,57 @@ let util= {
         }
         return format
       }
+    }
+  },
+  store: {
+    get: function (key) {
+      var cacheObj = store.get(key);
+      if (cacheObj) {
+        var now = new Date();
+
+        if (!cacheObj.expire) return null;
+        var expireTime = new Date(cacheObj.expire);
+        if (expireTime < now) {//超出有效期,移除
+          util.store.remove(key);
+          return null;
+        } else {
+          //有效期不足半小时,则刷新
+          if (expireTime - now < (30 * 60 * 1000)) {
+            cacheObj.expire = new Date((now / 1000 + 120 * 60) * 1000);
+            store.set(key, cacheObj)
+          }
+          return cacheObj.value;
+        }
+      }
+      return null;
+    },
+    set: function (key, value, span) {
+      var span = span || 120;//默认缓存两小时
+
+      var now = new Date();
+      var expire = new Date((now / 1000 + span * 60) * 1000);
+      var cacheObj = {
+        expire: expire,
+        value: value
+      };
+      store.set(key, cacheObj);
+    },
+    remove: function (key) {
+      store.remove(key);
+    },
+    clearAll: function () {
+      store.clearAll();
+    }
+  },
+  auth:{
+    getToken:function () {
+      return util.store.get(tokenKey);
+    },
+    setToken:function (token) {
+      util.store.set(tokenKey,token)
+    },
+    removeToken:function () {
+      util.store.remove(tokenKey);
     }
   }
 }

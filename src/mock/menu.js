@@ -21,6 +21,7 @@ let database = [
     "id": "3",
     "name": "用户管理",
     "parentId": "2",
+    "permissionName":"sys:authorize:user",
     "url": "/sys/authorize/user"
   }
 ]

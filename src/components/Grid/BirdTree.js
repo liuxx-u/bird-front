@@ -104,7 +104,7 @@ class BirdTree extends React.Component {
 
   //点击事件，不支持点选多个节点
   itemClick(selectKeys, isLeaf) {
-    if (selectKeys.length == 0)return;
+    if (selectKeys.length == 0) return;
 
     let clickKey = selectKeys[0];
     //执行点击事件
@@ -135,13 +135,19 @@ class BirdTree extends React.Component {
     })
   }
 
+  checkClick(cKeys) {
+    let keys = cKeys || [];
+    keys = keys.map(key => key.substring(5, key.length));//移除'tree_'前缀
+    this.props.treeOption.onCheck && this.props.treeOption.onCheck(keys);
+  }
+
   render() {
     let self = this;
     let option = self.state.treeOption;
     let roots = self.state.itemHash[option.initialValue] || [];
 
     let getTreeNode = function (node) {
-      if (!node)return;
+      if (!node) return;
       let textField = self.state.treeOption.textField;
       let valueField = self.state.treeOption.valueField;
       let itemHash = self.state.itemHash;
@@ -157,14 +163,20 @@ class BirdTree extends React.Component {
         return (<TreeNode title={node[textField]} key={key} isLeaf/>)
       }
     };
+
+    let checkedKeys = self.props.treeOption.checkedKeys || [];
+    checkedKeys = checkedKeys.map(key => 'tree_' + key);
+
     return (
       <Tree onSelect={(sKeys, e) => self.itemClick(sKeys, e.node.props.isLeaf)}
             onExpand={(eKeys) => self.expandClick(eKeys)}
             selectedKeys={self.state.selectedKeys}
             expandedKeys={self.state.expandedKeys}
+            autoExpandParent={false}
             showLine
             checkable={self.state.treeOption.checkable}
-            onCheck={self.state.treeOption.onCheck}
+            checkedKeys={checkedKeys}
+            onCheck={cKeys=>self.checkClick(cKeys)}
       >
         {roots.map(getTreeNode)}
       </Tree>)
@@ -182,6 +194,7 @@ BirdTree.propTypes = {
     initFirstLeaf: PropTypes.bool,//是否默认点击第一个叶子节点
     canSelectFolder: PropTypes.bool,//文件夹是否允许选中
     checkable: PropTypes.bool,//节点前添加 Checkbox 复选框
+    checkedKeys:PropTypes.array,//选中的keys
     expandAll: PropTypes.bool,//是否展开全部
     onCheck: PropTypes.func,//点击复选框触发
     onSelect: PropTypes.func//点击节点时触发

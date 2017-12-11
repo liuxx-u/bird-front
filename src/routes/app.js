@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import pathToRegexp from 'path-to-regexp'
 import { connect } from 'dva'
 import { Layout, Loader } from 'components'
-import { classnames, config } from 'utils'
+import { classnames, config, permission } from 'utils'
 import { Helmet } from 'react-helmet'
 import { withRouter } from 'dva/router'
 import '../themes/index.less'
@@ -22,9 +22,13 @@ const App = ({ children, dispatch, app, loading, location }) => {
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config
-  const current = menu.filter(item => pathToRegexp(item.url || '').exec(pathname))
-  // const hasPermission = current.length ? permissions.visit.includes(current[0].id) : false
-  const hasPermission = true;
+  const current = menu.filter(item => pathToRegexp(item.url || '').exec(pathname));
+  let hasPermission = false;
+  if (current.length == 0 || pathname.indexOf('?') > 0) {//菜单中没有，但是pathName上带有查询参数的连接，默认为子页面，不验证权限.
+    hasPermission = true;
+  } else {
+    hasPermission = permission.check(current[0].permissionName)
+  }
   const href = window.location.href
 
   if (lastHref !== href) {
@@ -86,7 +90,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
     <div>
       <Loader fullScreen spinning={loading.effects['app/query']} />
       <Helmet>
-        <title>ChengTay</title>
+        <title>bird</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href={logo} type="image/x-icon" />
         <link rel="stylesheet" href="/antd/antd.min.css" type="text/css" />

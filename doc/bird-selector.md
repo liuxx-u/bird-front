@@ -1,9 +1,5 @@
 # bird-selector
 
-标签（空格分隔）： bird bird-front
-
----
-
 bird-selector是基于react antd的Selector组件进行封装的支持服务端数据与本地数据的两用下拉选择器。
 
 **功能特性：**

@@ -1,9 +1,5 @@
 # bird-button
 
-标签（空格分隔）： bird bird-front
-
----
-
 bird-button是基于react antd的Button组件进行封装的支持权限控制的按钮组件。
 
 **功能特性：**

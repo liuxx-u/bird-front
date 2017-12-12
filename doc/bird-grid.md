@@ -1,8 +1,5 @@
 # bird-grid
 
-标签（空格分隔）： bird bird-front
-
----
 
 bird-grid是一个简化业务系统增删改查的全自动表格组件。组件内部处理数据加载、分页、排序、查询、新增、编辑等一系列操作。让业务表格开发变得异常简单。
 
@@ -161,7 +158,8 @@ permissionName | 所需权限名 | string |
 
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
-field | 列字段名称 | string | 
-value | 值 | string | 
+field | 列字段名称 | string | ''
+value | 值 | string | ''
+
 说明：
 customRules是在表格初始化之前为表格添加自定义查询条件，可用于url上不同参数对于表格数据的控制。

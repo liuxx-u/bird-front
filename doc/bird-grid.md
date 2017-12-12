@@ -1,6 +1,13 @@
+# bird-grid
+
+标签（空格分隔）： bird bird-front
+
+---
+
 bird-grid是一个简化业务系统增删改查的全自动表格组件。组件内部处理数据加载、分页、排序、查询、新增、编辑等一系列操作。让业务表格开发变得异常简单。
 
 **功能特性：**
+
 - 新增、编辑零代码，支持自定义的编辑配置（提示、是否必填、正则验证等）。
 - 查询、排序、分页零代码。每列均可查询、排序。
 - 自定义操作，默认提供新增、修改、删除的操作按钮。
@@ -117,9 +124,9 @@ source | 当列类型为dropdown时的数据源 | object |
 actions | 当列类型为command时的操作按钮数组 | array |[编辑,删除]
 editor | 列的编辑设置 | object | null
 说明：
+
 - render(v,d){}方法第一个参数表示当前行当前列的数据，第二个参数表示整行的数据。
 - scource:{key:’’,data:[]}。其中key、data分别对应bird-selector中的dicKey，data。
-- 
 
 **editor相关API：**
 
@@ -143,6 +150,7 @@ hideFunc | 根据行数据判断按钮是否显示方法 | function(data){} |
 permissionName | 所需权限名 | string |
 
 说明：
+
 - 本表格所有方法接收的data为行数据（右上角按钮的onClick事件除外）；
 - nameFormat，只对行内action有效，优先级高于name；
 - hideFunc，只对行内action有效，存在且hideFunc(data)为true时，该按钮隐藏；
@@ -153,8 +161,7 @@ permissionName | 所需权限名 | string |
 
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
-field | 列字段名称 | string | ''
-value | 值 | string | ''
-
+field | 列字段名称 | string | 
+value | 值 | string | 
 说明：
 customRules是在表格初始化之前为表格添加自定义查询条件，可用于url上不同参数对于表格数据的控制。

@@ -1,6 +1,13 @@
+# bird-tree
+
+标签（空格分隔）： bird bird-front
+
+---
+
 bird-tree是基于react antd的Tree组件进行封装的自动化组件树。
 
 **功能特性：**
+
 - 自动处理数据，递归渲染树
 - 支持默认选中第一个子节点
 - 支持全部展开

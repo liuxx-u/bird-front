@@ -1,6 +1,13 @@
-birdform简化了普通表单的编码操作，表单的内容通过配置自动渲染。
+# bird-form
+
+标签（空格分隔）： bird bird-front
+
+---
+
+bird-form简化了普通表单的编码操作，表单的内容通过配置自动渲染。
 
 **功能特性**
+
 - 支持表单中字段的配置，并根据配置自动渲染相关组件。
 - 支持字段提示配置。
 - 自持字段是否必填配置。
@@ -57,6 +64,7 @@ tabType | tab的类型。'line','card' | string | 'line'
 tabPosition | tab的位置。'top', 'right', 'bottom', 'left' | string | 'top'
 saveUrl | 数据提交地址 | string | ''
 value | 初始值 | object | {}
+
 
 - saveUrl配置之后自动渲染提交按钮。
 - 示例代码中可用this.refs.form.getResult()获取表单编辑之后的数据。

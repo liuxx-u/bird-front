@@ -161,5 +161,6 @@ permissionName | 所需权限名 | string |
 ---|---|---|---
 field | 列字段名称 | string | 
 value | 值 | string | 
+
 说明：
 customRules是在表格初始化之前为表格添加自定义查询条件，可用于url上不同参数对于表格数据的控制。

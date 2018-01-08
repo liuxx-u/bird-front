@@ -2,7 +2,7 @@
 
 bird-form简化了普通表单的编码操作，表单的内容通过配置自动渲染。
 
-**功能特性**
+## 功能特性
 
 - 支持表单中字段的配置，并根据配置自动渲染相关组件。
 - 支持字段提示配置。
@@ -11,7 +11,7 @@ bird-form简化了普通表单的编码操作，表单的内容通过配置自�
 - 支持按tab分组。
 - 支持配置每行显示的字段数量，最小1，最大4。
 
-示例代码：
+## 示例代码
 
 ```
 const fields=[
@@ -43,11 +43,11 @@ const fields=[
 
 <BirdForm fields={fields} withTab={true} saveUrl={'/save'} ref='form' />
 ```
-**效果图：**
+## 效果图
 
 ![image](https://raw.githubusercontent.com/liuxx001/bird-front/master/doc/bird-form.png)
 
-**API：**
+## API
 
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
@@ -65,7 +65,7 @@ value | 初始值 | object | {}
 - saveUrl配置之后自动渲染提交按钮。
 - 示例代码中可用this.refs.form.getResult()获取表单编辑之后的数据。
 
-**fields相关API：**
+### fields相关API
 
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---

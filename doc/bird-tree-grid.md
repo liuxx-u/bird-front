@@ -2,12 +2,12 @@
 
 bird-grid简化了单表的增删查改操作，但是很多业务场景下，单表操作并不能满足业务需求，特开发树表组件以满足更多的业务需要。其由bird-tree组件与bird-grid组件合并而来。
 
-**功能特性：**
+## 功能特性
 
 - 保留bird-grid的配置模式
 - 保留bird-tree自动处理数据、无限递归的特性
 
-**示例代码：**
+## 示例代码
 
 ```
 render() {
@@ -53,11 +53,11 @@ render() {
   }
 
 ```
-**效果图：**
+## 效果图
 
 ![image](https://raw.githubusercontent.com/liuxx001/bird-front/master/doc/bird-tree-grid.png)
 
-**API：**
+## API
 gridOption与bird-grid中api一致。treeOption相关API如下：
 
 参数 | 说明 | 类型 | 默认值

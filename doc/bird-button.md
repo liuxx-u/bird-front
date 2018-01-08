@@ -2,18 +2,18 @@
 
 bird-button是基于react antd的Button组件进行封装的支持权限控制的按钮组件。
 
-**功能特性：**
+## 功能特性
 
 - 支持所有antd Button组件的api
 - 支持权限控制
 
-**使用方式：**
+## 使用方式
 
 ```
 <BirdButton permissionName={'sys'} type='primary'>测试按钮</BirdButton>
 ```
 
-**API：**
+## API
 除permissionName外属性都会渲染至antd的Button组件
 
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { request, deepClone } from 'utils';
+import { request, deepClone,util } from 'utils';
 import AutoField from './AutoField';
 import {Form,message,Button,Tabs,Row,Col} from 'antd';
 
@@ -12,12 +12,15 @@ const TabPane = Tabs.TabPane;
  * props中有saveUrl参数，则自动渲染保存按钮并支持提交
  * props中有withTab=true，则自动分组渲染
  */
+
 class BirdForm extends React.Component {
   constructor(props) {
     super(props);
 
     let initValue = deepClone(this.props.value);
     this.state = {
+      formKey:util.string.generateRandom(6),
+
       activeKey: this.props.activeGroupName,
       group: [],
 
@@ -34,10 +37,8 @@ class BirdForm extends React.Component {
     if (!this.props.withTab || this.props.fields.length == 0 || this.state.group.length > 0) return;
 
     let group = [];
-    for (let i = 0, len = this.props.fields.length; i < len; i++) {
-      let field = this.props.fields[i];
+    for (let field of this.props.fields) {
       let groupName = field.groupName || this.props.defaultGroupName;
-      console.log(groupName);
 
       let index = group.findIndex(g => g.groupName == groupName);
       if (index < 0) {
@@ -67,8 +68,29 @@ class BirdForm extends React.Component {
     return this.state.initValue;
   }
 
+  validate() {
+    let dto = this.getResult();
+    //验证数据合法性
+    for (let field of this.props.fields) {
+      if (field.isRequired && util.string.isEmpty(dto[field.key])) {
+        message.error('`' + field.name + '`不能为空.');
+        return false;
+      }
+      if (field.validateRegular) {
+        let reg = typeof (field.validateRegular) === 'string' ? eval(field.validateRegular) : field.validateRegular;
+        if (reg.test && !reg.test(dto[field.key])) {
+          message.error('`' + field.name + '`数据格式不正确.');
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   save() {
     let self = this;
+    if(!self.validate())return;
+
     let dto = self.getResult();
     self.setState({submitting: true})
 
@@ -86,56 +108,40 @@ class BirdForm extends React.Component {
 
   getFields(fields) {
     let self = this;
+    let formKey = self.state.formKey;
     let capacity = self.props.lineCapacity;
 
-    let rows = [];
-    let fillHash = {};//rows中剩余容量与行序号数组的hash表
-    for (let i = capacity - 1; i > 0; i--) {
-      fillHash[i] = [];
-    }
+    let rows = [[]];
+    let lastRowCapacity = capacity;
 
-    for (let i = 0, len = fields.length; i < len; i++) {
-      let field = fields[i];
-      field.value = self.state.initValue[field.key];
-
+    for (let field of fields) {
+      field.value = self.state.initValue[field.key] || '';
+      //colSpan默认为1，最大为4
       let colSpan = field.colSpan || 1;
-      if (colSpan > capacity || field.fieldType === 'richtext') {//富文本占据整行
-        colSpan = capacity;
+      if (colSpan > 4) {
+        colSpan = 4;
       }
 
-      let hasFill = false;
-      let col = {colSpan: colSpan, field: field};
-      for (let i = colSpan; i < capacity; i++) {
-        if (fillHash[i].length > 0) {
-          hasFill = true;
-          let index = fillHash[i][0];
-          rows[index].push(col);
-          if (colSpan == i) {
-            fillHash[i].shift();
-          } else {
-            let sub = i - colSpan;
-            fillHash[sub].push(index);
-          }
-          break;
-        }
+      if (lastRowCapacity < colSpan) {
+        rows.push([]);
+        lastRowCapacity = capacity;
       }
-      if (!hasFill) {
-        rows.push([col]);
-        let sub = capacity - colSpan;
-        if (sub > 0) {
-          fillHash[sub].push(rows.length - 1)
-        }
-      }
+      rows[rows.length - 1].push(field);
+      lastRowCapacity = lastRowCapacity - colSpan;
     }
 
-
-    let autoFields = rows.map((row,index) => {
-      return <Row key={'row_'+index}>
-        {row.map(col => {
+    let autoFields = rows.map((row, index) => {
+      return <Row key={formKey+'_row_' + index}>
+        {row.map(field => {
+          let colSpan = field.colSpan||1;
+          if (colSpan > 4) {
+            colSpan = 4;
+          }
           let unit = 24 / self.props.lineCapacity;
-          return <Col span={col.colSpan * unit} key={'field_' + col.field.key}>
-            <AutoField fieldOption={col.field}
-                       onChange={(key, value) => self.onFieldChange(key, value)}/>
+          return <Col span={colSpan * unit} key={formKey+'_field_' + field.key}>
+            {field.fieldType !== 'empty' &&
+            <AutoField fieldOption={field} labelColSpan={6 / colSpan}
+                       onChange={(key, value) => self.onFieldChange(key, value)}/>}
           </Col>
         })}
       </Row>

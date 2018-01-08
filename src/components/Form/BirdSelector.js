@@ -9,31 +9,38 @@ class BirdSelector extends React.Component {
 
     this.state = {
       placeholder: '',
-      options: this.props.data || [],
-      selectedValue: '',
+      options: this.props.data || []
     }
   }
 
   componentDidMount() {
     let self = this;
-    if (!self.props.dicKey) return;
+    if (self.props.data.length > 0) return;
 
-    request({
-      url: config.api.getDic + self.props.dicKey,
-      method: "get"
-    }).then(function (result) {
-      self.setState({
-        placeholder: result.placeholder,
-        options: result.options,
-        selectedValue: self.props.selectedValue || result.defaultCode
-      })
-    });
+    if (self.props.url) {
+      request({
+        url: self.props.url,
+        method: "get"
+      }).then(function (result) {
+        self.setState({
+          options: result
+        })
+      });
+    } else if (self.props.dicKey) {
+      request({
+        url: config.api.getDic + self.props.dicKey,
+        method: "get"
+      }).then(function (result) {
+        self.setState({
+          placeholder: result.placeholder,
+          options: result.options
+        });
+        result.defaultCode && self.onPropsChange(result.defaultCode);
+      });
+    }
   }
 
   onPropsChange(value) {
-    this.setState({
-      selectedValue: value
-    })
     this.props.onChange && this.props.onChange(value);
   }
 
@@ -41,7 +48,7 @@ class BirdSelector extends React.Component {
     let self = this;
     return (
       <Select style={{width: self.props.width}} getPopupContainer={self.props.getPopupContainer}
-              onChange={value => self.onPropsChange(value)} value={self.state.selectedValue}>
+              onChange={value => self.onPropsChange(value)} value={self.props.selectedValue||''}>
         {this.state.options.map((option, index) => (
           <Select.Option key={'selector_' + self.props.dicKey + '_' + index} value={option.value}
                          disabled={option.disable == 'true'}>{option.label}</Select.Option>
@@ -52,8 +59,9 @@ class BirdSelector extends React.Component {
 }
 
 BirdSelector.propTypes = {
-  dicKey:PropTypes.string,
   data:PropTypes.array,
+  url:PropTypes.string,
+  dicKey:PropTypes.string,
   disabled:PropTypes.bool,
   size:PropTypes.string,
   selectedValue:PropTypes.string,
@@ -63,6 +71,7 @@ BirdSelector.propTypes = {
 
 BirdSelector.defaultProps={
   width:'100%',
+  data:[],
   getPopupContainer:() => document.body
 }
 

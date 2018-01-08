@@ -7,107 +7,107 @@ let database = {
   result:[
     {
       "parentValue": "0",
-      "text": "系统管理",
+      "label": "系统管理",
       "value": "1"
     },
     {
       "parentValue": "1",
-      "text": "菜单管理",
+      "label": "菜单管理",
       "value": "2"
     },
     {
       "parentValue": "1",
-      "text": "权限管理",
+      "label": "权限管理",
       "value": "4"
     },
     {
       "parentValue": "4",
-      "text": "组织机构列表",
+      "label": "组织机构列表",
       "value": "5"
     },
     {
       "parentValue": "4",
-      "text": "岗位设置",
+      "label": "岗位设置",
       "value": "6"
     },
     {
       "parentValue": "4",
-      "text": "用户列表",
+      "label": "用户列表",
       "value": "7"
     },
     {
       "parentValue": "1",
-      "text": "字典管理",
+      "label": "字典管理",
       "value": "8"
     },
     {
       "parentValue": "8",
-      "text": "字典类型",
+      "label": "字典类型",
       "value": "9"
     },
     {
       "parentValue": "8",
-      "text": "字典选项",
+      "label": "字典选项",
       "value": "10"
     },
     {
       "parentValue": "0",
-      "text": "CMS系统",
+      "label": "CMS系统",
       "value": "11"
     },
     {
       "parentValue": "11",
-      "text": "分类管理",
+      "label": "分类管理",
       "value": "12"
     },
     {
       "parentValue": "11",
-      "text": "属性管理",
+      "label": "属性管理",
       "value": "13"
     },
     {
       "parentValue": "1",
-      "text": "站点管理",
+      "label": "站点管理",
       "value": "14"
     },
     {
       "parentValue": "1",
-      "text": "表单管理",
+      "label": "表单管理",
       "value": "15"
     },
     {
       "parentValue": "15",
-      "text": "自定义表单",
+      "label": "自定义表单",
       "value": "16"
     },
     {
       "parentValue": "15",
-      "text": "表单设置",
+      "label": "表单设置",
       "value": "17"
     },
     {
       "parentValue": "14",
-      "text": "站点列表",
+      "label": "站点列表",
       "value": "18"
     },
     {
       "parentValue": "0",
-      "text": "CRM系统管理",
+      "label": "CRM系统管理",
       "value": "19"
     },
     {
       "parentValue": "19",
-      "text": "车辆管理",
+      "label": "车辆管理",
       "value": "20"
     },
     {
       "parentValue": "0",
-      "text": "综合管理",
+      "label": "综合管理",
       "value": "21"
     },
     {
       "parentValue": "4",
-      "text": "权限管理",
+      "label": "权限管理",
       "value": "34"
     }
   ]

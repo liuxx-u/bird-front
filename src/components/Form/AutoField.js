@@ -3,7 +3,8 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import { config } from 'utils';
 import BirdSelector from './BirdSelector';
-import DraftEditor from 'components/Editor';
+import BirdCascader from './BirdCascader';
+import LzEditor from 'components/LzEditor';
 import styles from './AutoField.less';
 
 import {Form,Input,Button, DatePicker,Switch,Icon,Upload,InputNumber,Tooltip } from 'antd';
@@ -23,6 +24,10 @@ class AutoField extends React.Component {
 
   getValueTag(field) {
     let self = this;
+    if (typeof (field.value) == 'undefined' || field.value == 'null') {
+      field.value = '';
+    }
+    if (field.render && typeof (field.render) === 'function') return field.render(field.value);
 
     switch (field.fieldType) {
       case "text":
@@ -32,17 +37,24 @@ class AutoField extends React.Component {
         return <TextArea value={field.value} autosize={true} disabled={field.disabled}
                          onChange={e => self.onChange(e.target.value)}/>
       case "number":
-        return <InputNumber min={0} value={field.value} disabled={field.disabled}
+        let step = field.step || 1;
+        let precision = field.precision || 0;
+        return <InputNumber min={0} step={step} precision={precision}
+                            value={field.value} disabled={field.disabled}
                             onChange={value => self.onChange(value)}/>;
       case "switch":
         return <Switch disabled={field.disabled}
                        checked={field.value == true}
                        checkedChildren={<Icon type="check"/>}
                        unCheckedChildren={<Icon type="cross"/>}
-                       onChange={value => self.onChange(value)}/>;
+                       onChange={value => self.onChange(value ? "1" : "0")}/>;
       case "dropdown":
-        return <BirdSelector dicKey={field.source.key} data={field.source.data || []}
+        return <BirdSelector dicKey={field.source.key} data={field.source.data || []} url={field.source.url}
                              onChange={value => self.onChange(value)} selectedValue={field.value}/>;
+
+      case "cascader":
+        return <BirdCascader data={field.source.data || []} url={field.source.url}
+                             onChange={value => self.onChange(value)} value={field.value}/>
       case "img":
         let fileProps = {
           action: config.api.upload,
@@ -57,7 +69,7 @@ class AutoField extends React.Component {
           onChange: function (file, fileList, event) {
             if (file.file.status === "done") {
               file.fileList.shift();
-              self.onChange(file.file.response);
+              self.onChange(file.file.response.path);
             }
           },
           onRemove: function (file) {
@@ -70,15 +82,15 @@ class AutoField extends React.Component {
           </Button>
         </Upload>;
       case "date":
-        return <DatePicker value={field.value ? moment(field.value) : ''} disabled={field.disabled}
+        return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
                            format={"YYYY-MM-DD"}
                            onChange={(date, dateString) => self.onChange(dateString)}/>;
       case "datetime":
-        return <DatePicker value={field.value ? moment(field.value) : ''} disabled={field.disabled}
+        return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
                            format={"YYYY-MM-DD HH:mm"}
                            onChange={(date, dateString) => self.onChange(dateString)} showTime={true}/>;
       case "richtext":
-        return <DraftEditor initValue={field.value} onChange={value=>self.onChange(value)}/>;
+        return <LzEditor initValue={field.value} onChange={value => self.onChange(value)}/>;
       default:
         return <span/>;
     }
@@ -87,8 +99,8 @@ class AutoField extends React.Component {
   render() {
     let fieldOption = this.props.fieldOption;
     let formItemLayout = {
-      labelCol: {span: 6},
-      wrapperCol: {span: 14},
+      labelCol: {span: this.props.labelColSpan},
+      wrapperCol: {span: 20 - this.props.labelColSpan},
     };
 
     return <FormItem {...formItemLayout} label={
@@ -110,7 +122,13 @@ class AutoField extends React.Component {
 
 AutoField.propTypes = {
   fieldOption: PropTypes.object.isRequired,
+  labelColSpan:PropTypes.number,
   onChange: PropTypes.func,
 }
+
+AutoField.defaultProps = {
+  labelCol: 6
+}
+
 
 export default AutoField

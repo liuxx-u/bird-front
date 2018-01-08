@@ -1,9 +1,10 @@
 import React from 'react';
 import { request } from 'utils';
-import {BirdSelector} from "../../components/Form";
 import {Card} from 'antd';
+import {BirdCascader} from 'components/Form';
 
-class BirdSelectorDemoPage extends React.Component {
+
+class BirdCascaderDemoPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,13 +20,14 @@ class BirdSelectorDemoPage extends React.Component {
   }
 
   render() {
+
     return (
       <Card>
-        <BirdSelector dicKey={'zero.test'} onChange={value=>this.selectChange(value)} width={200}
-                      selectedValue={this.state.selectedValue}/>
+        <BirdCascader url={'/api/v1/tree'} onChange={value => this.selectChange(value)} width={400}
+                      value={this.state.selectedValue}/>
       </Card>
     )
   }
 }
 
-export default BirdSelectorDemoPage
+export default BirdCascaderDemoPage

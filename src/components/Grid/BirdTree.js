@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { request } from 'utils';
 import {Tree} from 'antd';
+import './BirdTree.less';
 const TreeNode = Tree.TreeNode;
 
 class BirdTree extends React.Component {
@@ -9,7 +10,7 @@ class BirdTree extends React.Component {
     super(props);
 
     let defaultOption = {
-      textField: 'text',
+      textField: 'label',
       valueField: 'value',
       parentField: 'parentValue',
       initialValue: '0',
@@ -63,8 +64,7 @@ class BirdTree extends React.Component {
         let curNodes = itemHash[option.initialValue] || [];
         while (curNodes.length > 0) {
           let temp = [];
-          for (let i = 0, len = curNodes.length; i < len; i++) {
-            let node = curNodes[i];
+          for (let node of curNodes) {
             let children = itemHash[node[option.valueField]] || [];
             if (children.length > 0) {
               let nodeKey = 'tree_' + node[option.valueField];
@@ -89,13 +89,40 @@ class BirdTree extends React.Component {
       url: this.props.treeOption.url,
       method: "get"
     }).then(function (result) {
-      for (let i = 0, len = result.length; i < len; i++) {
-        let item = result[i];
-        if (!itemHash[item[option.parentField]]) {
-          itemHash[item[option.parentField]] = [];
+      let nodeHash = {};
+      let folderNodes = [];
+
+      for (let item of result) {
+        let value = item[option.valueField];
+        let parentValue = item[option.parentField];
+        if (!itemHash[parentValue]) {
+          itemHash[parentValue] = [];
         }
-        itemHash[item[option.parentField]].push(item);
+        itemHash[parentValue].push(item);
+        nodeHash[value] = item;
+        if (item.folder + '' == 'true') {
+          folderNodes.push(item);//插入数组头部，减少后续遍历的次数
+        }
       }
+
+      //folder节点,子节点为空时,递归删除
+      for (let i = 0, len = folderNodes.length; i < len; i++) {
+        let curNode = folderNodes[i];
+        while (curNode != null && typeof (curNode) != 'undefined') {
+          let value = curNode[option.valueField];
+          if (itemHash[value] && itemHash[value].length > 0) break;
+
+          let pValue = curNode[option.parentField]
+          let pArr = itemHash[pValue];
+
+          let index = pArr.findIndex(item => item[option.valueField] === value);
+          if (index == -1) break;
+
+          pArr.splice(index, 1)
+          curNode = nodeHash[pValue];
+        }
+      }
+
       self.setState({itemHash: itemHash}, () => {
         onComplete && onComplete()
       });
@@ -160,7 +187,7 @@ class BirdTree extends React.Component {
           {children.map(getTreeNode)}
         </TreeNode>
       } else {
-        return (<TreeNode title={node[textField]} key={key} isLeaf/>)
+        return <TreeNode title={node[textField]} key={key} isLeaf/>;
       }
     };
 

@@ -1,7 +1,9 @@
 
-const DropdownRender=function(v,soucre) {
-  let item = soucre.find(p => p.value == v);
-  return item ? item.label : '';
+const DropdownRender=function(v,source) {
+
+  if (!source) return v;
+  let item = source[v];
+  return item ? item.label : v;
 };
 
 const SwitchRender=function(v) {

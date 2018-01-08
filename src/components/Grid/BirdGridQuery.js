@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import BirdSelector from '../Form/BirdSelector';
+import BirdCascader from '../Form/BirdCascader';
 import {Icon,Popover,Form,Select,Col,Row,Button,DatePicker,TimePicker,Input,InputNumber } from 'antd';
 
 const FormItem = Form.Item;
@@ -109,6 +110,11 @@ class BirdGridQuery extends React.Component {
       case "dropdown":
         valueField = <BirdSelector dicKey={field.source.key} data={field.source.data || []}
                                    onChange={value => this.onValueChange(value)} selectedValue={this.state.value}
+                                   getPopupContainer={getContainer}/>;
+        break;
+      case "cascader":
+        valueField = <BirdCascader data={field.source.data || []} expandTrigger='hover'
+                                   onChange={value => this.onValueChange(value)} value={this.state.value}
                                    getPopupContainer={getContainer}/>;
         break;
       case "date":

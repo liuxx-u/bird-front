@@ -51,7 +51,7 @@ export default {
     }
   },
   dllPlugin: {
-    exclude: ["babel-runtime", "roadhog", "cross-env"],
+    exclude: ["babel-runtime", "roadhog", "cross-env","react-lz-editor"],
     include: ["dva/router", "dva/saga", "dva/fetch"]
   }
 }

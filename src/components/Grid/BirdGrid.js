@@ -2,23 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import BirdButton from '../Form/BirdButton';
 import AutoForm from './BirdGridForm';
-import BirdGridQuery from './BirdGridQuery';
-import { request,config,util,permission } from 'utils';
+import BirdGridFilter from './BirdGridFilter';
+import { request,config,util,permission,arrayToHash } from 'utils';
 import styles from './BirdGrid.less';
 import {DropdownRender,SwitchRender} from './render';
-import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Tag,Checkbox,Button } from 'antd';
-
-const operatorMap = {
-  "equal":"等于",
-  "notequal":"不等于",
-  "less":"小于",
-  "lessorequal":"小于等于",
-  "greater":"大于",
-  "greaterorequal":"大于等于",
-  "contains":"包含",
-  "startswith":"开始于",
-  "endswith":"结束于"
-};
+import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Checkbox,Button } from 'antd';
 
 class BirdGrid extends React.Component {
   constructor(props) {
@@ -26,6 +14,8 @@ class BirdGrid extends React.Component {
 
     let primaryKey = this.props.gridOption.primaryKey || this.props.gridOption.columns[0]['data'];
     this.state = {
+      columns: [],
+      queryColumns: [],
       actions: [],
       pageIndex: 1,
       pageSize: this.props.gridOption.pageSize || 15,
@@ -45,8 +35,7 @@ class BirdGrid extends React.Component {
         value: {}
       },
       customData: this.props.gridOption.customRules || [],
-      sourceKeyMap: {},//下拉选择器key与data的映射
-      fieldTitleMap: {},
+      sourceKeyMap: {},//dropdown与cascader类型key与data的hash映射
 
       primaryKey: primaryKey,//标识列名称
       tablePermission: {},
@@ -71,6 +60,45 @@ class BirdGrid extends React.Component {
       tp = p || {};
     }
 
+    let columns = [], queryColumns = [];
+    let sourceKeyMap = {};
+    for (let col of self.props.gridOption.columns) {
+      if (col.type === 'richtext' && self.state.formWidth === 520) {
+        self.setState({formWidth: 800});
+      }
+      if (col.query) {
+        queryColumns.push(col);
+      }
+      //初始化下拉选择框的数据源,优先级：data>url>key
+      if ((col.type === 'dropdown' || col.type === 'cascader') && col.source) {
+        if (col.source.data && col.source.data.length > 0) {
+          sourceKeyMap[col.data] = arrayToHash(col.source.data);
+        } else if (col.source.url) {
+          request({url: col.source.url, method: "get"})
+            .then(function (result) {
+              col.source.data = result;
+              sourceKeyMap[col.data] = arrayToHash(col.source.data);
+            });
+        } else if (col.source.key && col.type === 'dropdown') {
+          request({url: config.api.getDic + col.source.key, method: "get"})
+            .then(function (result) {
+              col.source.data = result.options;
+              sourceKeyMap[col.data] = arrayToHash(col.source.data);
+            });
+        } else {
+          sourceKeyMap[col.data] = {};
+        }
+      }
+      columns.push(col);
+    }
+
+    let filterRules = [];
+    filterRules.push({
+      field: queryColumns.length > 0 ? queryColumns[0]['data'] : '',
+      operate: 'equal',
+      value: ''
+    });
+
     let defaultActions = [];
     if (self.props.gridOption.url.add && permission.check(tp.add)) {
       defaultActions.push({
@@ -83,35 +111,41 @@ class BirdGrid extends React.Component {
     }
     let optionActions = self.props.gridOption.actions || [];
     optionActions = optionActions.concat(defaultActions);
-
-    let sourceKeyMap = {};
-    let fieldTitleMap = {};
-    for (let i = 0, len = self.props.gridOption.columns.length; i < len; i++) {
-      let col = self.props.gridOption.columns[i];
-      fieldTitleMap[col.data] = col.title;
-      if (col.type === 'richtext' && self.state.formWidth === 520) {
-        self.setState({formWidth: 800});
-      }
-      if (col.type === 'dropdown' && col.source) {
-        if (col.source.key) {
-          request({
-            url: config.api.getDic + col.source.key,
-            method: "get"
-          }).then(function (result) {
-            sourceKeyMap[col.data] = result.options;
-          });
-        } else {
-          sourceKeyMap[col.data] = col.source.data || [];
+    if (queryColumns.length > 0) {
+      optionActions.unshift({
+        name: '查询',
+        icon: 'search',
+        onClick: () => {
+          self.query()
         }
-      }
+      })
     }
 
     self.setState({
+      columns: columns,
+      queryColumns: queryColumns,
       actions: optionActions,
       sourceKeyMap: sourceKeyMap,
-      fieldTitleMap: fieldTitleMap,
-      tablePermission: tp
+      tablePermission: tp,
+      filterRules: filterRules
     }, self.query);
+  }
+
+  resetSourceKeyMap(key, data) {
+    let columns = this.state.columns;
+    let sourceKeyMap = this.state.sourceKeyMap;
+
+    for (let col of columns) {
+      if (col.data !== key) continue;
+      if (col.type !== 'dropdown' && col.type !== 'cascader') continue;
+      col.source = {data: data}
+    }
+
+    sourceKeyMap[key] = arrayToHash(data);
+    this.setState({
+      columns: columns,
+      sourceKeyMap: sourceKeyMap
+    })
   }
 
   /* 分页点击事件 */
@@ -134,7 +168,7 @@ class BirdGrid extends React.Component {
     let formOption = {
       model: "add",
       saveUrl: this.props.gridOption.url.add,
-      fields: this.props.gridOption.columns,
+      fields: this.state.columns,
       value: {},
       extraParams: this.state.customData
     };
@@ -149,7 +183,7 @@ class BirdGrid extends React.Component {
     let formOption = {
       model: "update",
       saveUrl: this.props.gridOption.url.edit,
-      fields: this.props.gridOption.columns,
+      fields: this.state.columns,
       value: data,
       extraParams: this.state.customData
     };
@@ -251,7 +285,7 @@ class BirdGrid extends React.Component {
       pageSize: this.state.pageSize,
       sortField: this.state.sortField,
       sortDirection: this.state.sortDirection === "asc" ? 0 : 1,
-      filters: this.state.filterRules.concat(customRules)
+      filters: this.state.filterRules.concat(customRules).filter(r => r.value.length > 0)
     };
 
     request({
@@ -260,7 +294,7 @@ class BirdGrid extends React.Component {
       data: dto
     }).then(function (result) {
       self.setState({
-        gridDatas: result
+        gridDatas: result || {totalCount: 0, items: []}
       })
     });
   }
@@ -269,16 +303,19 @@ class BirdGrid extends React.Component {
     this.setState({
       pageIndex: 1,
       pageSize: this.props.gridOption.pageSize || 15,
-      sortField: this.props.gridOption.sortField || this.props.gridOption.columns[0].data,
+      sortField: this.props.gridOption.sortField || this.state.columns[0].data,
       sortDirection: this.props.gridOption.sortDirection || "desc",
-      filterRules: [],
+      filterRules: [{
+        field: this.state.queryColumns.length > 0 ? this.state.queryColumns[0]['data'] : '',
+        operate: 'equal',
+        value: ''
+      }],
     }, this.query);
   }
 
   setCustomData(data) {
     let customData = this.state.customData;
-    for (let i = 0, len = data.length; i < len; i++) {
-      let filter = data[i];
+    for (let filter of data) {
       let exsitIndex = customData.findIndex(f => f.field == filter.field);
       if (exsitIndex < 0) {
         customData.push(filter)
@@ -291,36 +328,44 @@ class BirdGrid extends React.Component {
     }, this.reload);
   }
 
-  removeFilter(rule) {
+  filterChange(index, rule) {
     let rules = this.state.filterRules;
-    rules = rules.filter(r => r.field !== rule.field);
+    rules[index] = rule;
     this.setState({
       filterRules: rules
-    }, this.query)
+    })
   }
 
-  setFilter(rule) {
+  addFilter() {
+    let queryColumns = this.state.queryColumns;
+    if (queryColumns.length === 0) return;
+
     let rules = this.state.filterRules;
-    let index = rules.findIndex(r => r.field == rule.field);
-    if (index == -1) {
-      rules.push(rule);
-    } else {
-      rules[index] = rule;
-    }
+    rules.push({
+      field: queryColumns[0]['data'],
+      operate: 'equal',
+      value: ''
+    });
+    this.setState({
+      rules: rules
+    })
+  }
+
+  removeFilter(index) {
+    let rules = this.state.filterRules;
+    if (index >= rules.length) return;
+
+    rules.splice(index, 1);
     this.setState({
       filterRules: rules
-    }, this.query)
-  }
-
-  removeTag(colKey) {
-    this.refs['query_' + colKey].clear();
+    })
   }
 
   render() {
     let self = this;
     let gridOption = self.props.gridOption;
 
-    let ths = gridOption.columns.map(function (col) {
+    let ths = self.state.columns.map(function (col) {
       if (col.hide) return;
 
       let sortClass = "";
@@ -333,11 +378,6 @@ class BirdGrid extends React.Component {
       return (<th key={colKey} className={sortClass} onClick={() => {
         self.sortClick(col)
       }}>
-        {col.query &&
-        <BirdGridQuery key={'query_' + colKey} field={col}
-                       ref={'query_' + colKey}
-                       onFilter={rule => self.setFilter(rule)}
-                       onClear={rule => self.removeFilter(rule)}/>}
         {col.title}
       </th>);
     });
@@ -347,7 +387,7 @@ class BirdGrid extends React.Component {
         {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0}
                                                onChange={() => self.checkClick(data[primaryKey])}/></td>}
         {
-          gridOption.columns.map(function (col) {
+          self.state.columns.map(function (col) {
             if (col.hide) return;
 
             if (col.type === "command") {
@@ -390,7 +430,7 @@ class BirdGrid extends React.Component {
                 formatValue = col.render(data[col.data], data)
               } else {
                 if (col.type === 'switch') formatValue = SwitchRender(data[col.data]);
-                else if (col.type === 'dropdown') formatValue = DropdownRender(data[col.data], self.state.sourceKeyMap[col.data]);
+                else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(data[col.data], self.state.sourceKeyMap[col.data]);
                 else formatValue = data[col.data] || "";
               }
 
@@ -407,31 +447,67 @@ class BirdGrid extends React.Component {
     });
 
     let actions = self.state.actions.map(function (action, index) {
-      return <BirdButton permissionName={action.permissionName} key={"action_" + index} icon={action.icon}
-                         type="primary" onClick={() => {
-        action.onClick(self.state.checkedValues)
-      }}>{action.name}</BirdButton>
+      return <BirdButton permissionName={action.permissionName}
+                         key={"action_" + index}
+                         icon={action.icon}
+                         type="primary"
+                         onClick={() => {
+                           let primaryKey = self.state.primaryKey;
+                           let checkedValues = self.state.checkedValues;
+                           let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
+                           action.onClick(checkedValues, checkedDatas);
+                         }}>{action.name}</BirdButton>
     });
 
-    let filters = self.state.filterRules.map(filter => {
-      let formatValue = filter.value;
-      if (self.state.sourceKeyMap[filter.field]) {
-        formatValue = DropdownRender(filter.value, self.state.sourceKeyMap[filter.field]);
+    let filterGroups = [[]];
+    let filterRules = self.state.filterRules;
+
+    for (let i = 1, len = filterRules.length; i < len; i++) {
+      let offset = i % 3;
+      let groupIndex = (i - offset) / 3;
+      if (offset === 0) {
+        filterGroups.push([]);
+        groupIndex--;
       }
-      return <Tag color="blue" closable key={'filter_' + filter.field}
-                  onClose={() => this.removeTag(filter.field)}>`{self.state.fieldTitleMap[filter.field]}`{operatorMap[filter.operate]}`{formatValue}`</Tag>
-    });
+      filterGroups[groupIndex].push(filterRules[i])
+    }
+
+
+    let filters = filterGroups.map((group, gindex) => {
+      return <Row key={'filter_group_' + gindex}>
+        {group.map((rule, rindex) => {
+          let index = gindex * 3 + rindex + 1;//在filterRules中的index
+          let style = rindex == 0 ? {paddingLeft: 30} : {};
+          return <Col span={8} key={'filter_group_' + gindex + '_rule_' + rindex} style={style}>
+            <Row>
+              <Col span={20}>
+                <BirdGridFilter fields={self.state.queryColumns} rule={rule}
+                                onChange={rule => self.filterChange(index, rule)}/>
+              </Col>
+              <Col span={4}>
+                <Button icon='close' onClick={() => self.removeFilter(index)}/>
+              </Col>
+            </Row>
+          </Col>
+        })}
+      </Row>
+    })
 
     return (
       <Card>
         <Row>
-          <Col span={12}>
-            {self.state.filterRules.length > 0 && <div className={styles.filter}>
-              当前筛选条件：
-              {filters}
-            </div>}
+          <Col span={8} style={{paddingLeft: 30}}>
+            {self.state.queryColumns.length > 0 && <Row>
+              <Col span={20}>
+                <BirdGridFilter fields={self.state.queryColumns} rule={self.state.filterRules[0]}
+                                onChange={rule => self.filterChange(0, rule)}/>
+              </Col>
+              <Col span={4}>
+                <Button icon='plus' onClick={() => self.addFilter()}/>
+              </Col>
+            </Row>}
           </Col>
-          <Col span={12}>
+          <Col span={12} offset={4}>
             <div className={styles.action}>
               <Button.Group>
                 {actions}
@@ -439,7 +515,9 @@ class BirdGrid extends React.Component {
             </div>
           </Col>
         </Row>
+        {filters}
         <div className={styles.bird_table}>
+          {/*<div className={styles.changebox1}>占位用</div>*/}
           <div className={styles.bird_table_body}>
             <table>
               <thead className={styles.bird_table_thead}>
@@ -470,7 +548,7 @@ class BirdGrid extends React.Component {
                           return `共 ${total} 条`;
                         }}/>
           </div>
-
+          {/*<div className={styles.changebox2}>占位用</div>*/}
           <Modal title={this.state.formOption.model === 'add' ? '新增' : '编辑'}
                  width={this.state.formWidth}
                  visible={this.state.formVisiable}

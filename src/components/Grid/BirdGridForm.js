@@ -53,8 +53,8 @@ class BirdGridForm extends React.Component {
     let dto = this.state.initValue;
 
     let extraParams = this.state.extraParams;
-    for (let i = 0; i < extraParams.length; i++) {
-      dto[extraParams[i].field] = extraParams[i].value;
+    for (let extra of extraParams) {
+      dto[extra.field] = extra.value;
     }
     request({
       url: this.props.formOption.saveUrl,
@@ -84,8 +84,10 @@ class BirdGridForm extends React.Component {
         tips: field.editor.tips,
         isRequired: field.editor.isRequired,
         validateRegular: field.editor.validateRegular,
+        step: field.editor.step,
+        precision: field.editor.precision,
         fieldType: field.type,
-        value: self.state.initValue[field.data],
+        value: typeof (self.state.initValue[field.data]) == 'undefined' ? '' : self.state.initValue[field.data] + '',
         disabled: pattern === 'disabled',
         source: field.source || {}
       }

@@ -13,7 +13,8 @@
 
 .sorting {
   cursor: pointer;
-  background: #f7f7f7 ~"url(./sort_both.png)" no-repeat center right !important;;
+  padding:20px;
+  background: #f7f7f7 ~"url(./sort_both.png)" no-repeat right !important;;
 }
 .sorting_asc {
   cursor: pointer;
@@ -29,7 +30,7 @@
 }
 
 :global .ant-select-dropdown-menu-item{
-  padding: 0px 16px !important;
+  padding: 7px 10px !important;
 }
 
 .bird_table {
@@ -43,10 +44,12 @@
 .bird_table_body {
   -webkit-transition: opacity .3s ease;
   transition: opacity .3s ease;
+  overflow:auto;
 }
 
 .bird_table table{
-  border: 1px solid #e9e9e9;
+  margin-left:30px;
+  border: 1px solid #bdc8d2;
   border-right: 0;
   border-bottom: 0;
   width: 100%;
@@ -55,13 +58,16 @@
   text-align: left;
   border-radius: 4px 4px 0 0;
   overflow: hidden;
+
 }
 .bird_table_body>tr:hover{
   background: #ecf6fd;
 }
 
+
 .bird_table_body>tr,.bird_table_thead>tr{
-  border-bottom: 1px solid #e9e9e9;
+
+  border-bottom: 1px solid #bdc8d2;
 }
 
 .bird_table_body>tr, .bird_table_body>tr>td, .bird_table_thead>tr {
@@ -70,8 +76,8 @@
 }
 
 .bird_table_body>tr>td, .bird_table_thead>tr>th {
-  border-right: 1px solid #e9e9e9;
-  border-bottom: 1px solid #e9e9e9;
+  border-right: 1px solid #bdc8d2;
+  border-bottom: 1px solid #bdc8d2;
   padding: 8px 8px;
   word-break: break-all;
 }
@@ -82,5 +88,19 @@
   transition: background .3s ease;
   text-align: left;
   color: rgba(0,0,0,.85);
-}
 
+}
+.changebox1{
+    position:absolute;
+    width:29px;
+    height:562px;
+    background:#ecf5f9;
+}
+.changebox2{
+    position:absolute;
+    top:0;
+    right:0;
+    width:29px;
+    height:562px;
+    background:#ecf5f9;
+}

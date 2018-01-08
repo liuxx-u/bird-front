@@ -36,8 +36,7 @@ class BirdStoredForm extends React.Component {
       let lineCapacity = form.lineCapacity||self.state.lineCapacity;
       let saveUrl = self.props.isPreview && form.saveUrl;
       let fields = [];
-      for (let i = 0, len = form.fields.length; i < len; i++) {
-        let field = form.fields[i];
+      for (let field of form.fields) {
         field.source = {};
         let arr = field.fieldType.split(":");
         if (arr.length === 2) {

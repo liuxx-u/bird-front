@@ -20,8 +20,8 @@ class BirdGridDemoPage extends React.Component {
       checkable: true,
       actions: [{
         name: '右上角按钮',
-        onClick: (checkedValues) => {
-          console.log(checkedValues)
+        onClick: (keys,datas) => {
+          console.log(keys,datas)
         }
       }],
       url: {

@@ -40,6 +40,7 @@ class AutoField extends React.Component {
         let step = field.step || 1;
         let precision = field.precision || 0;
         return <InputNumber min={0} step={step} precision={precision}
+                            style={{width:'100%'}}
                             value={field.value} disabled={field.disabled}
                             onChange={value => self.onChange(value)}/>;
       case "switch":
@@ -84,10 +85,12 @@ class AutoField extends React.Component {
       case "date":
         return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
                            format={"YYYY-MM-DD"}
+                           style={{width:'100%'}}
                            onChange={(date, dateString) => self.onChange(dateString)}/>;
       case "datetime":
         return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
                            format={"YYYY-MM-DD HH:mm"}
+                           style={{width:'100%'}}
                            onChange={(date, dateString) => self.onChange(dateString)} showTime={true}/>;
       case "richtext":
         return <LzEditor initValue={field.value} onChange={value => self.onChange(value)}/>;
@@ -127,7 +130,7 @@ AutoField.propTypes = {
 }
 
 AutoField.defaultProps = {
-  labelCol: 6
+  labelColSpan: 6
 }
 
 

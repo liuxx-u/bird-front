@@ -12,15 +12,19 @@ class BirdGrid extends React.Component {
   constructor(props) {
     super(props);
 
-    let primaryKey = this.props.gridOption.primaryKey || this.props.gridOption.columns[0]['data'];
+    let gridOption = this.props.gridOption;
+    let primaryKey = gridOption.primaryKey || gridOption.columns[0]['data'];
+    let autoQuery = gridOption.autoQuery;
+    if(typeof (autoQuery) == 'undefined')autoQuery = true;
+
     this.state = {
       columns: [],
       queryColumns: [],
       actions: [],
       pageIndex: 1,
-      pageSize: this.props.gridOption.pageSize || 15,
-      sortField: this.props.gridOption.sortField || primaryKey,
-      sortDirection: this.props.gridOption.sortDirection || "desc",
+      pageSize: gridOption.pageSize || 15,
+      sortField: gridOption.sortField || primaryKey,
+      sortDirection: gridOption.sortDirection || "desc",
       filterRules: [],
       gridDatas: {
         totalCount: 0,
@@ -34,13 +38,14 @@ class BirdGrid extends React.Component {
         fields: [],
         value: {}
       },
-      customData: this.props.gridOption.customRules || [],
+      customData: gridOption.customRules || [],
       sourceKeyMap: {},//dropdown与cascader类型key与data的hash映射
 
       primaryKey: primaryKey,//标识列名称
       tablePermission: {},
 
-      checkedValues: []
+      checkedValues: [],
+      autoQuery: autoQuery //页面渲染完成之后是否自动查询，默认为true
     };
   }
 
@@ -128,7 +133,9 @@ class BirdGrid extends React.Component {
       sourceKeyMap: sourceKeyMap,
       tablePermission: tp,
       filterRules: filterRules
-    }, self.query);
+    }, () => {
+      self.state.autoQuery && self.query()
+    });
   }
 
   resetSourceKeyMap(key, data) {

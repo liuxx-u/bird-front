@@ -28,9 +28,12 @@ class BirdTreeGrid extends React.Component {
     let self = this;
     let option = {
       ...self.state.treeOption,
-      initFirstLeaf:true,
-      onSelect:(key)=>self.itemClick(key)
+      initFirstLeaf: true,
+      onSelect: (key) => self.itemClick(key)
     };
+
+    let gridOption = this.props.gridOption;
+    gridOption.autoQuery = false;
 
     return (<Row type="flex" justify="center">
       <Col span={4}>
@@ -39,7 +42,7 @@ class BirdTreeGrid extends React.Component {
         </Card>
       </Col>
       <Col span={20}>
-        <BirdGrid gridOption={this.props.gridOption} ref="grid"/>
+        <BirdGrid gridOption={gridOption} ref="grid"/>
       </Col>
     </Row>)
   }

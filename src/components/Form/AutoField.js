@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { config } from 'utils';
 import BirdSelector from './BirdSelector';
 import BirdCascader from './BirdCascader';
+import BirdMulti from './BirdMulti';
 import LzEditor from 'components/LzEditor';
 import styles from './AutoField.less';
 
@@ -40,7 +41,7 @@ class AutoField extends React.Component {
         let step = field.step || 1;
         let precision = field.precision || 0;
         return <InputNumber min={0} step={step} precision={precision}
-                            style={{width:'100%'}}
+                            style={{width: '100%'}}
                             value={field.value} disabled={field.disabled}
                             onChange={value => self.onChange(value)}/>;
       case "switch":
@@ -52,6 +53,9 @@ class AutoField extends React.Component {
       case "dropdown":
         return <BirdSelector dicKey={field.source.key} data={field.source.data || []} url={field.source.url}
                              onChange={value => self.onChange(value)} selectedValue={field.value}/>;
+      case "multi":
+        return <BirdMulti dicKey={field.source.key} options={field.source.data || []} url={field.source.url}
+                          onChange={value => self.onChange(value)} selectedValue={field.value}/>
 
       case "cascader":
         return <BirdCascader data={field.source.data || []} url={field.source.url}
@@ -85,12 +89,12 @@ class AutoField extends React.Component {
       case "date":
         return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
                            format={"YYYY-MM-DD"}
-                           style={{width:'100%'}}
+                           style={{width: '100%'}}
                            onChange={(date, dateString) => self.onChange(dateString)}/>;
       case "datetime":
         return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
                            format={"YYYY-MM-DD HH:mm"}
-                           style={{width:'100%'}}
+                           style={{width: '100%'}}
                            onChange={(date, dateString) => self.onChange(dateString)} showTime={true}/>;
       case "richtext":
         return <LzEditor initValue={field.value} onChange={value => self.onChange(value)}/>;

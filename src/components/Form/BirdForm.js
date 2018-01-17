@@ -19,13 +19,22 @@ class BirdForm extends React.Component {
 
     let initValue = deepClone(this.props.value);
     this.state = {
-      formKey:util.string.generateRandom(6),
+      formKey: util.string.generateRandom(6),
 
       activeKey: this.props.activeGroupName,
       group: [],
 
       initValue: initValue,
-      submitting: false
+      submitting: false,
+      isValueChange: false
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.value != this.props.value) {
+      let initValue = deepClone(nextProps.value)
+      this.setState({
+        initValue: initValue
+      })
     }
   }
 
@@ -60,8 +69,13 @@ class BirdForm extends React.Component {
     let initValue = this.state.initValue;
     initValue[key] = value;
     this.setState({
-      initValue: initValue
+      initValue: initValue,
+      isValueChange: true
     });
+  }
+
+  isValueChanged() {
+    return this.state.isValueChange
   }
 
   getResult() {

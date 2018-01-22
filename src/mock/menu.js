@@ -50,6 +50,14 @@ let database = [
   {
     "icon": "",
     "id": "7",
+    "name": "bird-multi示例",
+    "parentId": "4",
+    "permissionName":"",
+    "url": "/demo/bird-multi"
+  },
+  {
+    "icon": "",
+    "id": "8",
     "name": "bird-cascader示例",
     "parentId": "4",
     "permissionName":"",
@@ -57,7 +65,7 @@ let database = [
   },
   {
     "icon": "",
-    "id": "8",
+    "id": "9",
     "name": "bird-form示例",
     "parentId": "4",
     "permissionName":"",
@@ -65,7 +73,7 @@ let database = [
   },
   {
     "icon": "",
-    "id": "9",
+    "id": "10",
     "name": "bird-tree示例",
     "parentId": "4",
     "permissionName":"",
@@ -73,7 +81,7 @@ let database = [
   },
   {
     "icon": "",
-    "id": "10",
+    "id": "11",
     "name": "bird-button示例",
     "parentId": "4",
     "permissionName":"",

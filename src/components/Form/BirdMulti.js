@@ -4,6 +4,15 @@ import { request,config } from 'utils';
 import { Checkbox } from 'antd';
 const CheckboxGroup = Checkbox.Group;
 
+const formatOption = options=> {
+  if (!options || options.length == 0) return [];
+
+  return options.map(o => {
+    if (typeof (o['disabled']) == 'string') o['disabled'] = o['disabled'] === 'true';
+    return o;
+  });
+}
+
 class BirdMulti extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +32,7 @@ class BirdMulti extends React.Component {
         method: "get"
       }).then(function (result) {
         self.setState({
-          options: result
+          options: formatOption(result)
         })
       });
     } else if (self.props.dicKey) {
@@ -32,7 +41,7 @@ class BirdMulti extends React.Component {
         method: "get"
       }).then(function (result) {
         self.setState({
-          options: result.options
+          options: formatOption(result.options)
         });
         result.defaultCode && self.onPropsChange(result.defaultCode);
       });

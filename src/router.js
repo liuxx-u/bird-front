@@ -32,6 +32,10 @@ const Routers = function ({ history, app }) {
       component:()=>import('./routes/demo/bird-selector')
     },
     {
+      path:'/demo/bird-multi',
+      component:()=>import('./routes/demo/bird-multi')
+    },
+    {
       path:'/demo/bird-cascader',
       component:()=>import('./routes/demo/bird-cascader')
     },

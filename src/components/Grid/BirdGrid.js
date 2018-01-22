@@ -5,7 +5,7 @@ import AutoForm from './BirdGridForm';
 import BirdGridFilter from './BirdGridFilter';
 import { request,config,util,permission,arrayToHash } from 'utils';
 import styles from './BirdGrid.less';
-import {DropdownRender,SwitchRender} from './render';
+import {DropdownRender,SwitchRender,MultiRender} from './render';
 import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Checkbox,Button } from 'antd';
 
 class BirdGrid extends React.Component {
@@ -75,7 +75,7 @@ class BirdGrid extends React.Component {
         queryColumns.push(col);
       }
       //初始化下拉选择框的数据源,优先级：data>url>key
-      if ((col.type === 'dropdown' || col.type === 'cascader') && col.source) {
+      if ((col.type === 'dropdown' || col.type === 'cascader' || col.type === 'multi') && col.source) {
         if (col.source.data && col.source.data.length > 0) {
           sourceKeyMap[col.data] = arrayToHash(col.source.data);
         } else if (col.source.url) {
@@ -84,7 +84,7 @@ class BirdGrid extends React.Component {
               col.source.data = result;
               sourceKeyMap[col.data] = arrayToHash(col.source.data);
             });
-        } else if (col.source.key && col.type === 'dropdown') {
+        } else if (col.source.key && (col.type === 'dropdown' || col.type === 'multi')) {
           request({url: config.api.getDic + col.source.key, method: "get"})
             .then(function (result) {
               col.source.data = result.options;
@@ -438,7 +438,8 @@ class BirdGrid extends React.Component {
               } else {
                 if (col.type === 'switch') formatValue = SwitchRender(data[col.data]);
                 else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(data[col.data], self.state.sourceKeyMap[col.data]);
-                else formatValue = data[col.data] || "";
+                else if (col.type === 'multi') formatValue = MultiRender(data[col.data], self.state.sourceKeyMap[col.data]);
+                else formatValue = typeof (data[col.data]) === 'undefined' ? '' : data[col.data];
               }
 
               /*对于文本列长度超过30，则省略*/

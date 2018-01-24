@@ -6,7 +6,6 @@ import BirdSelector from './BirdSelector';
 import BirdCascader from './BirdCascader';
 import BirdMulti from './BirdMulti';
 import LzEditor from 'components/LzEditor';
-import styles from './AutoField.less';
 
 import {Form,Input,Button, DatePicker,Switch,Icon,Upload,InputNumber,Tooltip } from 'antd';
 
@@ -15,7 +14,72 @@ const TextArea = Input.TextArea;
 
 class AutoField extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
+
+    this.state = {
+      fileList: []
+    }
+  }
+
+  onFileChange(file) {
+    let fileList = file.fileList;
+
+    // read from response and show file link
+    fileList = fileList.map((file) => {
+      if (file.response) {
+        // Component will show file.url as link
+        file.url = file.response.path;
+      }
+      return file;
+    });
+
+    // filter successfully uploaded files according to response from server
+    fileList = fileList.filter((file) => {
+      if (file.response) {
+        return file.response.success;
+      }
+      return true;
+    });
+    this.setState({
+      fileList: fileList
+    }, () => {
+      let pathArr = this.state.fileList.map(f => f.url);
+      this.onChange(pathArr.join())
+    });
+  }
+
+  onFileRemove(file) {
+    let fileList = this.state.fileList.filter(f => {
+      return f.uid !== file.uid;
+    });
+    this.setState({
+      fileList: fileList
+    }, () => {
+      let pathArr = this.state.fileList.map(f => f.url);
+      this.onChange(pathArr.join())
+    });
+  }
+
+  componentDidMount() {
+    let field = this.props.fieldOption;
+    if (field.fieldType == 'img' || field.fieldType == 'imgs' || field.fieldType == 'file' || field.fieldType == 'files') {
+      let fieldValue = field.value || '';
+      let fileArr = [];
+      if (fieldValue.length > 0) {
+        fileArr = fieldValue.split(',').map((p, i) => {
+          return {
+            uid: i,
+            name: 'file',
+            status: 'done',
+            url: p,
+            thumbUrl: p
+          }
+        });
+      }
+      this.setState({
+        fileList: fileArr
+      })
+    }
   }
 
   onChange(value) {
@@ -61,26 +125,23 @@ class AutoField extends React.Component {
         return <BirdCascader data={field.source.data || []} url={field.source.url}
                              onChange={value => self.onChange(value)} value={field.value}/>
       case "img":
+      case "imgs":
+      case "file":
+      case "files":
+        let multiple = field.fieldType==='imgs'||field.fieldType==='files';
         let fileProps = {
           action: config.api.upload,
-          listType: 'picture',
-          defaultFileList: [{
-            uid: -1,
-            name: 'pic.png',
-            status: 'done',
-            url: field.value,
-            thumbUrl: field.value,
-          }],
-          onChange: function (file, fileList, event) {
-            if (file.file.status === "done") {
-              file.fileList.shift();
-              self.onChange(file.file.response.path);
-            }
-          },
-          onRemove: function (file) {
-            self.onChange("");
-          }
+          multiple: multiple,
+          listType: field.fieldType === 'img' || field.fieldType === 'imgs' ? 'picture' : 'text',
+          fileList: self.state.fileList,
+          onChange: file => self.onFileChange(file),
+          onRemove: file => self.onFileRemove(file)
         };
+
+        if(field.fieldType === 'img' || field.fieldType === 'imgs') {
+          fileProps.accept = "image/png,image/jpeg,image/jpg,image/gif,image/bmp";
+        }
+
         return <Upload {...fileProps}>
           <Button type="ghost" disabled={field.disabled}>
             <Icon type="upload"/> 点击上传
@@ -116,7 +177,7 @@ class AutoField extends React.Component {
         {fieldOption.name}
         {fieldOption.tips && <span style={{marginLeft: 5, fontStyle: 'normal', color: 'rgba(0, 0, 0, 0.45)'}}>
           <Tooltip title={fieldOption.tips}>
-            <Icon type="info-circle-o" style={{marginRight: 4}}/>
+            <Icon type="question-circle-o" style={{marginRight: 4}}/>
           </Tooltip>
         </span>}
       </span>

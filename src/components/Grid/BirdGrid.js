@@ -5,7 +5,7 @@ import AutoForm from './BirdGridForm';
 import BirdGridFilter from './BirdGridFilter';
 import { request,config,util,permission,arrayToHash } from 'utils';
 import styles from './BirdGrid.less';
-import {DropdownRender,SwitchRender,MultiRender} from './render';
+import {DropdownRender,SwitchRender,MultiRender,ImageRender,FileRender} from './render';
 import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Checkbox,Button } from 'antd';
 
 class BirdGrid extends React.Component {
@@ -302,7 +302,8 @@ class BirdGrid extends React.Component {
     }).then(function (result) {
       self.setState({
         gridDatas: result || {totalCount: 0, items: []}
-      })
+      });
+      self.props.gridOption.afterQuery&&self.props.gridOption.afterQuery(result);
     });
   }
 
@@ -439,6 +440,8 @@ class BirdGrid extends React.Component {
                 if (col.type === 'switch') formatValue = SwitchRender(data[col.data]);
                 else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(data[col.data], self.state.sourceKeyMap[col.data]);
                 else if (col.type === 'multi') formatValue = MultiRender(data[col.data], self.state.sourceKeyMap[col.data]);
+                else if (col.type === 'img' || col.type === 'imgs') formatValue = ImageRender(data[col.data]);
+                else if (col.type === 'file' || col.type === 'files') formatValue = FileRender(data[col.data]);
                 else formatValue = typeof (data[col.data]) === 'undefined' ? '' : data[col.data];
               }
 

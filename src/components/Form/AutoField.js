@@ -6,6 +6,7 @@ import BirdSelector from './BirdSelector';
 import BirdCascader from './BirdCascader';
 import BirdMulti from './BirdMulti';
 import LzEditor from 'components/LzEditor';
+import styles from './AutoField.less';
 
 import {Form,Input,Button, DatePicker,Switch,Icon,Upload,InputNumber,Tooltip } from 'antd';
 
@@ -23,9 +24,12 @@ class AutoField extends React.Component {
 
   onFileChange(file) {
     let fileList = file.fileList;
+    let field = this.props.fieldOption;
+    let multiple = field.fieldType === 'imgs' || field.fieldType === 'files';
+    let success = false;
 
     // read from response and show file link
-    fileList = fileList.map((file) => {
+    fileList = fileList.map(file => {
       if (file.response) {
         // Component will show file.url as link
         file.url = file.response.path;
@@ -34,12 +38,27 @@ class AutoField extends React.Component {
     });
 
     // filter successfully uploaded files according to response from server
-    fileList = fileList.filter((file) => {
+    fileList = fileList.filter(file => {
       if (file.response) {
-        return file.response.success;
+        success = file.response.success;
+        return success;
       }
       return true;
     });
+
+    //删除response属性，确保每次拿到response时都是服务端最后一次返回的response
+    fileList.forEach(file => {
+      if (file.response) {
+        delete file.response
+      }
+    })
+
+    //对于单文件上传成功后，移除其他文件
+    if (!multiple && success) {
+      fileList = fileList.splice(fileList.length - 1, 1);
+    }
+
+
     this.setState({
       fileList: fileList
     }, () => {
@@ -99,7 +118,7 @@ class AutoField extends React.Component {
         return <Input value={field.value} disabled={field.disabled}
                       onChange={e => self.onChange(e.target.value)}/>;
       case "textarea":
-        return <TextArea value={field.value} autosize={true} disabled={field.disabled}
+        return <TextArea value={field.value} autosize={{ minRows: 4, maxRows: 8 }} disabled={field.disabled}
                          onChange={e => self.onChange(e.target.value)}/>
       case "number":
         let step = field.step || 1;

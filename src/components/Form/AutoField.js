@@ -6,7 +6,6 @@ import BirdSelector from './BirdSelector';
 import BirdCascader from './BirdCascader';
 import BirdMulti from './BirdMulti';
 import LzEditor from 'components/LzEditor';
-import styles from './AutoField.less';
 
 import {Form,Input,Button, DatePicker,Switch,Icon,Upload,InputNumber,Tooltip } from 'antd';
 

@@ -15,7 +15,7 @@ class BirdGrid extends React.Component {
     let gridOption = this.props.gridOption;
     let primaryKey = gridOption.primaryKey || gridOption.columns[0]['data'];
     let autoQuery = gridOption.autoQuery;
-    if(typeof (autoQuery) == 'undefined')autoQuery = true;
+    if (typeof (autoQuery) == 'undefined') autoQuery = true;
 
     this.state = {
       columns: [],
@@ -32,7 +32,7 @@ class BirdGrid extends React.Component {
       },
       formVisiable: false,
       formConfirmLoading: false,
-      formWidth: 520,
+      formWidth: gridOption.formWidth || 520,
       formOption: {
         saveUrl: "",
         fields: [],

@@ -2,7 +2,7 @@ import style from './BirdGrid.less';
 
 const DropdownRender = function(v,source) {
   if (!source) return v;
-  if(typeof v ==='undefined')return '';
+  if(typeof v ==='undefined' || v === null)return '';
 
   let item = source[v];
   return item ? item.label : v;
@@ -10,7 +10,7 @@ const DropdownRender = function(v,source) {
 
 const MultiRender = function (v,source) {
   if (!source) return v;
-  if (typeof v === 'undefined') return '';
+  if (typeof v === 'undefined' || v === null) return '';
 
   let vArr = v.split(',');
   let textArr = vArr.map(p => {

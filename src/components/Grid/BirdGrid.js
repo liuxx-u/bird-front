@@ -303,7 +303,7 @@ class BirdGrid extends React.Component {
       self.setState({
         gridDatas: result || {totalCount: 0, items: []}
       });
-      self.props.gridOption.afterQuery&&self.props.gridOption.afterQuery(result);
+      self.props.gridOption.afterQuery && self.props.gridOption.afterQuery(result);
     });
   }
 
@@ -391,7 +391,9 @@ class BirdGrid extends React.Component {
     });
     let trs = self.state.gridDatas.items.map(function (data) {
       let primaryKey = self.state.primaryKey;
-      return <tr className="ant-table-row  ant-table-row-level-0" key={'tr_' + data[primaryKey]}>
+      return <tr
+        style={self.props.gridOption.errorFinder && self.props.gridOption.errorFinder(data) ? {backgroundColor: '#fef0ef'} : {}}
+        className="ant-table-row  ant-table-row-level-0" key={'tr_' + data[primaryKey]}>
         {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0}
                                                onChange={() => self.checkClick(data[primaryKey])}/></td>}
         {

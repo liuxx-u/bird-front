@@ -5,7 +5,9 @@ import jsonp from 'jsonp'
 import lodash from 'lodash'
 import pathToRegexp from 'path-to-regexp'
 import { message } from 'antd'
-import { YQL, CORS } from './config'
+import config from './config'
+import util from './util';
+import permission from './permission';
 
 const fetch = (options) => {
   let {
@@ -53,14 +55,26 @@ const fetch = (options) => {
     data = null
   }
 
+  //使用axios拦截器添加sso.token请求头
+  axios.interceptors.request.use(
+    config => {
+      var token = util.auth.getToken();
+      if (token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
+        config.headers['sso.token'] = token;
+      }
+      return config;
+    }, err => {
+      return Promise.reject(err);
+    });
+
   switch (method.toLowerCase()) {
     case 'get':
       return axios.get(url, {
-        params: cloneData,
+        params: cloneData
       })
     case 'delete':
       return axios.delete(url, {
-        data: cloneData,
+        data: cloneData
       })
     case 'post':
       return axios.post(url, cloneData)
@@ -75,22 +89,23 @@ const fetch = (options) => {
 
 export default function request (options) {
   //TODO:后台访问地址前缀移入配置文件
-  if(options.url && options.url.indexOf('api/v') <0) {
-    //options.url = 'http://localhost:8080' + options.url;
+  if (options.url && options.url.indexOf('//') == -1 && options.url.indexOf('api/v') < 0) {
+    options.url = config.apiPrefix + options.url;
   }
   if (options.url && options.url.indexOf('//') > -1) {
     const origin = `${options.url.split('//')[0]}//${options.url.split('//')[1].split('/')[0]}`
 
     if (window.location.origin !== origin) {
-      if (CORS && CORS.indexOf(origin) > -1) {
+      if (config.CORS && config.CORS.indexOf(origin) > -1) {
         options.fetchType = 'CORS'
-      } else if (YQL && YQL.indexOf(origin) > -1) {
+      } else if (config.YQL && config.YQL.indexOf(origin) > -1) {
         options.fetchType = 'YQL'
       } else {
         options.fetchType = 'JSONP'
       }
     }
   }
+
 
   return fetch(options).then((response) => {
     const { statusText, status } = response
@@ -111,17 +126,18 @@ export default function request (options) {
       })
     }
   }).catch((error) => {
-    const { response } = error
+    const {response} = error
     let msg
     let statusCode
     if (response && response instanceof Object) {
-      const { data, statusText } = response
+      const {data, statusText} = response
       statusCode = response.status
       msg = data.message || statusText
     } else {
       statusCode = 600
       msg = error.message || 'Network Error'
     }
-    return Promise.reject({ success: false, statusCode, message: msg })
+    message.error(msg);
+    return Promise.reject({success: false, statusCode, message: msg})
   })
 }

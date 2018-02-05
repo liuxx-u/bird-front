@@ -2,7 +2,7 @@ import { message } from 'antd'
 import dva from 'dva'
 import createLoading from 'dva-loading'
 import createHistory from 'history/createBrowserHistory'
-import 'babel-polyfill'
+import '@babel/polyfill';
 
 // 1. Initialize
 const app = dva({
@@ -16,10 +16,10 @@ const app = dva({
 })
 
 // 2. Model
-app.model(require('./models/app'))
+app.model(require('./models/app').default)
 
 // 3. Router
-app.router(require('./router'))
+app.router(require('./router').default)
 
 // 4. Start
 app.start('#root')

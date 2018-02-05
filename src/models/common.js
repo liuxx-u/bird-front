@@ -41,7 +41,7 @@ const pageModel = modelExtend(model, {
 })
 
 
-export default  {
+export  {
   model,
   pageModel,
 }

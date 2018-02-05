@@ -66,6 +66,21 @@ const arrayToTree = (array, id = 'id', pid = 'parentId', children = 'children') 
 }
 
 /**
+ * 数组格式转hash表
+ * @param array
+ * @param key
+ * @returns {{}}
+ */
+const arrayToHash=(array,key='value')=> {
+  let hash = {}
+  let data = lodash.cloneDeep(array)
+  data.forEach(item => {
+    hash[item[key]] = item;
+  })
+  return hash;
+}
+
+/**
  * 深拷贝对象
  * @param p 源对象
  * @param c 目标对象
@@ -88,7 +103,7 @@ const deepClone = (p,c) => {
   return c;
 }
 
-export default  {
+export {
   config,
   request,
   color,
@@ -96,6 +111,7 @@ export default  {
   queryURL,
   queryArray,
   arrayToTree,
+  arrayToHash,
   deepClone,
   util,
   permission

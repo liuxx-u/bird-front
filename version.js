@@ -1,7 +1,7 @@
-const fs = require('fs')
-const path = require('path')
-const beautify = require('js-beautify').js_beautify
-const config = require('./package.json')
+import fs from 'fs'
+import path from 'path'
+import {beautify} from 'js-beautify'
+import config from './package.json'
 
 const dist = path.join(`${__dirname}/dist`)
 const maxVersion = 5

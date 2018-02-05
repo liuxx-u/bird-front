@@ -93,7 +93,6 @@ const App = ({ children, dispatch, app, loading, location }) => {
         <title>bird-front</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href={logo} type="image/x-icon" />
-        <link rel="stylesheet" href="/antd/antd.min.css" type="text/css" />
         {iconFontJS && <script src={iconFontJS} />}
         {iconFontCSS && <link rel="stylesheet" href={iconFontCSS} />}
       </Helmet>

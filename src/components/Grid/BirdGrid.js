@@ -6,7 +6,7 @@ import BirdGridFilter from './BirdGridFilter';
 import { request,config,util,permission,arrayToHash } from 'utils';
 import styles from './BirdGrid.less';
 import {DropdownRender,SwitchRender,MultiRender,ImageRender,FileRender} from './render';
-import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Checkbox,Button } from 'antd';
+import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Checkbox,Button,Divider } from 'antd';
 
 class BirdGrid extends React.Component {
   constructor(props) {
@@ -413,7 +413,7 @@ class BirdGrid extends React.Component {
                     if (action.hideFunc && action.hideFunc(data)) return;
                     var actionName = action.nameFormat ? action.nameFormat(data) : action.name;
                     return <span key={'tr_' + data[primaryKey] + '_action_' + aIndex}>
-                      <span className="ant-divider"></span>
+                      <Divider type="vertical" />
                       {action.confirm ? <Popconfirm title={'确定要' + actionName + '吗？'} onConfirm={() => {
                           action.onClick(data)
                         }}><a href="#">{actionName}</a></Popconfirm> :
@@ -428,7 +428,7 @@ class BirdGrid extends React.Component {
                   self.deleteClick(data[primaryKey])
                 }}>
                   <span>
-                    <span className="ant-divider"></span>
+                    <Divider type="vertical" />
                     <a href="#">删除</a>
                   </span>
                 </Popconfirm>}

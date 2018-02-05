@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Switch, Route, Redirect, routerRedux } from 'dva/router'
 import dynamic from 'dva/dynamic'
+import zhCN from 'antd/lib/locale-provider/zh_CN';
+import {LocaleProvider } from 'antd'
 import App from 'routes/app'
 import Exception from 'components/Exception'
 
@@ -55,24 +57,26 @@ const Routers = function ({ history, app }) {
 
   return (
     <ConnectedRouter history={history}>
-      <App>
-        <Switch>
-          <Route exact path="/" render={() => (<Redirect to="/dashboard" />)} />
-          {
-            routes.map(({ path, ...dynamics }, key) => (
-              <Route key={key}
-                exact
-                path={path}
-                component={dynamic({
-                  app,
-                  ...dynamics,
-                })}
-              />
-            ))
-          }
-          <Route component={()=>{return <Exception type={404} />}} />
-        </Switch>
-      </App>
+      <LocaleProvider locale={zhCN}>
+        <App>
+          <Switch>
+            <Route exact path="/" render={() => (<Redirect to="/dashboard" />)} />
+            {
+              routes.map(({ path, ...dynamics }, key) => (
+                <Route key={key}
+                       exact
+                       path={path}
+                       component={dynamic({
+                         app,
+                         ...dynamics,
+                       })}
+                />
+              ))
+            }
+            <Route component={()=>{return <Exception type={404} />}} />
+          </Switch>
+        </App>
+      </LocaleProvider>
     </ConnectedRouter>
   )
 }

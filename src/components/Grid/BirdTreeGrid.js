@@ -50,13 +50,13 @@ class BirdTreeGrid extends React.Component {
 
 BirdTreeGrid.propTypes = {
   treeOption: PropTypes.shape({
-    url:React.PropTypes.string.isRequired,
-    title:React.PropTypes.string.isRequired,
-    paramName:React.PropTypes.string.isRequired,//点击时关联的表格字段名
-    textField: React.PropTypes.string,
-    valueField: React.PropTypes.string,
-    parentField:React.PropTypes.string,
-    initialValue:React.PropTypes.string,
+    url:PropTypes.string.isRequired,
+    title:PropTypes.string.isRequired,
+    paramName:PropTypes.string.isRequired,//点击时关联的表格字段名
+    textField: PropTypes.string,
+    valueField: PropTypes.string,
+    parentField:PropTypes.string,
+    initialValue:PropTypes.string,
   }),
   gridOption:PropTypes.object.isRequired
 };

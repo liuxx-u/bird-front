@@ -31,7 +31,7 @@ const Header = ({ user, logout, switchSider, siderFold, isNavbar, menuPopoverVis
           className={styles.button}
           onClick={switchSider}
         >
-          <Icon type={classnames({ 'menu-unfold': siderFold, 'menu-fold': !siderFold })} />
+          <Icon type={siderFold?'menu-unfold':'menu-fold'} />
         </div>}
       <div className={styles.rightWarpper}>
         <div className={styles.button}>

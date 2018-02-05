@@ -51,6 +51,12 @@
               }
             }
           }
+
+          & > .ant-menu-submenu-vertical{
+            .ant-menu-submenu-title{
+              padding: 0 !important;
+            }
+          }
         }
       }
     }
@@ -91,6 +97,7 @@
 
       img {
         width: 40px;
+        vertical-align: unset;
         margin-right: 8px;
         transition: @transition-ease-out;
       }
@@ -101,6 +108,7 @@
         font-size: 16px;
         text-transform: uppercase;
         display: inline-block;
+        margin-bottom: 3px;
       }
 
       .anticon {

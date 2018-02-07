@@ -17,6 +17,6 @@
     "template": "./src/entry.ejs"
   },
   "publicPath": "/",
-  "disableDynamicImport": true,
+  "disableDynamicImport": false,
   "hash": true
 }

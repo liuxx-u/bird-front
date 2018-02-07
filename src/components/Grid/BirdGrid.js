@@ -538,7 +538,7 @@ class BirdGrid extends React.Component {
               <thead className={styles.bird_table_thead}>
                 <tr>
                   {gridOption.checkable && <th style={{ width: 15 }}><Checkbox
-                    checked={this.state.checkedValues.length == this.state.gridDatas.items.length}
+                    checked={this.state.checkedValues.length > 0 && this.state.checkedValues.length == this.state.gridDatas.items.length}
                     onChange={() => this.checkAllClick()} /></th>}
                   {ths}
                 </tr>

@@ -8,7 +8,7 @@ export default  {
   logo: '/logo.png',
   iconFontCSS: '/iconfont.css',
   iconFontJS: '/iconfont.js',
-  CORS: ['http://localhost:8080'],
+  CORS: ['http://localhost:8000','http://localhost'],
   openPages: ['/login'],
   apiPrefix: '/api/v1',
   APIV1,

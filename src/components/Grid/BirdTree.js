@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { request } from 'utils';
-import {Tree} from 'antd';
+import { Tree } from 'antd';
 import './BirdTree.less';
 const TreeNode = Tree.TreeNode;
 
@@ -74,7 +74,7 @@ class BirdTree extends React.Component {
           }
           curNodes = temp;
         }
-        self.setState({expandedKeys: expandKeys});
+        self.setState({ expandedKeys: expandKeys });
       }
     })
   }
@@ -123,7 +123,7 @@ class BirdTree extends React.Component {
         }
       }
 
-      self.setState({itemHash: itemHash}, () => {
+      self.setState({ itemHash: itemHash }, () => {
         onComplete && onComplete()
       });
     });
@@ -187,7 +187,7 @@ class BirdTree extends React.Component {
           {children.map(getTreeNode)}
         </TreeNode>
       } else {
-        return <TreeNode title={node[textField]} key={key} isLeaf/>;
+        return <TreeNode title={node[textField]} key={key} isLeaf />;
       }
     };
 
@@ -196,14 +196,14 @@ class BirdTree extends React.Component {
 
     return (
       <Tree onSelect={(sKeys, e) => self.itemClick(sKeys, e.node.props.isLeaf)}
-            onExpand={(eKeys) => self.expandClick(eKeys)}
-            selectedKeys={self.state.selectedKeys}
-            expandedKeys={self.state.expandedKeys}
-            autoExpandParent={false}
-            showLine
-            checkable={self.state.treeOption.checkable}
-            checkedKeys={checkedKeys}
-            onCheck={cKeys=>self.checkClick(cKeys)}
+        onExpand={(eKeys) => self.expandClick(eKeys)}
+        selectedKeys={self.state.selectedKeys}
+        expandedKeys={self.state.expandedKeys}
+        autoExpandParent={false}
+        showLine
+        checkable={self.state.treeOption.checkable}
+        checkedKeys={checkedKeys}
+        onCheck={cKeys => self.checkClick(cKeys)}
       >
         {roots.map(getTreeNode)}
       </Tree>)
@@ -221,7 +221,7 @@ BirdTree.propTypes = {
     initFirstLeaf: PropTypes.bool,//是否默认点击第一个叶子节点
     canSelectFolder: PropTypes.bool,//文件夹是否允许选中
     checkable: PropTypes.bool,//节点前添加 Checkbox 复选框
-    checkedKeys:PropTypes.array,//选中的keys
+    checkedKeys: PropTypes.array,//选中的keys
     expandAll: PropTypes.bool,//是否展开全部
     onCheck: PropTypes.func,//点击复选框触发
     onSelect: PropTypes.func//点击节点时触发

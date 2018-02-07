@@ -2,15 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import BirdSelector from '../Form/BirdSelector';
 import BirdCascader from '../Form/BirdCascader';
-import {Icon,Popover,Form,Select,Col,Row,Button,DatePicker,TimePicker,Input,InputNumber } from 'antd';
+import { Icon, Popover, Form, Select, Col, Row, Button, DatePicker, TimePicker, Input, InputNumber } from 'antd';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-const operators={
-  common: [{value: "equal", text: "等于"}, {value: "notequal", text: "不等于"}],
-  struct: [{value: "less", text: "小于"}, {value: "lessorequal", text: "小于等于"}, {value: "greater",text: "大于"}, {value: "greaterorequal", text: "大于等于"}],
-  text: [{value: "contains", text: "包含"}, {value: "startswith", text: "开始于"}, {value: "endswith", text: "结束于"}]
+const operators = {
+  common: [{ value: "equal", text: "等于" }, { value: "notequal", text: "不等于" }],
+  struct: [{ value: "less", text: "小于" }, { value: "lessorequal", text: "小于等于" }, { value: "greater", text: "大于" }, { value: "greaterorequal", text: "大于等于" }],
+  text: [{ value: "contains", text: "包含" }, { value: "startswith", text: "开始于" }, { value: "endswith", text: "结束于" }]
 }
 class BirdGridQuery extends React.Component {
   constructor(props) {
@@ -91,17 +91,17 @@ class BirdGridQuery extends React.Component {
       case "text":
       case "textarea":
         valueField =
-          <Input id={field.data} value={this.state.value} onChange={(e) => this.onValueChange(e.target.value)}/>;
+          <Input id={field.data} value={this.state.value} onChange={(e) => this.onValueChange(e.target.value)} />;
         break;
       case "number":
         valueField = <InputNumber id={field.data} min={0} value={this.state.value}
-                                  onChange={(e) => this.onValueChange(e.target.value)}/>;
+          onChange={(e) => this.onValueChange(e.target.value)} />;
         break;
       case "switch":
         valueField = (
           <Select id={field.data} value={this.state.value} onChange={(value) => this.onValueChange(value)}
-                  style={{width: '100%'}}
-                  getPopupContainer={getContainer}>
+            style={{ width: '100%' }}
+            getPopupContainer={getContainer}>
             <Option value="true">是</Option>
             <Option value="false">否</Option>
           </Select>
@@ -109,28 +109,28 @@ class BirdGridQuery extends React.Component {
         break;
       case "dropdown":
         valueField = <BirdSelector dicKey={field.source.key} data={field.source.data || []}
-                                   onChange={value => this.onValueChange(value)} selectedValue={this.state.value}
-                                   getPopupContainer={getContainer}/>;
+          onChange={value => this.onValueChange(value)} selectedValue={this.state.value}
+          getPopupContainer={getContainer} />;
         break;
       case "cascader":
         valueField = <BirdCascader data={field.source.data || []} expandTrigger='hover'
-                                   onChange={value => this.onValueChange(value)} value={this.state.value}
-                                   getPopupContainer={getContainer}/>;
+          onChange={value => this.onValueChange(value)} value={this.state.value}
+          getPopupContainer={getContainer} />;
         break;
       case "date":
         valueField =
           <DatePicker id={field.data} value={this.state.value} format={"yyyy-MM-dd"}
-                      onChange={(date, dateString) => this.onValueChange(dateString)}
-                      getCalendarContainer={getContainer}/>;
+            onChange={(date, dateString) => this.onValueChange(dateString)}
+            getCalendarContainer={getContainer} />;
         break;
       case "datetime":
         valueField =
           <DatePicker id={field.data} value={this.state.value} format={"yyyy-MM-dd HH:mm"}
-                      onChange={(date, dateString) => this.onValueChange(dateString)}
-                      getCalendarContainer={getContainer}/>;
+            onChange={(date, dateString) => this.onValueChange(dateString)}
+            getCalendarContainer={getContainer} />;
         break;
       default:
-        valueField = <span/>;
+        valueField = <span />;
         break;
     }
 
@@ -138,14 +138,14 @@ class BirdGridQuery extends React.Component {
       <Form>
         <FormItem>
           <Select placeholder="请选择操作符"
-                  style={{width: '100%'}}
-                  value={this.state.oprator}
-                  onChange={(operator => this.onOpratorChange(operator))}
-                  getPopupContainer={getContainer}>
+            style={{ width: '100%' }}
+            value={this.state.oprator}
+            onChange={(operator => this.onOpratorChange(operator))}
+            getPopupContainer={getContainer}>
             {
               searchOperators.map(function (operator) {
                 return <Option key={'operator_option_' + operator.value}
-                               value={operator.value}>{operator.text}</Option>;
+                  value={operator.value}>{operator.text}</Option>;
               })
             }
           </Select>
@@ -160,7 +160,7 @@ class BirdGridQuery extends React.Component {
             }}>搜索</Button>
           </Col>
           <Col sm={12}>
-            <Button type="ghost" style={{float: "right"}} onClick={() => {
+            <Button type="ghost" style={{ float: "right" }} onClick={() => {
               this.clear()
             }}>清除</Button>
           </Col>
@@ -169,7 +169,7 @@ class BirdGridQuery extends React.Component {
 
     return (
       <Popover placement="bottomLeft" content={queryContent} trigger="click">
-        <Icon type="search" style={{marginRight: 5}} onClick={function (e) {
+        <Icon type="search" style={{ marginRight: 5 }} onClick={function (e) {
           e.stopPropagation();
         }}></Icon>
       </Popover>

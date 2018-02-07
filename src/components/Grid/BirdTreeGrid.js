@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Row,Col,Card} from 'antd';
+import { Row, Col, Card } from 'antd';
 import BirdGrid from './BirdGrid';
 import BirdTree from './BirdTree';
 
@@ -38,11 +38,11 @@ class BirdTreeGrid extends React.Component {
     return (<Row type="flex" justify="center">
       <Col span={4}>
         <Card title={self.props.treeOption.title}>
-          <BirdTree treeOption={option}/>
+          <BirdTree treeOption={option} />
         </Card>
       </Col>
       <Col span={20}>
-        <BirdGrid gridOption={gridOption} ref="grid"/>
+        <BirdGrid gridOption={gridOption} ref="grid" />
       </Col>
     </Row>)
   }
@@ -50,15 +50,15 @@ class BirdTreeGrid extends React.Component {
 
 BirdTreeGrid.propTypes = {
   treeOption: PropTypes.shape({
-    url:PropTypes.string.isRequired,
-    title:PropTypes.string.isRequired,
-    paramName:PropTypes.string.isRequired,//点击时关联的表格字段名
+    url: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    paramName: PropTypes.string.isRequired,//点击时关联的表格字段名
     textField: PropTypes.string,
     valueField: PropTypes.string,
-    parentField:PropTypes.string,
-    initialValue:PropTypes.string,
+    parentField: PropTypes.string,
+    initialValue: PropTypes.string,
   }),
-  gridOption:PropTypes.object.isRequired
+  gridOption: PropTypes.object.isRequired
 };
 
 export default BirdTreeGrid;

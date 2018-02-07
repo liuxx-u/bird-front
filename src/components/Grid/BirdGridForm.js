@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { request, deepClone, util } from 'utils';
 import AutoField from '../Form/AutoField';
-import {Form,message} from 'antd';
+import { Form, message } from 'antd';
 
 class BirdGridForm extends React.Component {
   constructor(props) {
@@ -97,7 +97,7 @@ class BirdGridForm extends React.Component {
 
       return <AutoField key={'auto_field_' + index} fieldOption={field} onChange={(key, value) => {
         self.onFieldChange(key, value)
-      }}/>;
+      }} />;
     });
 
     return (

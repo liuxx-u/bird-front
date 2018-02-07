@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import BirdButton from '../Form/BirdButton';
 import AutoForm from './BirdGridForm';
 import BirdGridFilter from './BirdGridFilter';
-import { request,config,util,permission,arrayToHash } from 'utils';
+import { request, config, util, permission, arrayToHash } from 'utils';
 import styles from './BirdGrid.less';
-import {DropdownRender,SwitchRender,MultiRender,ImageRender,FileRender} from './render';
-import {Pagination,Modal,Card,Popconfirm,message,Row, Col,Checkbox,Button,Divider } from 'antd';
+import { DropdownRender, SwitchRender, MultiRender, ImageRender, FileRender } from './render';
+import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider } from 'antd';
 
 class BirdGrid extends React.Component {
   constructor(props) {
@@ -69,7 +69,7 @@ class BirdGrid extends React.Component {
     let sourceKeyMap = {};
     for (let col of self.props.gridOption.columns) {
       if (col.type === 'richtext' && self.state.formWidth === 520) {
-        self.setState({formWidth: 800});
+        self.setState({ formWidth: 800 });
       }
       if (col.query) {
         queryColumns.push(col);
@@ -79,13 +79,13 @@ class BirdGrid extends React.Component {
         if (col.source.data && col.source.data.length > 0) {
           sourceKeyMap[col.data] = arrayToHash(col.source.data);
         } else if (col.source.url) {
-          request({url: col.source.url, method: "get"})
+          request({ url: col.source.url, method: "get" })
             .then(function (result) {
               col.source.data = result;
               sourceKeyMap[col.data] = arrayToHash(col.source.data);
             });
         } else if (col.source.key && (col.type === 'dropdown' || col.type === 'multi')) {
-          request({url: config.api.getDic + col.source.key, method: "get"})
+          request({ url: config.api.getDic + col.source.key, method: "get" })
             .then(function (result) {
               col.source.data = result.options;
               sourceKeyMap[col.data] = arrayToHash(col.source.data);
@@ -145,7 +145,7 @@ class BirdGrid extends React.Component {
     for (let col of columns) {
       if (col.data !== key) continue;
       if (col.type !== 'dropdown' && col.type !== 'cascader') continue;
-      col.source = {data: data}
+      col.source = { data: data }
     }
 
     sourceKeyMap[key] = arrayToHash(data);
@@ -252,10 +252,10 @@ class BirdGrid extends React.Component {
   /* 全选点击事件 */
   checkAllClick() {
     if (this.state.checkedValues.length == this.state.gridDatas.items.length) {
-      this.setState({checkedValues: []})
+      this.setState({ checkedValues: [] })
     } else {
       let checkValues = this.state.gridDatas.items.map(p => p[this.state.primaryKey]);
-      this.setState({checkedValues: checkValues})
+      this.setState({ checkedValues: checkValues })
     }
   }
 
@@ -268,7 +268,7 @@ class BirdGrid extends React.Component {
     } else {
       checkValues.splice(index, 1);
     }
-    this.setState({checkedValues: checkValues})
+    this.setState({ checkedValues: checkValues })
   }
 
   /* 获取选择的值*/
@@ -301,7 +301,7 @@ class BirdGrid extends React.Component {
       data: dto
     }).then(function (result) {
       self.setState({
-        gridDatas: result || {totalCount: 0, items: []}
+        gridDatas: result || { totalCount: 0, items: [] }
       });
       self.props.gridOption.afterQuery && self.props.gridOption.afterQuery(result);
     });
@@ -392,46 +392,48 @@ class BirdGrid extends React.Component {
     let trs = self.state.gridDatas.items.map(function (data) {
       let primaryKey = self.state.primaryKey;
       return <tr
-        style={self.props.gridOption.errorFinder && self.props.gridOption.errorFinder(data) ? {backgroundColor: '#fef0ef'} : {}}
+        style={gridOption.errorFinder && gridOption.errorFinder(data) ? { backgroundColor: '#fef0ef' } : {}}
         className="ant-table-row  ant-table-row-level-0" key={'tr_' + data[primaryKey]}>
         {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0}
-                                               onChange={() => self.checkClick(data[primaryKey])}/></td>}
+          onChange={() => self.checkClick(data[primaryKey])} /></td>}
         {
           self.state.columns.map(function (col) {
             if (col.hide) return;
 
             if (col.type === "command") {
               let tdActions = col.actions || [];
-
+              let hasEdit = gridOption.url.edit && permission.check(self.state.tablePermission.edit);
+              let hasPrev = hasEdit;
               return <td key={'tr_' + data[primaryKey] + '_td_' + col.data}>
-                {self.props.gridOption.url.edit && permission.check(self.state.tablePermission.edit) &&
-                <a href="#" onClick={() => self.editClick(data)}>编辑</a>}
-
+                {hasEdit && <a href="#" onClick={() => self.editClick(data)}>编辑</a>}
                 {
                   tdActions.map(function (action, aIndex) {
                     if (!permission.check(action.permissionName)) return;
                     if (action.hideFunc && action.hideFunc(data)) return;
+
+                    let withDivider = hasPrev;
+                    hasPrev = true;
                     var actionName = action.nameFormat ? action.nameFormat(data) : action.name;
                     return <span key={'tr_' + data[primaryKey] + '_action_' + aIndex}>
-                      <Divider type="vertical" />
+                      {withDivider && <Divider type="vertical" />}
                       {action.confirm ? <Popconfirm title={'确定要' + actionName + '吗？'} onConfirm={() => {
-                          action.onClick(data)
-                        }}><a href="#">{actionName}</a></Popconfirm> :
+                        action.onClick(data)
+                      }}><a href="#">{actionName}</a></Popconfirm> :
                         <a href="javascript:void(0);" onClick={() => action.onClick(data)}>{actionName}</a>}
 
                     </span>
                   })
                 }
 
-                {self.props.gridOption.url.delete && permission.check(self.state.tablePermission.delete) &&
-                <Popconfirm title="确定要删除这条记录吗？" onConfirm={() => {
-                  self.deleteClick(data[primaryKey])
-                }}>
-                  <span>
-                    <Divider type="vertical" />
-                    <a href="#">删除</a>
-                  </span>
-                </Popconfirm>}
+                {gridOption.url.delete && permission.check(self.state.tablePermission.delete) &&
+                  <Popconfirm title="确定要删除这条记录吗？" onConfirm={() => {
+                    self.deleteClick(data[primaryKey])
+                  }}>
+                    <span>
+                      {hasPrev && <Divider type="vertical" />}
+                      <a href="#">删除</a>
+                    </span>
+                  </Popconfirm>}
               </td>;
             }
             else {
@@ -461,15 +463,15 @@ class BirdGrid extends React.Component {
 
     let actions = self.state.actions.map(function (action, index) {
       return <BirdButton permissionName={action.permissionName}
-                         key={"action_" + index}
-                         icon={action.icon}
-                         type="primary"
-                         onClick={() => {
-                           let primaryKey = self.state.primaryKey;
-                           let checkedValues = self.state.checkedValues;
-                           let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
-                           action.onClick(checkedValues, checkedDatas);
-                         }}>{action.name}</BirdButton>
+        key={"action_" + index}
+        icon={action.icon}
+        type="primary"
+        onClick={() => {
+          let primaryKey = self.state.primaryKey;
+          let checkedValues = self.state.checkedValues;
+          let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
+          action.onClick(checkedValues, checkedDatas);
+        }}>{action.name}</BirdButton>
     });
 
     let filterGroups = [[]];
@@ -490,15 +492,15 @@ class BirdGrid extends React.Component {
       return <Row key={'filter_group_' + gindex}>
         {group.map((rule, rindex) => {
           let index = gindex * 3 + rindex + 1;//在filterRules中的index
-          let style = rindex == 0 ? {paddingLeft: 30} : {};
+          let style = rindex == 0 ? { paddingLeft: 30 } : {};
           return <Col span={8} key={'filter_group_' + gindex + '_rule_' + rindex} style={style}>
             <Row>
               <Col span={20}>
                 <BirdGridFilter fields={self.state.queryColumns} rule={rule}
-                                onChange={rule => self.filterChange(index, rule)}/>
+                  onChange={rule => self.filterChange(index, rule)} />
               </Col>
               <Col span={4}>
-                <Button icon='close' onClick={() => self.removeFilter(index)}/>
+                <Button icon='close' onClick={() => self.removeFilter(index)} />
               </Col>
             </Row>
           </Col>
@@ -509,14 +511,14 @@ class BirdGrid extends React.Component {
     return (
       <Card>
         <Row>
-          <Col span={8} style={{paddingLeft: 30}}>
+          <Col span={8} style={{ paddingLeft: 30 }}>
             {self.state.queryColumns.length > 0 && <Row>
               <Col span={20}>
                 <BirdGridFilter fields={self.state.queryColumns} rule={self.state.filterRules[0]}
-                                onChange={rule => self.filterChange(0, rule)}/>
+                  onChange={rule => self.filterChange(0, rule)} />
               </Col>
               <Col span={4}>
-                <Button icon='plus' onClick={() => self.addFilter()}/>
+                <Button icon='plus' onClick={() => self.addFilter()} />
               </Col>
             </Row>}
           </Col>
@@ -534,46 +536,46 @@ class BirdGrid extends React.Component {
           <div className={styles.bird_table_body}>
             <table>
               <thead className={styles.bird_table_thead}>
-              <tr>
-                {gridOption.checkable && <th style={{width: 15}}><Checkbox
-                  checked={this.state.checkedValues.length == this.state.gridDatas.items.length}
-                  onChange={() => this.checkAllClick()}/></th>}
-                {ths}
-              </tr>
+                <tr>
+                  {gridOption.checkable && <th style={{ width: 15 }}><Checkbox
+                    checked={this.state.checkedValues.length == this.state.gridDatas.items.length}
+                    onChange={() => this.checkAllClick()} /></th>}
+                  {ths}
+                </tr>
               </thead>
               <tbody className={styles.bird_table_body}>
-              {trs}
+                {trs}
               </tbody>
             </table>
             <Pagination className={styles.gridPagination}
-                        current={this.state.pageIndex}
-                        total={parseInt(this.state.gridDatas.totalCount)}
-                        pageSizeOptions={this.props.gridOption.pageSizeOptions || ["10", "15", "20", "30", "50", "100"]}
-                        pageSize={this.state.pageSize}
-                        onChange={(page, pageSize) => {
-                          this.pageClick(page, pageSize)
-                        }}
-                        showSizeChanger={true}
-                        onShowSizeChange={(page, pageSize) => {
-                          this.pageSizeChange(pageSize)
-                        }}
-                        showTotal={function (total) {
-                          return `共 ${total} 条`;
-                        }}/>
+              current={this.state.pageIndex}
+              total={parseInt(this.state.gridDatas.totalCount)}
+              pageSizeOptions={gridOption.pageSizeOptions || ["10", "15", "20", "30", "50", "100"]}
+              pageSize={this.state.pageSize}
+              onChange={(page, pageSize) => {
+                this.pageClick(page, pageSize)
+              }}
+              showSizeChanger={true}
+              onShowSizeChange={(page, pageSize) => {
+                this.pageSizeChange(pageSize)
+              }}
+              showTotal={function (total) {
+                return `共 ${total} 条`;
+              }} />
           </div>
           {/*<div className={styles.changebox2}>占位用</div>*/}
           <Modal title={this.state.formOption.model === 'add' ? '新增' : '编辑'}
-                 width={this.state.formWidth}
-                 visible={this.state.formVisiable}
-                 onOk={() => {
-                   this.saveClick()
-                 }}
-                 onCancel={() => {
-                   this.cancelClick()
-                 }}
-                 confirmLoading={this.state.formConfirmLoading}
+            width={this.state.formWidth}
+            visible={this.state.formVisiable}
+            onOk={() => {
+              this.saveClick()
+            }}
+            onCancel={() => {
+              this.cancelClick()
+            }}
+            confirmLoading={this.state.formConfirmLoading}
           >
-            <AutoForm formOption={this.state.formOption} ref="autoForm"/>
+            <AutoForm formOption={this.state.formOption} ref="autoForm" />
           </Modal>
         </div>
       </Card>

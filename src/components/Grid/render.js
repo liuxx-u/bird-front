@@ -1,14 +1,14 @@
 import style from './BirdGrid.less';
 
-const DropdownRender = function(v,source) {
+const DropdownRender = function (v, source) {
   if (!source) return v;
-  if(typeof v ==='undefined' || v === null)return '';
+  if (typeof v === 'undefined' || v === null) return '';
 
   let item = source[v];
   return item ? item.label : v;
 };
 
-const MultiRender = function (v,source) {
+const MultiRender = function (v, source) {
   if (!source) return v;
   if (typeof v === 'undefined' || v === null) return '';
 
@@ -20,11 +20,11 @@ const MultiRender = function (v,source) {
   return textArr.join()
 }
 
-const SwitchRender = function(v) {
+const SwitchRender = function (v) {
   return v ? '是' : '否';
 };
 
-const DateTimeRender=function (v,format) {
+const DateTimeRender = function (v, format) {
 
 }
 
@@ -35,7 +35,7 @@ const ImageRender = function (v) {
   return images.map(path => {
     return <div key={path} className={style.img_item}>
       <a href={path} target="_blank">
-        <img src={path}/>
+        <img src={path} />
       </a>
     </div>
   });
@@ -47,12 +47,12 @@ const FileRender = function (v) {
   let files = v.split(',');
   return files.map(path => {
     return <div key={path}>
-    <span>
-      <i className="anticon anticon-paper-clip"></i>
-      <a href={path} target="_blank" title="file">file</a>
-    </span>
+      <span>
+        <i className="anticon anticon-paper-clip"></i>
+        <a href={path} target="_blank" title="file">file</a>
+      </span>
     </div>
   })
 }
 
-export {DropdownRender,SwitchRender,MultiRender,ImageRender,FileRender}
+export { DropdownRender, SwitchRender, MultiRender, ImageRender, FileRender }

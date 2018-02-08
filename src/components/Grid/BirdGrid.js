@@ -492,8 +492,7 @@ class BirdGrid extends React.Component {
       return <Row key={'filter_group_' + gindex}>
         {group.map((rule, rindex) => {
           let index = gindex * 3 + rindex + 1;//在filterRules中的index
-          let style = rindex == 0 ? { paddingLeft: 30 } : {};
-          return <Col span={8} key={'filter_group_' + gindex + '_rule_' + rindex} style={style}>
+          return <Col span={8} key={'filter_group_' + gindex + '_rule_' + rindex}>
             <Row>
               <Col span={20}>
                 <BirdGridFilter fields={self.state.queryColumns} rule={rule}
@@ -511,7 +510,7 @@ class BirdGrid extends React.Component {
     return (
       <Card>
         <Row>
-          <Col span={8} style={{ paddingLeft: 30 }}>
+          <Col span={8}>
             {self.state.queryColumns.length > 0 && <Row>
               <Col span={20}>
                 <BirdGridFilter fields={self.state.queryColumns} rule={self.state.filterRules[0]}

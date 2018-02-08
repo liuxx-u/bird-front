@@ -1,5 +1,5 @@
 import React from 'react';
-import {BirdGrid} from 'components/Grid';
+import { BirdGrid } from 'components/Grid';
 
 class SysUserPage extends React.Component {
   constructor(props) {
@@ -8,42 +8,49 @@ class SysUserPage extends React.Component {
     }
   }
 
+
   render() {
     let gridOption = {
-      title: "用户列表",
+      title: "表格示例",
       url: {
         read: "/api/v1/table",
-        add: "/sys/user/save",
-        edit: "/sys/user/save",
-        delete: "/sys/user/delete"
+        add: "/test/add",
+        edit: "/test/edit",
+        delete: "/test/delete"
       },
+      checkable:true,
+      actions: [{
+        name: '外部按钮',
+        onClick: function (ids, datas) { }
+      }],
       columns: [
-        {title: "编号", data: "id", type: "number",},
-        {title: "用户名", data: "userName", type: "text", editor: {}, query: true},
-        {title: "昵称", data: "nickName", type: "text", editor: {}, query: true},
-        {title: "联系电话", data: "phoneNo", type: "text", editor: {}, query: true},
-        {title: "锁定", data: "locked", type: "switch", editor: {}, query: true},
-        {
-          title: "最后登录时间",
-          data: "lastLoginTime",
-          type: "datetime",
-          editor: {ep: 'hide', ap: 'hide'},
-          query: true
-        },
+        { title: "编号", data: "id", type: "number", },
+        { title: "文本", data: "field-text", type: "text", editor: {}, query: true },
+        { title: "整数", data: "field-number", type: "number", editor: {}, query: true },
+        { title: "小数", data: "field-float", type: "number", editor: { step: 0.1, precision: 2 }, query: true },
+        { title: "布尔值", data: "field-switch", type: "switch", editor: {}, query: true },
+        { title: "单选", data: "field-dropdown", type: "dropdown", editor: {},source:{url:'/api/v1/getOptions'}, query: true },
+        { title: "多选", data: "field-multi", type: "multi", editor: {},source:{key:'xx'} },
+        { title: "级联选择", data: "field-cascader", type: "cascader", editor: {},source:{url:'/api/v1/tree'}, query: true },
+        { title: "图片", data: "field-img", type: "img", editor: {},hide:true },
+        { title: "多图片", data: "field-imgs", type: "imgs", editor: {},hide:true },
+        { title: "文件", data: "field-file", type: "file", editor: {} },
+        { title: "多文件", data: "field-files", type: "files", editor: {},hide:true },
+        { title: "时间", data: "field-datetime", type: "datetime", editor: {}, query: true },
+        { title: "富文本", data: "field-richtext", type: "richtext", editor: {}, query: true },
         {
           title: "操作选项", type: "command", actions: [{
-          name: '查看行数据',
-          permissionName:'sys:authorize:user:test',
-          onClick: (data) => {
-            console.log(data);
-          }
-        }]
+            name: '行内按钮',
+            onClick: (data) => {
+              console.log(data);
+            }
+          }]
         }
       ]
     };
     return (
       <div>
-        <BirdGrid gridOption={gridOption}/>
+        <BirdGrid gridOption={gridOption} />
       </div>
     )
   }

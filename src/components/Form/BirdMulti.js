@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { request,config } from 'utils';
+import { request, config } from 'utils';
 import { Checkbox } from 'antd';
 const CheckboxGroup = Checkbox.Group;
 
-const formatOption = options=> {
+const formatOption = options => {
   if (!options || options.length == 0) return [];
 
   return options.map(o => {
@@ -68,10 +68,11 @@ class BirdMulti extends React.Component {
   render() {
     let checkedValues = this.props.selectedValue ? this.props.selectedValue.split(',') : [];
     let isCheckAll = checkedValues.length == this.state.options.length;
+    let options = this.state.options.map(option => { option.disabled = option.disabled + ''==='true'; return option });
 
     return (
       <div>
-        {this.props.canCheckAll && <div style={{borderBottom: '1px solid #E9E9E9'}}>
+        {this.props.canCheckAll && <div style={{ borderBottom: '1px solid #E9E9E9' }}>
           <Checkbox
             indeterminate={checkedValues.length > 0 && !isCheckAll}
             onChange={this.checkAll}
@@ -79,10 +80,10 @@ class BirdMulti extends React.Component {
           >
             全选
           </Checkbox>
-          <br/>
+          <br />
         </div>}
         <CheckboxGroup
-          options={this.state.options}
+          options={options}
           value={checkedValues}
           disabled={this.props.disabled}
           onChange={cvs => {
@@ -106,7 +107,7 @@ BirdMulti.propTypes = {
   onChange: PropTypes.func
 };
 
-BirdMulti.defaultProps= {
+BirdMulti.defaultProps = {
   options: [],
   disabled: false,
   canCheckAll: false

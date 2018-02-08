@@ -70,13 +70,11 @@ export default {
       const { success, user } = yield call(query, payload)
       const { locationPathname } = yield select(_ => _.app)
       if (success && user) {
-        const { list } = yield call(menusService.query)
-        let menu = list
-
+        let menu = yield call(menusService.query)
         let permissions = permission.getPermissions();
         if (!permissions) {
           permissions = yield call(permissionsService.query);
-          permission.setPermissions(permissions.list)
+          permission.setPermissions(permissions)
         }
 
         yield put({

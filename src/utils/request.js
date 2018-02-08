@@ -112,18 +112,10 @@ export default function request (options) {
     let data = options.fetchType === 'YQL' ? response.data.query.results.json : response.data
     if(data['httpCode']==="200") {
       return Promise.resolve(data['result'])
+    } else if (data['code'] + '' === '500') {
+      return Promise.reject({response});
     }else {
-      if (data instanceof Array) {
-        data = {
-          list: data,
-        }
-      }
-      return Promise.resolve({
-        success: true,
-        message: statusText,
-        statusCode: status,
-        ...data,
-      })
+      return Promise.resolve(data);
     }
   }).catch((error) => {
     const {response} = error

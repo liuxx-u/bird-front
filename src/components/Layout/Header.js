@@ -48,7 +48,7 @@ const Header = ({ user, logout, switchSider, siderFold, isNavbar, menuPopoverVis
             </span>}
           >
             <Menu.Item key="switch">
-              切换系统
+              修改密码
             </Menu.Item>
             <Menu.Item key="logout">
               安全退出

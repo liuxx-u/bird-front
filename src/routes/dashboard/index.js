@@ -8,7 +8,6 @@ class DashBoardPage extends React.Component {
     }
   }
 
-
   render() {
     let gridOption = {
       title: "表格示例",
@@ -32,12 +31,12 @@ class DashBoardPage extends React.Component {
         { title: "单选", data: "field-dropdown", type: "dropdown", editor: {},source:{url:'/api/v1/getOptions'}, query: true },
         { title: "多选", data: "field-multi", type: "multi", editor: {},source:{key:'xx'} },
         { title: "级联选择", data: "field-cascader", type: "cascader", editor: {},source:{url:'/api/v1/tree'}, query: true },
-        { title: "图片", data: "field-img", type: "img", editor: {},hide:true },
-        { title: "多图片", data: "field-imgs", type: "imgs", editor: {},hide:true },
+        { title: "图片", data: "field-img", type: "img", editor: {ap:'hide',ep:'hide'},hide:true },
+        { title: "多图片", data: "field-imgs", type: "imgs", editor: {ap:'hide',ep:'hide'},hide:true },
         { title: "文件", data: "field-file", type: "file", editor: {} },
-        { title: "多文件", data: "field-files", type: "files", editor: {},hide:true },
+        { title: "多文件", data: "field-files", type: "files", editor: {ap:'hide',ep:'hide'},hide:true },
         { title: "时间", data: "field-datetime", type: "datetime", editor: {}, query: true },
-        { title: "富文本", data: "field-richtext", type: "richtext", editor: {}, query: true },
+        // { title: "富文本", data: "field-richtext", type: "richtext", editor: {}, query: true },
         {
           title: "操作选项", type: "command", actions: [{
             name: '行内按钮',

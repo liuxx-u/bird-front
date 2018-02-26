@@ -83,14 +83,14 @@ class BirdGrid extends React.Component {
             .then(function (result) {
               col.source.data = result;
               sourceKeyMap[col.data] = arrayToHash(col.source.data);
-              self.setState({ sourceKeyMap: sourceKeyMap });
+              self.setState({sourceKeyMap:sourceKeyMap});
             });
         } else if (col.source.key && (col.type === 'dropdown' || col.type === 'multi')) {
           request({ url: config.api.getDic + col.source.key, method: "get" })
             .then(function (result) {
               col.source.data = result.options;
               sourceKeyMap[col.data] = arrayToHash(col.source.data);
-              self.setState({ sourceKeyMap: sourceKeyMap });
+              self.setState({sourceKeyMap:sourceKeyMap});
             });
         } else {
           sourceKeyMap[col.data] = {};

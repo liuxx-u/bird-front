@@ -91,7 +91,7 @@ class BirdForm extends React.Component {
         return false;
       }
       if (field.validateRegular) {
-        let reg = typeof (field.validateRegular) === 'string' ? eval(field.validateRegular) : field.validateRegular;
+        let reg = typeof (field.validateRegular) === 'string' ? new RegExp(field.validateRegular) : field.validateRegular;
         if (reg.test && !reg.test(dto[field.key])) {
           message.error('`' + field.name + '`数据格式不正确.');
           return false;

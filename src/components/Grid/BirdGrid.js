@@ -83,12 +83,14 @@ class BirdGrid extends React.Component {
             .then(function (result) {
               col.source.data = result;
               sourceKeyMap[col.data] = arrayToHash(col.source.data);
+              self.setState({ sourceKeyMap: sourceKeyMap });
             });
         } else if (col.source.key && (col.type === 'dropdown' || col.type === 'multi')) {
           request({ url: config.api.getDic + col.source.key, method: "get" })
             .then(function (result) {
               col.source.data = result.options;
               sourceKeyMap[col.data] = arrayToHash(col.source.data);
+              self.setState({ sourceKeyMap: sourceKeyMap });
             });
         } else {
           sourceKeyMap[col.data] = {};
@@ -373,7 +375,7 @@ class BirdGrid extends React.Component {
     let self = this;
     let gridOption = self.props.gridOption;
 
-    let ths = self.state.columns.map(function (col) {
+    let ths = self.state.columns.map(function (col, index) {
       if (col.hide) return;
 
       let sortClass = "";
@@ -383,6 +385,7 @@ class BirdGrid extends React.Component {
           : self.state.sortDirection === 'asc' ? styles.sorting_asc : styles.sorting_desc;
       }
       let colKey = col.type === 'command' ? 'col_command' : col.data;
+      colKey += '_' + index;
       return (<th key={colKey} className={sortClass} onClick={() => {
         self.sortClick(col)
       }}>
@@ -397,14 +400,15 @@ class BirdGrid extends React.Component {
         {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0}
           onChange={() => self.checkClick(data[primaryKey])} /></td>}
         {
-          self.state.columns.map(function (col) {
+          self.state.columns.map(function (col, index) {
             if (col.hide) return;
 
             if (col.type === "command") {
               let tdActions = col.actions || [];
               let hasEdit = gridOption.url.edit && permission.check(self.state.tablePermission.edit);
               let hasPrev = hasEdit;
-              return <td key={'tr_' + data[primaryKey] + '_td_' + col.data}>
+              let colKey = 'tr_' + data[primaryKey] + '_td_command_' + index;
+              return <td key={colKey}>
                 {hasEdit && <a href="#" onClick={() => self.editClick(data)}>编辑</a>}
                 {
                   tdActions.map(function (action, aIndex) {
@@ -438,6 +442,7 @@ class BirdGrid extends React.Component {
             }
             else {
               let formatValue;
+              let colKey = 'tr_' + data[primaryKey] + '_td_' + col.data + '_' + index;
               if (col.render) {
                 formatValue = col.render(data[col.data], data)
               } else {
@@ -451,9 +456,9 @@ class BirdGrid extends React.Component {
 
               /*对于文本列长度超过30，则省略*/
               if (col.type === 'text' || col.type === 'textarea' || col.type === 'richtext') {
-                return <td title={formatValue} key={col.data}>{util.string.truncate(formatValue, 30)}</td>;
+                return <td title={formatValue} key={colKey}>{util.string.truncate(formatValue, 30)}</td>;
               } else {
-                return <td key={col.data}>{formatValue}</td>
+                return <td key={colKey}>{formatValue}</td>
               }
             }
           })

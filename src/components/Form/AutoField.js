@@ -5,7 +5,7 @@ import { config } from 'utils';
 import BirdSelector from './BirdSelector';
 import BirdCascader from './BirdCascader';
 import BirdMulti from './BirdMulti';
-import LzEditor from 'components/LzEditor';
+import BraftEditor from './BraftEditor';
 
 import {Form,Input,Button, DatePicker,Switch,Icon,Upload,InputNumber,Tooltip } from 'antd';
 
@@ -176,7 +176,7 @@ class AutoField extends React.Component {
                            style={{width: '100%'}}
                            onChange={(date, dateString) => self.onChange(dateString)} showTime={true}/>;
       case "richtext":
-        return <LzEditor initValue={field.value} onChange={value => self.onChange(value)}/>;
+        return <BraftEditor initValue={field.value} onChange={value => self.onChange(value)}/>;
       default:
         return <span/>;
     }

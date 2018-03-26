@@ -53,7 +53,7 @@ class BirdGridFilter extends React.Component {
       case "number":
         valueField = <InputNumber id={field.data} min={0} value={this.props.rule.value}
           style={{ width: '100%' }}
-          onChange={(e) => this.onRuleChange('value', e.target.value)} />;
+          onChange={(value) => this.onRuleChange('value', value)} />;
         break;
       case "switch":
         valueField = (

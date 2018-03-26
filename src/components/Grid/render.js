@@ -1,4 +1,6 @@
 import style from './BirdGrid.less';
+import { util } from 'utils';
+import { Icon } from 'antd';
 
 const DropdownRender = function (v, source) {
   if (!source) return v;
@@ -25,7 +27,11 @@ const SwitchRender = function (v) {
 };
 
 const DateTimeRender = function (v, format) {
-
+  let date = v;
+  if (typeof (v) === 'string') {
+    date = new Date(v);
+  }
+  return util.date.format(date, format);
 }
 
 const ImageRender = function (v) {
@@ -41,6 +47,29 @@ const ImageRender = function (v) {
   });
 }
 
+const getFileIcon = function (path) {
+  if (!path || path.length == 0) {
+    return <span />
+  }
+  let ext = path.substring(path.lastIndexOf('.'));
+  switch (ext) {
+    case '.doc':
+    case '.docx':
+      return <Icon type="file-word" />;
+    case '.xls':
+    case '.xlsx':
+      return <Icon type="file-excel" />;
+    case '.ppt':
+    case '.pptx':
+      return <Icon type="file-ppt" />;
+    case '.pdf':
+      return <Icon type="file-pdf" />;
+    case '.txt':
+      return <Icon type="file-text" />;
+    default:
+      return <Icon type="file" />;
+  }
+}
 const FileRender = function (v) {
   if (!v) return '';
 
@@ -48,11 +77,11 @@ const FileRender = function (v) {
   return files.map(path => {
     return <div key={path}>
       <span>
-        <i className="anticon anticon-paper-clip"></i>
+        {getFileIcon(path)}
         <a href={path} target="_blank" title="file">file</a>
       </span>
     </div>
   })
 }
 
-export { DropdownRender, SwitchRender, MultiRender, ImageRender, FileRender }
+export { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender, FileRender }

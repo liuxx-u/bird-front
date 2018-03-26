@@ -5,7 +5,7 @@ import AutoForm from './BirdGridForm';
 import BirdGridFilter from './BirdGridFilter';
 import { request, config, util, permission, arrayToHash } from 'utils';
 import styles from './BirdGrid.less';
-import { DropdownRender, SwitchRender, MultiRender, ImageRender, FileRender } from './render';
+import { DropdownRender, SwitchRender,DateTimeRender, MultiRender, ImageRender, FileRender } from './render';
 import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider } from 'antd';
 
 class BirdGrid extends React.Component {
@@ -449,6 +449,8 @@ class BirdGrid extends React.Component {
                 if (col.type === 'switch') formatValue = SwitchRender(data[col.data]);
                 else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(data[col.data], self.state.sourceKeyMap[col.data]);
                 else if (col.type === 'multi') formatValue = MultiRender(data[col.data], self.state.sourceKeyMap[col.data]);
+                else if (col.type === 'date') formatValue = DateTimeRender(data[col.data],'yyyy-MM-dd');
+                else if (col.type === 'datetime') formatValue = DateTimeRender(data[col.data],'yyyy-MM-dd HH:mm:ss');
                 else if (col.type === 'img' || col.type === 'imgs') formatValue = ImageRender(data[col.data]);
                 else if (col.type === 'file' || col.type === 'files') formatValue = FileRender(data[col.data]);
                 else formatValue = typeof (data[col.data]) === 'undefined' ? '' : data[col.data];

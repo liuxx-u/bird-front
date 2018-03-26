@@ -14,7 +14,7 @@ let database = {
       "field-cascader":"16",
       "field-img":"",
       "field-imgs":"",
-      "field-file":"",
+      "field-file":"aa.doc",
       "field-files":"",
       "field-datetime":"2017-12-01 17:53:04",
       "field-richtext":"sss"
@@ -30,7 +30,7 @@ let database = {
       "field-cascader":"14",
       "field-img":"",
       "field-imgs":"",
-      "field-file":"",
+      "field-file":"aa.docx",
       "field-files":"",
       "field-datetime":"2017-12-01 17:53:04",
       "field-richtext":"wwww"
@@ -46,7 +46,7 @@ let database = {
       "field-cascader":"21",
       "field-img":"",
       "field-imgs":"",
-      "field-file":"",
+      "field-file":"aa.xls",
       "field-files":"",
       "field-datetime":"2017-12-01 17:53:04",
       "field-richtext":"33333"
@@ -62,7 +62,7 @@ let database = {
       "field-cascader":"13",
       "field-img":"",
       "field-imgs":"",
-      "field-file":"",
+      "field-file":"aa.xlsx",
       "field-files":"",
       "field-datetime":"2017-12-01 17:53:04",
       "field-richtext":"44444"
@@ -78,7 +78,7 @@ let database = {
       "field-cascader":"15",
       "field-img":"",
       "field-imgs":"",
-      "field-file":"",
+      "field-file":"aa.ppt",
       "field-files":"",
       "field-datetime":"2017-12-01 17:53:04",
       "field-richtext":"5555"
@@ -94,7 +94,7 @@ let database = {
       "field-cascader":"12",
       "field-img":"",
       "field-imgs":"",
-      "field-file":"",
+      "field-file":"aa.pptx",
       "field-files":"",
       "field-datetime":"2017-12-01 17:53:04",
       "field-richtext":"6666"
@@ -110,7 +110,7 @@ let database = {
       "field-cascader":"17",
       "field-img":"",
       "field-imgs":"",
-      "field-file":"",
+      "field-file":"aa.pdf",
       "field-files":"",
       "field-datetime":"2017-12-01 17:53:04",
       "field-richtext":"7777"
@@ -126,7 +126,7 @@ let database = {
       "field-cascader":"16",
       "field-img":"",
       "field-imgs":"",
-      "field-file":"",
+      "field-file":"aa.txt",
       "field-files":"",
       "field-datetime":"2017-12-01 17:53:04",
       "field-richtext":"8888"

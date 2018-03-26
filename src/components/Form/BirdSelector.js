@@ -49,6 +49,14 @@ class BirdSelector extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.data != this.props.data) {
+      this.setState({
+        options: nextProps.data
+      })
+    }
+  }
+
   onPropsChange(value) {
     this.props.onChange && this.props.onChange(value);
   }

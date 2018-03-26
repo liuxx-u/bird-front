@@ -31,6 +31,12 @@ class BirdCascader extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.data != this.props.data) {
+      this.initData(nextProps.data)
+    }
+  }
+
   initData(data) {
     let self = this;
 

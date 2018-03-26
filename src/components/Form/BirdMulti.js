@@ -47,6 +47,14 @@ class BirdMulti extends React.Component {
       });
     }
   }
+  
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.options != this.props.options) {
+      this.setState({
+        options: nextProps.options
+      })
+    }
+  }
 
   checkAll = () => {
     let allValues = this.state.options.filter(o => !o.disabled).map(p => p.value);

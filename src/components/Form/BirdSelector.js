@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { request, config } from 'utils';
+import { request, config, util } from 'utils';
 import { Select } from 'antd';
 
 const formatOption = options => {
@@ -50,7 +50,7 @@ class BirdSelector extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.data != this.props.data) {
+    if (!util.object.equal(nextProps.data, this.props.data)) {
       this.setState({
         options: nextProps.data
       })

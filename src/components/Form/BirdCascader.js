@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Cascader} from 'antd';
-import { request } from 'utils';
+import { Cascader } from 'antd';
+import { request, util } from 'utils';
 
 class BirdCascader extends React.Component {
   constructor(props) {
@@ -32,7 +32,7 @@ class BirdCascader extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.data != this.props.data) {
+    if (!util.object.equal(nextProps.data, this.props.data)) {
       this.initData(nextProps.data)
     }
   }
@@ -105,34 +105,34 @@ class BirdCascader extends React.Component {
     let fValue = this.formatValue(this.props.value);
 
     return <Cascader options={this.state.options}
-                     value={fValue}
-                     expandTrigger={this.props.expandTrigger}
-                     size={this.props.size}
-                     disabled={this.props.disabled}
-                     getPopupContainer={this.props.getPopupContainer}
-                     onChange={value => this.onPropsChange(value)}
-                     style={{width: this.props.width || '100%'}}/>
+      value={fValue}
+      expandTrigger={this.props.expandTrigger}
+      size={this.props.size}
+      disabled={this.props.disabled}
+      getPopupContainer={this.props.getPopupContainer}
+      onChange={value => this.onPropsChange(value)}
+      style={{ width: this.props.width || '100%' }} />
   }
 }
 
 BirdCascader.propTypes = {
   url: PropTypes.string,
-  data:PropTypes.array,
-  onChange:PropTypes.func,
-  disabled:PropTypes.bool,
-  expandTrigger:PropTypes.string,
-  placeholder:PropTypes.string,
-  size:PropTypes.string,
-  value:PropTypes.string,
-  getPopupContainer:PropTypes.func
+  data: PropTypes.array,
+  onChange: PropTypes.func,
+  disabled: PropTypes.bool,
+  expandTrigger: PropTypes.string,
+  placeholder: PropTypes.string,
+  size: PropTypes.string,
+  value: PropTypes.string,
+  getPopupContainer: PropTypes.func
 };
 
-BirdCascader.defaultProps={
-  data:[],
-  expandTrigger:'click',
-  size:'default',
-  disabled:false,
-  getPopupContainer:() => document.body
+BirdCascader.defaultProps = {
+  data: [],
+  expandTrigger: 'click',
+  size: 'default',
+  disabled: false,
+  getPopupContainer: () => document.body
 }
 
 

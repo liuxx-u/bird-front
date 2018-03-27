@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { request, config } from 'utils';
+import { request, config, util } from 'utils';
 import { Checkbox } from 'antd';
 const CheckboxGroup = Checkbox.Group;
 
@@ -49,7 +49,7 @@ class BirdMulti extends React.Component {
   }
   
   componentWillReceiveProps(nextProps) {
-    if (nextProps.options != this.props.options) {
+    if (!util.object.equal(nextProps.options, this.props.options)) {
       this.setState({
         options: nextProps.options
       })

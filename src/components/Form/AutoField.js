@@ -78,16 +78,17 @@ class AutoField extends React.Component {
     });
   }
 
-  componentDidMount() {
-    let field = this.props.fieldOption;
+  initFileFields(field){
+    if(!field)return;
     if (field.fieldType == 'img' || field.fieldType == 'imgs' || field.fieldType == 'file' || field.fieldType == 'files') {
       let fieldValue = field.value || '';
       let fileArr = [];
       if (fieldValue.length > 0) {
         fileArr = fieldValue.split(',').map((p, i) => {
+          let ext = p.substring(p.lastIndexOf('.'));
           return {
             uid: i,
-            name: 'file',
+            name: 'file' + ext,
             status: 'done',
             url: p,
             thumbUrl: p
@@ -97,6 +98,19 @@ class AutoField extends React.Component {
       this.setState({
         fileList: fileArr
       })
+    }
+  }
+
+  componentDidMount() {
+    let field = this.props.fieldOption;
+    this.initFileFields(field);
+  }
+
+  componentWillReceiveProps(nextProps){
+    let field = nextProps.fieldOption;
+
+    if(!util.object.equal(nextProps.field,this.props.fieldOption)){
+      this.initFileFields(field);
     }
   }
 

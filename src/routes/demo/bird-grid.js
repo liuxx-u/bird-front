@@ -48,11 +48,7 @@ class BirdGridDemoPage extends React.Component {
         }
       ]
     };
-    return (
-      <div>
-        <BirdGrid gridOption={gridOption} />
-      </div>
-    )
+    return <BirdGrid gridOption={gridOption} />
   }
 }
 

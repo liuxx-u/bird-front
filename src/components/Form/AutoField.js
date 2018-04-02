@@ -62,7 +62,10 @@ class AutoField extends React.Component {
       fileList: fileList
     }, () => {
       let pathArr = this.state.fileList.map(f => f.url);
-      this.onChange(pathArr.join())
+      let strPath = pathArr.filter(path => !util.string.isEmpty(path)).join();
+      if (!util.string.isEmpty(strPath) && field.value !== strPath) {
+        this.onChange(strPath)
+      }
     });
   }
 

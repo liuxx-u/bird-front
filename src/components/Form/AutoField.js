@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { config } from 'utils';
+import { config,util } from 'utils';
 import BirdSelector from './BirdSelector';
 import BirdCascader from './BirdCascader';
 import BirdMulti from './BirdMulti';

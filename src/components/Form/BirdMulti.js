@@ -8,7 +8,7 @@ const formatOption = options => {
   if (!options || options.length == 0) return [];
 
   return options.map(o => {
-    if (typeof (o['disabled']) == 'string') o['disabled'] = o['disabled'] === 'true';
+    o['disabled'] = o['disabled'] + '' === 'true';
     return o;
   });
 }
@@ -57,11 +57,13 @@ class BirdMulti extends React.Component {
   }
 
   checkAll = () => {
-    let allValues = this.state.options.filter(o => !o.disabled).map(p => p.value);
-    if (allValues.length == 0) return;
+    let enableOptions = this.state.options.filter(o => !o.disabled);
+    if(enableOptions.length == 0) return;
+
+    let allValues = enableOptions.map(p => p.value);
 
     let checkedValues = this.props.selectedValue ? this.props.selectedValue.split(',') : [];
-    let isCheckAll = checkedValues.length == this.state.options.length;
+    let isCheckAll = checkedValues.length == enableOptions.length;
     if (isCheckAll) {
       this.onPropsChange('');
     } else {
@@ -75,7 +77,7 @@ class BirdMulti extends React.Component {
 
   render() {
     let checkedValues = this.props.selectedValue ? this.props.selectedValue.split(',') : [];
-    let isCheckAll = checkedValues.length == this.state.options.length;
+    let isCheckAll = checkedValues.length == this.state.options.filter(o => !o.disabled).length;
     let options = this.state.options.map(option => { option.disabled = option.disabled + ''==='true'; return option });
 
     return (

@@ -167,6 +167,7 @@ class AutoField extends React.Component {
         let fileProps = {
           action: config.api.upload,
           multiple: multiple,
+          disabled:field.disabled,
           listType: field.fieldType === 'img' || field.fieldType === 'imgs' ? 'picture' : 'text',
           fileList: self.state.fileList,
           onChange: file => self.onFileChange(file),

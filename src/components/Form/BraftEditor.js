@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Editor from 'braft-editor'
 import 'braft-editor/dist/braft.css'
-import { config } from 'utils';
+import { config,util } from 'utils';
 
 // 不允许上传超过50M的文件
 const validateFn = (file) => {
@@ -57,6 +57,7 @@ class BraftEditor extends React.Component {
     super(props);
 
     this.state = {
+      contentId:util.string.generateRandom(6)
     }
   }
 
@@ -64,11 +65,18 @@ class BraftEditor extends React.Component {
     this.props.onChange && this.props.onChange(html);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.initValue!==this.props.initValue){
+      this.setState({contentId:nextProps.contentId})
+    }
+  }
+
   render() {
     const editorProps = {
       height: 300,
       contentFormat: 'html',
       initialContent: this.props.initValue,
+      contentId:this.state.contentId,
       // onChange: this.handleChange,
       onHTMLChange: html => this.onChange(html),
       media: {

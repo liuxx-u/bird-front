@@ -194,7 +194,7 @@ class AutoField extends React.Component {
                            style={{width: '100%'}}
                            onChange={(date, dateString) => self.onChange(dateString)} showTime={true}/>;
       case "richtext":
-        return <BraftEditor initValue={field.value} onChange={value => self.onChange(value)}/>;
+        return <BraftEditor initValue={field.value} contentId = {field.key} onChange={value => self.onChange(value)}/>;
       default:
         return <span/>;
     }

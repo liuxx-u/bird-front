@@ -110,8 +110,7 @@ let util= {
     },
     isEmpty:function(str) {
       if (typeof (str) === "undefined") return true;
-      if (str.replace(/(^s*)|(s*$)/g, "").length === 0) return true;
-      return false;
+      return (str.replace(/(^\s*)|(\s*$)/g, "").length === 0);
     },
     generateRandom(len) {
       len = len || 32;

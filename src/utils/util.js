@@ -1,8 +1,8 @@
 import store from 'store';
 
-const tokenKey="sso.token";
+const tokenKey = "sso.token";
 
-let util= {
+let util = {
   object: {
     deepClone: function (p, c) {
       var c = c ? c : p.constructor === Array ? [] : {};
@@ -89,10 +89,10 @@ let util= {
   string: {
     // 最大显示长度
     truncate: function (str, max, postfix) {
-      if(typeof (str) !== "string"){
+      if (typeof (str) !== "string") {
         return str;
       }
-      if (typeof(postfix) === "undefined") {
+      if (typeof (postfix) === "undefined") {
         postfix = "...";
       }
       if (str.length <= max) return str;
@@ -108,7 +108,7 @@ let util= {
     humpToHyphen: function (str) {
       return str.replace(/([A-Z])/g, '-$1').toLowerCase()
     },
-    isEmpty:function(str) {
+    isEmpty: function (str) {
       if (typeof (str) === "undefined") return true;
       return (str.replace(/(^\s*)|(\s*$)/g, "").length === 0);
     },
@@ -125,27 +125,28 @@ let util= {
   },
   date: {
     format: function (date, format) {
-      {
-        const o = {
-          'M+': date.getMonth() + 1,
-          'd+': date.getDate(),
-          'h+': date.getHours(),
-          'H+': date.getHours(),
-          'm+': date.getMinutes(),
-          's+': date.getSeconds(),
-          'q+': Math.floor((date.getMonth() + 3) / 3),
-          S: date.getMilliseconds(),
-        }
-        if (/(y+)/.test(format)) {
-          format = format.replace(RegExp.$1, `${date.getFullYear()}`.substr(4 - RegExp.$1.length))
-        }
-        for (let k in o) {
-          if (new RegExp(`(${k})`).test(format)) {
-            format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : (`00${o[k]}`).substr(`${o[k]}`.length))
-          }
-        }
-        return format
+      if (typeof (date) === 'string') {
+        date = new Date(Date.parse(date.replace(/-/g, "/")))
       }
+      const o = {
+        'M+': date.getMonth() + 1,
+        'd+': date.getDate(),
+        'h+': date.getHours(),
+        'H+': date.getHours(),
+        'm+': date.getMinutes(),
+        's+': date.getSeconds(),
+        'q+': Math.floor((date.getMonth() + 3) / 3),
+        S: date.getMilliseconds(),
+      }
+      if (/(y+)/.test(format)) {
+        format = format.replace(RegExp.$1, `${date.getFullYear()}`.substr(4 - RegExp.$1.length))
+      }
+      for (let k in o) {
+        if (new RegExp(`(${k})`).test(format)) {
+          format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : (`00${o[k]}`).substr(`${o[k]}`.length))
+        }
+      }
+      return format
     }
   },
   store: {
@@ -188,14 +189,14 @@ let util= {
       store.clearAll();
     }
   },
-  auth:{
-    getToken:function () {
+  auth: {
+    getToken: function () {
       return util.store.get(tokenKey);
     },
-    setToken:function (token) {
-      util.store.set(tokenKey,token)
+    setToken: function (token) {
+      util.store.set(tokenKey, token)
     },
-    removeToken:function () {
+    removeToken: function () {
       util.store.remove(tokenKey);
     }
   }

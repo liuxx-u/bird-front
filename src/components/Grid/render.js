@@ -27,11 +27,9 @@ const SwitchRender = function (v) {
 };
 
 const DateTimeRender = function (v, format) {
-  let date = v;
-  if (typeof (v) === 'string') {
-    date = new Date(v);
-  }
-  return util.date.format(date, format);
+  if(util.string.isEmpty(v))return '';
+  
+  return util.date.format(v, format);
 }
 
 const ImageRender = function (v) {

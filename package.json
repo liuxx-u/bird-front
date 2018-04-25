@@ -62,6 +62,7 @@
     "roadhog-api-doc": "^0.3.4",
     "rollbar": "^2.3.4",
     "stylelint": "^8.4.0",
+    "less-vars-to-js": "^1.1.2",
     "stylelint-config-standard": "^18.0.0"
   },
   "pre-commit": [

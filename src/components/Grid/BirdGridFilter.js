@@ -22,8 +22,11 @@ class BirdGridFilter extends React.Component {
 
   onRuleChange(key, value) {
     let rule = this.props.rule;
-    rule[key] = value;
+    if (key === 'field' && rule[key] !== value) {
+      rule.value = "";
+    }
 
+    rule[key] = value;
     this.props.onChange && this.props.onChange(rule);
   }
 

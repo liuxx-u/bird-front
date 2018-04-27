@@ -41,9 +41,12 @@ class BirdGridForm extends React.Component {
         message.error('`' + field.title + '`不能为空.');
         return false;
       }
-      if (field.editor.validateRegular && !field.editor.validateRegular.test(dto[field.data])) {
-        message.error('`' + field.title + '`数据格式不正确.');
-        return false;
+      if (field.editor.validateRegular) {
+        let reg = typeof (field.editor.validateRegular) === 'string' ? new RegExp(field.editor.validateRegular) : field.editor.validateRegular;
+        if (reg.test && !reg.test(dto[field.data])) {
+          message.error('`' + field.title + '`数据格式不正确.');
+          return false;
+        }
       }
     }
     return true;

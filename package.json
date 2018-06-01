@@ -3,7 +3,7 @@
   "name": "bird-front",
   "version": "0.0.3",
   "dependencies": {
-    "@babel/polyfill": "^7.0.0-beta.36",
+    "@babel/polyfill": "7.0.0-beta.38",
     "antd": "^3.1.6",
     "axios": "^0.17.1",
     "braft-editor": "^1.8.7",
@@ -58,7 +58,7 @@
     "pro-download": "^1.0.1",
     "redbox-react": "^1.5.0",
     "regenerator-runtime": "^0.11.1",
-    "roadhog": "^2.1.0",
+    "roadhog": "~2.3.0",
     "roadhog-api-doc": "^0.3.4",
     "rollbar": "^2.3.4",
     "stylelint": "^8.4.0",

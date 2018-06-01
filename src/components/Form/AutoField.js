@@ -1,13 +1,13 @@
 import React from 'react'
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { config,util } from 'utils';
+import { config, util } from 'utils';
 import BirdSelector from './BirdSelector';
 import BirdCascader from './BirdCascader';
 import BirdMulti from './BirdMulti';
 import BraftEditor from './BraftEditor';
 
-import {Form,Input,Button, DatePicker,Switch,Icon,Upload,InputNumber,Tooltip } from 'antd';
+import { Form, Input, Button, DatePicker, Switch, Icon, Upload, InputNumber, Tooltip } from 'antd';
 
 const FormItem = Form.Item;
 const TextArea = Input.TextArea;
@@ -81,8 +81,8 @@ class AutoField extends React.Component {
     });
   }
 
-  initFileFields(field){
-    if(!field)return;
+  initFileFields(field) {
+    if (!field) return;
     if (field.fieldType == 'img' || field.fieldType == 'imgs' || field.fieldType == 'file' || field.fieldType == 'files') {
       let fieldValue = field.value || '';
       let fileArr = [];
@@ -109,10 +109,10 @@ class AutoField extends React.Component {
     this.initFileFields(field);
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     let field = nextProps.fieldOption;
 
-    if(!util.object.equal(nextProps.field,this.props.fieldOption)){
+    if (!util.object.equal(nextProps.field, this.props.fieldOption)) {
       this.initFileFields(field);
     }
   }
@@ -132,88 +132,93 @@ class AutoField extends React.Component {
     switch (field.fieldType) {
       case "text":
         return <Input value={field.value} disabled={field.disabled}
-                      onChange={e => self.onChange(e.target.value)}/>;
+          onChange={e => self.onChange(e.target.value)} />;
       case "textarea":
         return <TextArea value={field.value} autosize={{ minRows: 4, maxRows: 8 }} disabled={field.disabled}
-                         onChange={e => self.onChange(e.target.value)}/>
+          onChange={e => self.onChange(e.target.value)} />
       case "number":
-        let step = field.step || 1;
-        let precision = field.precision || 0;
-        return <InputNumber min={0} step={step} precision={precision}
-                            style={{width: '100%'}}
-                            value={field.value} disabled={field.disabled}
-                            onChange={value => self.onChange(value)}/>;
+        return <InputNumber min={0} step={field.step || 1} precision={field.precision || 0}
+          style={{ width: '100%' }}
+          value={field.value || 0} disabled={field.disabled}
+          onChange={value => self.onChange(util.string.isEmpty(value) ? 0 : value)} />;
+      case "money":
+        return <InputNumber min={0} step={field.step || 1} precision={field.precision || 0}
+          style={{ width: '100%' }}
+          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={value => value.replace(/\$\s?|(,*)/g, '')}
+          value={field.value || 0} disabled={field.disabled}
+          onChange={value => self.onChange(util.string.isEmpty(value) ? 0 : value)} />;
       case "switch":
         return <Switch disabled={field.disabled}
-                       checked={field.value == true}
-                       checkedChildren={<Icon type="check"/>}
-                       unCheckedChildren={<Icon type="cross"/>}
-                       onChange={value => self.onChange(value ? "1" : "0")}/>;
+          checked={field.value == true}
+          checkedChildren={<Icon type="check" />}
+          unCheckedChildren={<Icon type="cross" />}
+          onChange={value => self.onChange(value ? "1" : "0")} />;
       case "dropdown":
         return <BirdSelector dicKey={field.source.key} data={field.source.data || []} url={field.source.url}
-                             onChange={value => self.onChange(value)} selectedValue={field.value}/>;
+          onChange={value => self.onChange(value)} selectedValue={field.value} />;
       case "multi":
         return <BirdMulti dicKey={field.source.key} options={field.source.data || []} url={field.source.url}
-                          onChange={value => self.onChange(value)} selectedValue={field.value}/>
+          onChange={value => self.onChange(value)} selectedValue={field.value} />
 
       case "cascader":
         return <BirdCascader data={field.source.data || []} url={field.source.url}
-                             onChange={value => self.onChange(value)} value={field.value}/>
+          onChange={value => self.onChange(value)} value={field.value} />
       case "img":
       case "imgs":
       case "file":
       case "files":
-        let multiple = field.fieldType==='imgs'||field.fieldType==='files';
+        let multiple = field.fieldType === 'imgs' || field.fieldType === 'files';
         let fileProps = {
           action: config.api.upload,
           multiple: multiple,
-          disabled:field.disabled,
+          disabled: field.disabled,
           listType: field.fieldType === 'img' || field.fieldType === 'imgs' ? 'picture' : 'text',
           fileList: self.state.fileList,
           onChange: file => self.onFileChange(file),
           onRemove: file => self.onFileRemove(file)
         };
 
-        if(field.fieldType === 'img' || field.fieldType === 'imgs') {
+        if (field.fieldType === 'img' || field.fieldType === 'imgs') {
           fileProps.accept = "image/png,image/jpeg,image/jpg,image/gif,image/bmp";
         }
 
         return <Upload {...fileProps}>
           <Button type="ghost" disabled={field.disabled}>
-            <Icon type="upload"/> 点击上传
+            <Icon type="upload" /> 点击上传
           </Button>
         </Upload>;
       case "date":
         return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
-                           format={"YYYY-MM-DD"}
-                           style={{width: '100%'}}
-                           onChange={(date, dateString) => self.onChange(dateString)}/>;
+          format={"YYYY-MM-DD"}
+          style={{ width: '100%' }}
+          onChange={(date, dateString) => self.onChange(dateString)} />;
       case "datetime":
         return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
-                           format={"YYYY-MM-DD HH:mm"}
-                           style={{width: '100%'}}
-                           onChange={(date, dateString) => self.onChange(dateString)} showTime={true}/>;
+          format={"YYYY-MM-DD HH:mm"}
+          style={{ width: '100%' }}
+          onChange={(date, dateString) => self.onChange(dateString)} showTime={true} />;
       case "richtext":
-        return <BraftEditor initValue={field.value} contentId = {field.key} onChange={value => self.onChange(value)}/>;
+        return <BraftEditor initValue={field.value} contentId={field.key} onChange={value => self.onChange(value)} />;
       default:
-        return <span/>;
+        return <span />;
     }
   }
 
   render() {
     let fieldOption = this.props.fieldOption;
     let formItemLayout = {
-      labelCol: {span: this.props.labelColSpan},
-      wrapperCol: {span: 20 - this.props.labelColSpan},
+      labelCol: { span: this.props.labelColSpan },
+      wrapperCol: { span: 20 - this.props.labelColSpan },
     };
 
     return <FormItem {...formItemLayout} label={
       <span>
-        {fieldOption.isRequired && <span style={{color: '#f46e65', marginRight: 4}}>*</span>}
+        {fieldOption.isRequired && <span style={{ color: '#f46e65', marginRight: 4 }}>*</span>}
         {fieldOption.name}
-        {fieldOption.tips && <span style={{marginLeft: 5, fontStyle: 'normal', color: 'rgba(0, 0, 0, 0.45)'}}>
+        {fieldOption.tips && <span style={{ marginLeft: 5, fontStyle: 'normal', color: 'rgba(0, 0, 0, 0.45)' }}>
           <Tooltip title={fieldOption.tips}>
-            <Icon type="question-circle-o" style={{marginRight: 4}}/>
+            <Icon type="question-circle-o" style={{ marginRight: 4 }} />
           </Tooltip>
         </span>}
       </span>
@@ -226,7 +231,7 @@ class AutoField extends React.Component {
 
 AutoField.propTypes = {
   fieldOption: PropTypes.object.isRequired,
-  labelColSpan:PropTypes.number,
+  labelColSpan: PropTypes.number,
   onChange: PropTypes.func,
 }
 

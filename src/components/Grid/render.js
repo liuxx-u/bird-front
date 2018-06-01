@@ -81,5 +81,8 @@ const FileRender = function (v) {
     </div>
   })
 }
+const MoneyRender = function(v){
+  return `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
 
-export { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender, FileRender }
+export { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender, FileRender, MoneyRender }

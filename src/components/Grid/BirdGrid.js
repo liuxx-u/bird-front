@@ -457,9 +457,9 @@ class BirdGrid extends React.Component {
                 else formatValue = typeof (data[col.data]) === 'undefined' ? '' : data[col.data];
               }
 
-              /*对于文本列长度超过30，则省略*/
               if (col.type === 'text' || col.type === 'textarea' || col.type === 'richtext') {
-                return <td title={formatValue} key={colKey}>{util.string.truncate(formatValue, 30)}</td>;
+                let maxLength = col.maxLength || 30;
+                return <td title={formatValue} key={colKey}>{util.string.truncate(formatValue, maxLength)}</td>;
               } else {
                 return <td key={colKey}>{formatValue}</td>
               }

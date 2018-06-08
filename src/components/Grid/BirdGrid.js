@@ -25,7 +25,7 @@ class BirdGrid extends React.Component {
       pageSize: gridOption.pageSize || 15,
       sortField: gridOption.sortField || primaryKey,
       sortDirection: gridOption.sortDirection || "desc",
-      filterRules: [],
+      filterRules: gridOption.filterRules || [],
       gridDatas: {
         totalCount: 0,
         items: []
@@ -99,12 +99,14 @@ class BirdGrid extends React.Component {
       columns.push(col);
     }
 
-    let filterRules = [];
-    filterRules.push({
-      field: queryColumns.length > 0 ? queryColumns[0]['data'] : '',
-      operate: 'equal',
-      value: ''
-    });
+    let filterRules = this.state.filterRules;
+    if(filterRules.length == 0){
+      filterRules.push({
+        field: queryColumns.length > 0 ? queryColumns[0]['data'] : '',
+        operate: 'equal',
+        value: ''
+      });
+    }
 
     let defaultActions = [];
     if (self.props.gridOption.url.add && permission.check(tp.add)) {

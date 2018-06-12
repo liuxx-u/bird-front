@@ -11,7 +11,6 @@ class BirdButtonDemoPage extends React.Component {
   }
 
   render() {
-
     return (
       <Card>
         <BirdButton permissionName={'sys:authorize:user:add'} type="primary">权限按钮</BirdButton>

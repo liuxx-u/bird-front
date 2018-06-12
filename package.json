@@ -4,13 +4,13 @@
   "version": "0.0.3",
   "dependencies": {
     "@babel/polyfill": "7.0.0-beta.38",
-    "antd": "^3.1.6",
+    "antd": "^3.4.3",
     "axios": "^0.17.1",
     "braft-editor": "^1.8.7",
     "classnames": "^2.2.5",
     "cross-env": "^5.1.3",
     "d3-shape": "^1.2.0",
-    "dva": "^2.1.0",
+    "dva": "^2.2.3",
     "dva-loading": "^1.0.4",
     "ejs-loader": "^0.3.0",
     "history": "^4.7.2",
@@ -58,7 +58,7 @@
     "pro-download": "^1.0.1",
     "redbox-react": "^1.5.0",
     "regenerator-runtime": "^0.11.1",
-    "roadhog": "^2.3.0",
+    "roadhog": "~2.3.0",
     "roadhog-api-doc": "^0.3.4",
     "rollbar": "^2.3.4",
     "stylelint": "^8.4.0",
@@ -69,10 +69,10 @@
     "lint"
   ],
   "scripts": {
-    "dev": "cross-env DISABLE_ESLINT=true roadhog dev",
-    "start": "cross-env DISABLE_ESLINT=true roadhog dev",
+    "dev": "cross-env ESLINT=none roadhog dev",
+    "start": "cross-env ESLINT=none roadhog dev",
     "lint": "eslint --fix --ext .js src",
-    "build": "cross-env DISABLE_ESLINT=true roadhog build",
-    "build:new": "node version && cross-env DISABLE_ESLINT=true roadhog build"
+    "build": "cross-env ESLINT=none roadhog build",
+    "build:new": "node version && cross-env ESLINT=none roadhog build"
   }
 }

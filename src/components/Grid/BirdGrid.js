@@ -125,7 +125,7 @@ class BirdGrid extends React.Component {
     optionActions = optionActions.concat(defaultActions);
     if (queryColumns.length > 0) {
       optionActions.unshift({
-        name: '查询',
+        name: gridOption.queryText || '查询',
         icon: 'search',
         onClick: () => {
           this.query()

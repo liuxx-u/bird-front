@@ -195,7 +195,7 @@ class AutoField extends React.Component {
           onChange={(date, dateString) => self.onChange(dateString)} />;
       case "datetime":
         return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
-          format={"YYYY-MM-DD HH:mm"}
+          format={"YYYY-MM-DD HH:mm:ss"}
           style={{ width: '100%' }}
           onChange={(date, dateString) => self.onChange(dateString)} showTime={true} />;
       case "richtext":

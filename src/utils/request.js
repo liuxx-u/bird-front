@@ -7,7 +7,6 @@ import pathToRegexp from 'path-to-regexp'
 import { message } from 'antd'
 import config from './config'
 import util from './util';
-import permission from './permission';
 
 const fetch = (options) => {
   let {
@@ -60,7 +59,7 @@ const fetch = (options) => {
     config => {
       var token = util.auth.getToken();
       if (token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-        config.headers['sso.token'] = token;
+        config.headers['Sso-Token'] = token;
       }
       return config;
     }, err => {
@@ -108,7 +107,6 @@ export default function request (options) {
 
 
   return fetch(options).then((response) => {
-    const { statusText, status } = response
     let data = options.fetchType === 'YQL' ? response.data.query.results.json : response.data
     if(data['httpCode']==="200") {
       return Promise.resolve(data['result'])

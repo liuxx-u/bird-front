@@ -8,7 +8,7 @@ import { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender,
 import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider } from 'antd';
 
 class BirdGrid extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
 
     let gridOption = this.props.gridOption;
@@ -53,7 +53,7 @@ class BirdGrid extends React.Component {
   }
 
   /* 初始化渲染执行之前执行 */
-  componentWillMount() {
+  componentWillMount () {
     let gridOption = this.props.gridOption;
     let p = gridOption.permission;
     let tp = {};
@@ -145,7 +145,7 @@ class BirdGrid extends React.Component {
     });
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps (nextProps){
     if(!util.object.equal(nextProps.gridOption.dataSource,this.props.gridOption.dataSource)){
       this.setState({
         gridDatas: {
@@ -157,14 +157,14 @@ class BirdGrid extends React.Component {
   }
 
   /* 分页点击事件 */
-  pageClick(pageIndex) {
+  pageClick (pageIndex) {
     this.setState({
       pageIndex: pageIndex
     }, this.query);
   }
 
   /* 每页显示数量改变事件 */
-  pageSizeChange(pageSize) {
+  pageSizeChange (pageSize) {
     this.setState({
       pageIndex: 1,
       pageSize: pageSize
@@ -172,7 +172,7 @@ class BirdGrid extends React.Component {
   }
 
   /* 新增点击事件 */
-  addClick() {
+  addClick () {
     let formOption = {
       model: "add",
       saveUrl: this.props.gridOption.url.add,

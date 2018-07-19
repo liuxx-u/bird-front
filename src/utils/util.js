@@ -112,7 +112,7 @@ let util = {
       if (typeof (str) === "undefined") return true;
       return (str.replace(/(^\s*)|(\s*$)/g, "").length === 0);
     },
-    generateRandom(len) {
+    generateRandom (len) {
       len = len || 32;
       var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
       var maxPos = $chars.length;
@@ -136,7 +136,7 @@ let util = {
         'm+': date.getMinutes(),
         's+': date.getSeconds(),
         'q+': Math.floor((date.getMonth() + 3) / 3),
-        S: date.getMilliseconds(),
+        S: date.getMilliseconds()
       }
       if (/(y+)/.test(format)) {
         format = format.replace(RegExp.$1, `${date.getFullYear()}`.substr(4 - RegExp.$1.length))

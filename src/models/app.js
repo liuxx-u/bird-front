@@ -5,7 +5,6 @@ import { routerRedux } from 'dva/router'
 import { parse } from 'qs'
 import config from 'config'
 import {permission} from 'utils'
-import { EnumRoleType } from 'enums'
 import { query, logout } from 'services/app'
 import * as menusService from 'services/menus'
 import * as permissionsService from 'services/permissions'
@@ -17,9 +16,6 @@ export default {
   namespace: 'app',
   state: {
     user: {},
-    permissions: {
-      visit: [],
-    },
     menu: [
       {
         id: 1,
@@ -44,7 +40,7 @@ export default {
           type: 'updateState',
           payload: {
             locationPathname: location.pathname,
-            locationQuery: queryString.parse(location.search),
+            locationQuery: location.query,
           },
         })
       })
@@ -104,6 +100,15 @@ export default {
     }, { call, put }) {
       const data = yield call(logout, parse(payload))
       if (data.success) {
+        yield put({ type: 'updateState', payload: {
+          user: {},
+          menu: [{
+              id: 1,
+              icon: 'laptop',
+              name: 'Dashboard',
+              router: '/dashboard',
+            }],
+        }})
         yield put({ type: 'query' })
       } else {
         throw (data)

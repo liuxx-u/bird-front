@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet'
 import { withRouter } from 'dva/router'
 import '../themes/index.less'
 import './app.less'
-import Exception from 'components/Exception';
+import Exception from 'components/Exception'
 
 const { prefix, openPages } = config
 
@@ -18,7 +18,7 @@ const { Header, Bread, Footer, Sider, styles } = Layout
 let lastHref
 
 const App = ({ children, dispatch, app, loading, location }) => {
-  const { user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu, permissions } = app
+  const { user, siderFold, darkTheme, isNavbar, menuPopoverVisible, navOpenKeys, menu } = app
   let { pathname } = location
   pathname = pathname.startsWith('/') ? pathname : `/${pathname}`
   const { iconFontJS, iconFontCSS, logo } = config

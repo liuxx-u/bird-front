@@ -1,6 +1,6 @@
 const qs = require('qs')
 const Mock = require('mockjs')
-const config = require('../utils/config')
+const config = require('../src/utils/config')
 
 const { apiPrefix } = config
 
@@ -88,7 +88,7 @@ const NOTFOUND = {
   documentation_url: 'http://localhost:8000/request',
 }
 
-export default  {
+module.exports = {
 
   [`POST ${apiPrefix}/user/login`] (req, res) {
     const { username, password } = req.body

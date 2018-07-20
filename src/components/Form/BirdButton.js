@@ -11,10 +11,10 @@ class BirdButton extends React.Component {
   constructor(props) {
     super(props);
 
-    const permission = this.props.permission;
+    const permissionName = this.props.permission;
 
     this.state = {
-      hasPermission: permission === '' || permission.check(permission)
+      hasPermission: permissionName === '' || permission.check(permissionName)
     }
   }
 

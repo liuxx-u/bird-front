@@ -20,10 +20,10 @@ class DashBoardPage extends React.Component {
       checkable:true,
       actions: [{
         name: '外部按钮',
-        onClick: function (ids, datas) { }
+        onClick: function () { }
       }],
       columns: [
-        { title: "编号", data: "id", type: "number", },
+        { title: "编号", data: "id", type: "number"},
         { title: "文本", data: "field-text", type: "text", editor: {}, query: true },
         { title: "整数", data: "field-number", type: "number", editor: {}, query: true },
         { title: "小数", data: "field-float", type: "number", editor: { step: 0.1, precision: 2 }, query: true },

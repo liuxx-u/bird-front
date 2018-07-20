@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { request, deepClone } from 'utils';
+import { request } from 'utils';
 import BirdForm from './BirdForm';
 import {Card} from 'antd';
 
@@ -22,7 +22,7 @@ class BirdStoredForm extends React.Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     let self = this;
 
     request({

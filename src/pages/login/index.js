@@ -12,10 +12,10 @@ const Login = ({
   dispatch,
   form: {
     getFieldDecorator,
-    validateFieldsAndScroll,
-  },
+    validateFieldsAndScroll
+  }
 }) => {
-  function handleOk () {
+  function handleOk() {
     validateFieldsAndScroll((errors, values) => {
       if (errors) {
         return
@@ -35,18 +35,18 @@ const Login = ({
           {getFieldDecorator('username', {
             rules: [
               {
-                required: true,
-              },
-            ],
+                required: true
+              }
+            ]
           })(<Input onPressEnter={handleOk} placeholder="Username" />)}
         </FormItem>
         <FormItem hasFeedback>
           {getFieldDecorator('password', {
             rules: [
               {
-                required: true,
-              },
-            ],
+                required: true
+              }
+            ]
           })(<Input type="password" onPressEnter={handleOk} placeholder="Password" />)}
         </FormItem>
         <Row>
@@ -67,7 +67,7 @@ const Login = ({
 Login.propTypes = {
   form: PropTypes.object,
   dispatch: PropTypes.func,
-  loading: PropTypes.object,
+  loading: PropTypes.object
 }
 
 export default connect(({ loading }) => ({ loading }))(Form.create()(Login))

@@ -83,7 +83,7 @@ class AutoField extends React.Component {
 
   initFileFields(field) {
     if (!field) return;
-    if (field.fieldType == 'img' || field.fieldType == 'imgs' || field.fieldType == 'file' || field.fieldType == 'files') {
+    if (field.fieldType === 'img' || field.fieldType === 'imgs' || field.fieldType === 'file' || field.fieldType === 'files') {
       let fieldValue = field.value || '';
       let fileArr = [];
       if (fieldValue.length > 0) {
@@ -109,7 +109,7 @@ class AutoField extends React.Component {
     this.initFileFields(field);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     let field = nextProps.fieldOption;
 
     if (!util.object.equal(nextProps.field, this.props.fieldOption)) {
@@ -124,7 +124,7 @@ class AutoField extends React.Component {
 
   getValueTag(field) {
     let self = this;
-    if (typeof (field.value) == 'undefined' || field.value == 'null') {
+    if (typeof (field.value) === 'undefined' || field.value === 'null') {
       field.value = '';
     }
     if (field.render && typeof (field.render) === 'function') return field.render(field.value);
@@ -150,7 +150,7 @@ class AutoField extends React.Component {
           onChange={value => self.onChange(util.string.isEmpty(value) ? 0 : value)} />;
       case "switch":
         return <Switch disabled={field.disabled}
-          checked={field.value == true}
+          checked={field.value === true}
           checkedChildren={<Icon type="check" />}
           unCheckedChildren={<Icon type="cross" />}
           onChange={value => self.onChange(value ? "1" : "0")} />;
@@ -209,7 +209,7 @@ class AutoField extends React.Component {
     let fieldOption = this.props.fieldOption;
     let formItemLayout = {
       labelCol: { span: this.props.labelColSpan },
-      wrapperCol: { span: 20 - this.props.labelColSpan },
+      wrapperCol: { span: 20 - this.props.labelColSpan }
     };
 
     return <FormItem {...formItemLayout} label={
@@ -232,7 +232,7 @@ class AutoField extends React.Component {
 AutoField.propTypes = {
   fieldOption: PropTypes.object.isRequired,
   labelColSpan: PropTypes.number,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func
 }
 
 AutoField.defaultProps = {

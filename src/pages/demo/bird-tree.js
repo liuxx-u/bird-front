@@ -1,5 +1,4 @@
 import React from 'react';
-import { request } from 'utils';
 import {Card} from 'antd';
 import {BirdTree} from 'components/Grid';
 

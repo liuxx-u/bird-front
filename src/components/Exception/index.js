@@ -23,7 +23,7 @@ export default ({ className, linkElement = 'a', type, title, desc, img, actions,
             actions ||
               createElement(linkElement, {
                 to: '/',
-                href: '/',
+                href: '/'
               }, <Button type="primary">返回首页</Button>)
           }
 

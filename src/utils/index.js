@@ -87,20 +87,20 @@ const arrayToHash=(array,key='value')=> {
  * @returns {*}
  */
 const deepClone = (p,c) => {
-  var c = c ? c : p.constructor === Array ? [] : {};
+  var nc = c ? c : p.constructor === Array ? [] : {};
   for (var i in p) {
     if (typeof p[i] === 'object') {
       if (p[i] == null) {
-        c[i] = null;
+        nc[i] = null;
         continue;
       }
-      c[i] = (p[i].constructor === Array) ? [] : {};
-      deepClone(p[i], c[i]);
+      nc[i] = (p[i].constructor === Array) ? [] : {};
+      deepClone(p[i], nc[i]);
     } else {
-      c[i] = p[i];
+      nc[i] = p[i];
     }
   }
-  return c;
+  return nc;
 }
 
 export {

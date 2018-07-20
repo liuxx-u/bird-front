@@ -7,7 +7,7 @@ const permission = {
     if (util.string.isEmpty(permissionName)) return true;
 
     let permissions = permission.getPermissions();
-    return permissions.findIndex(p => p == permissionName) >= 0;
+    return permissions.findIndex(p => p === permissionName) >= 0;
   },
   getPermissions() {
     return util.store.get(permissionKey);

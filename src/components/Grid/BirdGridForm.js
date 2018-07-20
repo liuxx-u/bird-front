@@ -15,7 +15,7 @@ class BirdGridForm extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     var initValue = deepClone(nextProps.formOption.value);
     this.setState({
       initValue: initValue,
@@ -90,7 +90,7 @@ class BirdGridForm extends React.Component {
         step: field.editor.step,
         precision: field.editor.precision,
         fieldType: field.type,
-        value: typeof (self.state.initValue[field.data]) == 'undefined' ? '' : self.state.initValue[field.data] + '',
+        value: typeof (self.state.initValue[field.data]) === 'undefined' ? '' : self.state.initValue[field.data] + '',
         disabled: pattern === 'disabled',
         source: field.source || {}
       }
@@ -113,7 +113,7 @@ class BirdGridForm extends React.Component {
 
 BirdGridForm.propTypes = {
   formOption: PropTypes.object.isRequired,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func
 }
 
 export default BirdGridForm

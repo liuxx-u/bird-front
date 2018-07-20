@@ -31,7 +31,7 @@ class BirdCascader extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (!util.object.equal(nextProps.data, this.props.data)) {
       this.initData(nextProps.data)
     }
@@ -45,7 +45,7 @@ class BirdCascader extends React.Component {
     let hash = {}
     data.forEach(item => {
       hash[item['value']] = item;
-      if (item.folder + '' == 'true') {
+      if (item.folder + '' === 'true') {
         folderNodes.push(item);
       }
     });
@@ -64,7 +64,7 @@ class BirdCascader extends React.Component {
     for (let i = 0, len = folderNodes.length; i < len; i++) {
       let curNode = folderNodes[i];
 
-      while (curNode != null && typeof (curNode) != 'undefined') {
+      while (curNode !== null && typeof (curNode) !== 'undefined') {
         let value = curNode['value'];
         if (hash[value]['children'] && hash[value]['children'].length > 0) break;
 
@@ -73,7 +73,7 @@ class BirdCascader extends React.Component {
         let pArr = pNode ? pNode['children'] : options;
 
         let index = pArr.findIndex(item => item['value'] === value);
-        if (index == -1) break;
+        if (index === -1) break;
 
         pArr.splice(index, 1)
         curNode = hash[pValue];

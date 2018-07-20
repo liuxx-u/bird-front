@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Menu, Icon, Popover } from 'antd'
-import classnames from 'classnames'
 import styles from './Header.less'
 import Menus from './Menu'
 
@@ -17,7 +16,7 @@ const Header = ({ user, logout, switchSider, siderFold, isNavbar, menuPopoverVis
     handleClickNavMenu: switchMenuPopover,
     location,
     navOpenKeys,
-    changeOpenKeys,
+    changeOpenKeys
   }
   return (
     <div className={styles.header}>
@@ -40,7 +39,7 @@ const Header = ({ user, logout, switchSider, siderFold, isNavbar, menuPopoverVis
         <Menu mode="horizontal" onClick={handleClickMenu}>
           <SubMenu
             style={{
-              float: 'right',
+              float: 'right'
             }}
             title={<span>
               <Icon type="user" />
@@ -71,7 +70,7 @@ Header.propTypes = {
   location: PropTypes.object,
   switchMenuPopover: PropTypes.func,
   navOpenKeys: PropTypes.array,
-  changeOpenKeys: PropTypes.func,
+  changeOpenKeys: PropTypes.func
 }
 
 export default Header

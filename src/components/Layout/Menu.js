@@ -74,7 +74,7 @@ const Menus = ({ siderFold, darkTheme, handleClickNavMenu, navOpenKeys, changeOp
 
   let menuProps = !siderFold ? {
     onOpenChange,
-    openKeys: navOpenKeys,
+    openKeys: navOpenKeys
   } : {}
 
 
@@ -127,7 +127,7 @@ Menus.propTypes = {
   handleClickNavMenu: PropTypes.func,
   navOpenKeys: PropTypes.array,
   changeOpenKeys: PropTypes.func,
-  location: PropTypes.object,
+  location: PropTypes.object
 }
 
 export default Menus

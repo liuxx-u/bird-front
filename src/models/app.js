@@ -21,8 +21,8 @@ export default {
         id: 1,
         icon: 'laptop',
         name: 'Dashboard',
-        url: '/dashboard',
-      },
+        url: '/dashboard'
+      }
     ],
     menuPopoverVisible: false,
     siderFold: window.localStorage.getItem(`${prefix}siderFold`) === 'true',
@@ -30,7 +30,7 @@ export default {
     isNavbar: document.body.clientWidth < 769,
     navOpenKeys: JSON.parse(window.localStorage.getItem(`${prefix}navOpenKeys`)) || [],
     locationPathname: '',
-    locationQuery: {},
+    locationQuery: {}
   },
   subscriptions: {
 
@@ -40,8 +40,8 @@ export default {
           type: 'updateState',
           payload: {
             locationPathname: location.pathname,
-            locationQuery: location.query,
-          },
+            locationQuery: location.query
+          }
         })
       })
     },
@@ -55,13 +55,12 @@ export default {
           dispatch({ type: 'changeNavbar' })
         }, 300)
       }
-    },
-
+    }
   },
   effects: {
 
     * query({
-      payload,
+      payload
     }, { call, put, select }) {
       const { success, user } = yield call(query, payload)
       const { locationPathname } = yield select(_ => _.app)
@@ -77,26 +76,26 @@ export default {
           type: 'updateState',
           payload: {
             user,
-            menu,
-          },
+            menu
+          }
         })
-        if (location.pathname === '/login') {
+        if (window.location.pathname === '/login') {
           yield put(routerRedux.push({
-            pathname: '/dashboard',
+            pathname: '/dashboard'
           }))
         }
       } else if (config.openPages && config.openPages.indexOf(locationPathname) < 0) {
         yield put(routerRedux.push({
           pathname: '/login',
           search: queryString.stringify({
-            from: locationPathname,
-          }),
+            from: locationPathname
+          })
         }))
       }
     },
 
     * logout({
-      payload,
+      payload
     }, { call, put }) {
       const data = yield call(logout, parse(payload))
       if (data.success) {
@@ -109,8 +108,8 @@ export default {
                 icon: 'laptop',
                 name: 'Dashboard',
                 url: '/dashboard'
-              },
-            ],
+              }
+            ]
           }
         })
         yield put({ type: 'query' })
@@ -125,14 +124,13 @@ export default {
       if (isNavbar !== app.isNavbar) {
         yield put({ type: 'handleNavbar', payload: isNavbar })
       }
-    },
-
+    }
   },
   reducers: {
-    updateState (state, { payload }) {
+    updateState(state, { payload }) {
       return {
         ...state,
-        ...payload,
+        ...payload
       }
     },
 
@@ -140,7 +138,7 @@ export default {
       window.localStorage.setItem(`${prefix}siderFold`, !state.siderFold)
       return {
         ...state,
-        siderFold: !state.siderFold,
+        siderFold: !state.siderFold
       }
     },
 
@@ -148,29 +146,29 @@ export default {
       window.localStorage.setItem(`${prefix}darkTheme`, !state.darkTheme)
       return {
         ...state,
-        darkTheme: !state.darkTheme,
+        darkTheme: !state.darkTheme
       }
     },
 
     switchMenuPopver(state) {
       return {
         ...state,
-        menuPopoverVisible: !state.menuPopoverVisible,
+        menuPopoverVisible: !state.menuPopoverVisible
       }
     },
 
     handleNavbar(state, { payload }) {
       return {
         ...state,
-        isNavbar: payload,
+        isNavbar: payload
       }
     },
 
     handleNavOpenKeys(state, { payload: navOpenKeys }) {
       return {
         ...state,
-        ...navOpenKeys,
+        ...navOpenKeys
       }
-    },
-  },
+    }
+  }
 }

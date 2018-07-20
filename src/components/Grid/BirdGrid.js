@@ -8,15 +8,15 @@ import { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender,
 import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider } from 'antd';
 
 class BirdGrid extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
 
     let gridOption = this.props.gridOption;
     let primaryKey = gridOption.primaryKey || gridOption.columns[0]['data'];
     let dataSource = gridOption.dataSource || [];
     let autoQuery = gridOption.autoQuery;
-    if (typeof (autoQuery) == 'undefined') {
-      autoQuery = dataSource.length == 0 && gridOption.url && gridOption.url.read;
+    if (typeof (autoQuery) === 'undefined') {
+      autoQuery = dataSource.length === 0 && gridOption.url && gridOption.url.read;
     }
 
     this.state = {
@@ -53,7 +53,7 @@ class BirdGrid extends React.Component {
   }
 
   /* 初始化渲染执行之前执行 */
-  componentDidMount () {
+  componentDidMount() {
     let gridOption = this.props.gridOption;
     let p = gridOption.permission;
     let tp = {};
@@ -103,7 +103,7 @@ class BirdGrid extends React.Component {
     }
 
     let filterRules = this.state.filterRules;
-    if (filterRules.length == 0) {
+    if (filterRules.length === 0) {
       filterRules.push({
         field: queryColumns.length > 0 ? queryColumns[0]['data'] : '',
         operate: 'equal',
@@ -145,8 +145,8 @@ class BirdGrid extends React.Component {
     });
   }
 
-  componentWillReceiveProps (nextProps){
-    if(!util.object.equal(nextProps.gridOption.dataSource,this.props.gridOption.dataSource)){
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (!util.object.equal(nextProps.gridOption.dataSource, this.props.gridOption.dataSource)) {
       this.setState({
         gridDatas: {
           totalCount: nextProps.gridOption.dataSource.length,
@@ -157,14 +157,14 @@ class BirdGrid extends React.Component {
   }
 
   /* 分页点击事件 */
-  pageClick (pageIndex) {
+  pageClick(pageIndex) {
     this.setState({
       pageIndex: pageIndex
     }, this.query);
   }
 
   /* 每页显示数量改变事件 */
-  pageSizeChange (pageSize) {
+  pageSizeChange(pageSize) {
     this.setState({
       pageIndex: 1,
       pageSize: pageSize
@@ -172,7 +172,7 @@ class BirdGrid extends React.Component {
   }
 
   /* 新增点击事件 */
-  addClick () {
+  addClick() {
     let formOption = {
       model: "add",
       saveUrl: this.props.gridOption.url.add,
@@ -252,7 +252,7 @@ class BirdGrid extends React.Component {
 
   /* 全选点击事件 */
   checkAllClick() {
-    if (this.state.checkedValues.length == this.state.gridDatas.items.length) {
+    if (this.state.checkedValues.length === this.state.gridDatas.items.length) {
       this.setState({ checkedValues: [] })
     } else {
       let checkValues = this.state.gridDatas.items.map(p => p[this.state.primaryKey]);
@@ -263,7 +263,7 @@ class BirdGrid extends React.Component {
   /* 选择框点击事件 */
   checkClick(value) {
     let checkValues = this.state.checkedValues;
-    let index = checkValues.findIndex(p => p == value);
+    let index = checkValues.findIndex(p => p === value);
     if (index < 0) {
       checkValues.push(value);
     } else {
@@ -315,14 +315,14 @@ class BirdGrid extends React.Component {
         field: this.state.queryColumns.length > 0 ? this.state.queryColumns[0]['data'] : '',
         operate: 'equal',
         value: ''
-      }],
+      }]
     }, this.query);
   }
 
   setCustomData(data) {
     let customData = this.state.customData;
     for (let filter of data) {
-      let exsitIndex = customData.findIndex(f => f.field == filter.field);
+      let exsitIndex = customData.findIndex(f => f.field === filter.field);
       if (exsitIndex < 0) {
         customData.push(filter)
       } else {
@@ -383,9 +383,7 @@ class BirdGrid extends React.Component {
     let self = this;
     let gridOption = self.props.gridOption;
 
-    let ths = self.state.columns.map(function (col, index) {
-      if (col.hide) return;
-
+    let ths = self.state.columns.filter(c => !c.hide).map(function (col, index) {
       let sortClass = "";
       if (!col.sortDisable && col.type !== "command" && gridOption.url && gridOption.url.read) {
         sortClass = self.state.sortField !== col.data
@@ -408,9 +406,7 @@ class BirdGrid extends React.Component {
         {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0}
           onChange={() => self.checkClick(data[primaryKey])} /></td>}
         {
-          self.state.columns.map(function (col, index) {
-            if (col.hide) return;
-
+          self.state.columns.filter(c => !c.hide).map(function (col, index) {
             if (col.type === "command") {
               let tdActions = col.actions || [];
               let hasEdit = gridOption.url && gridOption.url.edit && permission.check(self.state.tablePermission.edit);
@@ -421,8 +417,8 @@ class BirdGrid extends React.Component {
                 {hasEdit && <a href="#" onClick={() => self.editClick(data)}>编辑</a>}
                 {
                   tdActions.map(function (action, aIndex) {
-                    if (!permission.check(action.permissionName)) return;
-                    if (action.hideFunc && action.hideFunc(data)) return;
+                    if (!permission.check(action.permissionName)) return '';
+                    if (action.hideFunc && action.hideFunc(data)) return '';
 
                     let withDivider = hasPrev;
                     hasPrev = true;
@@ -563,7 +559,7 @@ class BirdGrid extends React.Component {
               <thead className={styles.bird_table_thead}>
                 <tr>
                   {gridOption.checkable && <th style={{ width: 15 }}><Checkbox
-                    checked={this.state.checkedValues.length > 0 && this.state.checkedValues.length == this.state.gridDatas.items.length}
+                    checked={this.state.checkedValues.length > 0 && this.state.checkedValues.length === this.state.gridDatas.items.length}
                     onChange={() => this.checkAllClick()} /></th>}
                   {ths}
                 </tr>
@@ -574,7 +570,7 @@ class BirdGrid extends React.Component {
             </table>
             {gridOption.url && gridOption.url.read && <Pagination className={styles.gridPagination}
               current={this.state.pageIndex}
-              total={parseInt(this.state.gridDatas.totalCount)}
+              total={parseInt(this.state.gridDatas.totalCount, 10)}
               pageSizeOptions={gridOption.pageSizeOptions || ["10", "15", "20", "30", "50", "100"]}
               pageSize={this.state.pageSize}
               onChange={(page, pageSize) => {

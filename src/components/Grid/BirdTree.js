@@ -100,7 +100,7 @@ class BirdTree extends React.Component {
         }
         itemHash[parentValue].push(item);
         nodeHash[value] = item;
-        if (item.folder + '' == 'true') {
+        if (item.folder + '' === 'true') {
           folderNodes.push(item);//插入数组头部，减少后续遍历的次数
         }
       }
@@ -108,7 +108,7 @@ class BirdTree extends React.Component {
       //folder节点,子节点为空时,递归删除
       for (let i = 0, len = folderNodes.length; i < len; i++) {
         let curNode = folderNodes[i];
-        while (curNode != null && typeof (curNode) != 'undefined') {
+        while (curNode !== null && typeof (curNode) !== 'undefined') {
           let value = curNode[option.valueField];
           if (itemHash[value] && itemHash[value].length > 0) break;
 
@@ -116,7 +116,7 @@ class BirdTree extends React.Component {
           let pArr = itemHash[pValue];
 
           let index = pArr.findIndex(item => item[option.valueField] === value);
-          if (index == -1) break;
+          if (index === -1) break;
 
           pArr.splice(index, 1)
           curNode = nodeHash[pValue];
@@ -131,7 +131,7 @@ class BirdTree extends React.Component {
 
   //点击事件，不支持点选多个节点
   itemClick(selectKeys, isLeaf) {
-    if (selectKeys.length == 0) return;
+    if (selectKeys.length === 0) return;
 
     let clickKey = selectKeys[0];
     //执行点击事件
@@ -144,11 +144,11 @@ class BirdTree extends React.Component {
     }
     else {//文件夹不允许点击且是非叶子节点，展开/收缩
       let expandKeys = this.state.expandedKeys;
-      let index = expandKeys.findIndex(key => key == clickKey);
+      let index = expandKeys.findIndex(key => key === clickKey);
       if (index < 0) {
         expandKeys.push(clickKey);
       } else {
-        expandKeys = expandKeys.filter(key => key != clickKey);
+        expandKeys = expandKeys.filter(key => key !== clickKey);
       }
       this.setState({
         expandedKeys: expandKeys

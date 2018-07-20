@@ -1,5 +1,4 @@
 import React from 'react';
-import { request } from 'utils';
 import {BirdMulti} from "../../components/Form";
 import {Card} from 'antd';
 

@@ -24,7 +24,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
   const { iconFontJS, iconFontCSS, logo } = config
   const current = menu.filter(item => pathToRegexp(item.url || '').exec(pathname));
   let hasPermission = false;
-  if (current.length == 0 || pathname.indexOf('?') > 0) {//菜单中没有，但是pathName上带有查询参数的连接，默认为子页面，不验证权限.
+  if (current.length === 0 || pathname.indexOf('?') > 0) {//菜单中没有，但是pathName上带有查询参数的连接，默认为子页面，不验证权限.
     hasPermission = true;
   } else {
     hasPermission = permission.check(current[0].permissionName)
@@ -47,18 +47,18 @@ const App = ({ children, dispatch, app, loading, location }) => {
     isNavbar,
     menuPopoverVisible,
     navOpenKeys,
-    switchMenuPopover () {
+    switchMenuPopover() {
       dispatch({ type: 'app/switchMenuPopver' })
     },
-    logout () {
+    logout() {
       dispatch({ type: 'app/logout' })
     },
-    switchSider () {
+    switchSider() {
       dispatch({ type: 'app/switchSider' })
     },
-    changeOpenKeys (openKeys) {
+    changeOpenKeys(openKeys) {
       dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
-    },
+    }
   }
 
   const siderProps = {
@@ -67,18 +67,18 @@ const App = ({ children, dispatch, app, loading, location }) => {
     siderFold,
     darkTheme,
     navOpenKeys,
-    changeTheme () {
+    changeTheme() {
       dispatch({ type: 'app/switchTheme' })
     },
-    changeOpenKeys (openKeys) {
+    changeOpenKeys(openKeys) {
       window.localStorage.setItem(`${prefix}navOpenKeys`, JSON.stringify(openKeys))
       dispatch({ type: 'app/handleNavOpenKeys', payload: { navOpenKeys: openKeys } })
-    },
+    }
   }
 
   const breadProps = {
     menu,
-    location,
+    location
   }
   if (openPages && openPages.includes(pathname)) {
     return (<div>
@@ -105,7 +105,7 @@ const App = ({ children, dispatch, app, loading, location }) => {
           <Bread {...breadProps} />
           <div className={styles.container}>
             <div className={styles.content}>
-              {hasPermission ? children : <Exception type={403}/>}
+              {hasPermission ? children : <Exception type={403} />}
             </div>
           </div>
           <Footer />
@@ -120,7 +120,7 @@ App.propTypes = {
   location: PropTypes.object,
   dispatch: PropTypes.func,
   app: PropTypes.object,
-  loading: PropTypes.object,
+  loading: PropTypes.object
 }
 
 export default withRouter(connect(({ app, loading }) => ({ app, loading }))(App))

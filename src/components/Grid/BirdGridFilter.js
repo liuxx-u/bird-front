@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import BirdSelector from '../Form/BirdSelector';
 import BirdCascader from '../Form/BirdCascader';
 import moment from 'moment';
-import { Form, Select, Col, Row, Button, DatePicker, Input, InputNumber } from 'antd';
+import { Select, Col, Row, DatePicker, Input, InputNumber } from 'antd';
 
-const FormItem = Form.Item;
 const Option = Select.Option;
 
 const operators = {
@@ -42,6 +41,7 @@ class BirdGridFilter extends React.Component {
       case "text":
       case "textarea":
         searchOperators = searchOperators.concat(operators.text);
+        break;
       default:
         break;
     }

@@ -10,8 +10,7 @@ export default {
           /service\.(j|t)sx?$/,
           /models\//,
           /components\//,
-          /services\//,
-          /chart\/Container\.js$/,
+          /services\//
         ],
       },
     ],

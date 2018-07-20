@@ -12,7 +12,7 @@ const Sider = ({ siderFold, darkTheme, location, changeTheme, navOpenKeys, chang
     darkTheme,
     location,
     navOpenKeys,
-    changeOpenKeys,
+    changeOpenKeys
   }
   return (
     <div>
@@ -36,7 +36,7 @@ Sider.propTypes = {
   location: PropTypes.object,
   changeTheme: PropTypes.func,
   navOpenKeys: PropTypes.array,
-  changeOpenKeys: PropTypes.func,
+  changeOpenKeys: PropTypes.func
 }
 
 export default Sider

@@ -5,30 +5,30 @@ const tokenKey = "sso.token";
 let util = {
   object: {
     deepClone: function (p, c) {
-      var c = c ? c : p.constructor === Array ? [] : {};
+      var nc = c ? c : p.constructor === Array ? [] : {};
       for (var i in p) {
         if (typeof p[i] === 'object') {
           if (p[i] == null) {
-            c[i] = null;
+            nc[i] = null;
             continue;
           }
-          c[i] = (p[i].constructor === Array) ? [] : {};
-          util.object.deepClone(p[i], c[i]);
+          nc[i] = (p[i].constructor === Array) ? [] : {};
+          util.object.deepClone(p[i], nc[i]);
         } else {
-          c[i] = p[i];
+          nc[i] = p[i];
         }
       }
-      return c;
+      return nc;
     },
     equal: function (a, b) {
-      return JSON.stringify(a) == JSON.stringify(b);
+      return JSON.stringify(a) === JSON.stringify(b);
     }
   },
   number: {
     getDiscount: function (price, originPrice) {
       if (price <= 0 || originPrice <= 0 || price >= originPrice) return "";
       var d = (price / originPrice * 10).toFixed(2);
-      while (d[d.length - 1] === "0" || d[d.length - 1] == ".") {
+      while (d[d.length - 1] === "0" || d[d.length - 1] === ".") {
         d = d.substring(0, d.length - 1);
       }
       return d;
@@ -112,7 +112,7 @@ let util = {
       if (typeof (str) === "undefined") return true;
       return (str.replace(/(^\s*)|(\s*$)/g, "").length === 0);
     },
-    generateRandom (len) {
+    generateRandom(len) {
       len = len || 32;
       var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
       var maxPos = $chars.length;
@@ -172,10 +172,10 @@ let util = {
       return null;
     },
     set: function (key, value, span) {
-      var span = span || 120;//默认缓存两小时
+      var sp = span || 120;//默认缓存两小时
 
       var now = new Date();
-      var expire = new Date((now / 1000 + span * 60) * 1000);
+      var expire = new Date((now / 1000 + sp * 60) * 1000);
       var cacheObj = {
         expire: expire,
         value: value

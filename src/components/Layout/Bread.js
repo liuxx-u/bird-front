@@ -29,11 +29,11 @@ const Bread = ({ menu, location }) => {
     pathArray.push(menu[0] || {
       id: 1,
       icon: 'laptop',
-      name: 'Dashboard',
+      name: 'Dashboard'
     })
     pathArray.push({
       id: 404,
-      name: 'Not Found',
+      name: 'Not Found'
     })
   } else {
     getPathArray(current)
@@ -68,7 +68,7 @@ const Bread = ({ menu, location }) => {
 
 Bread.propTypes = {
   menu: PropTypes.array,
-  location: PropTypes.object,
+  location: PropTypes.object
 }
 
 export default Bread

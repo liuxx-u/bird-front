@@ -4,10 +4,10 @@ import { request, config, util } from 'utils';
 import { Select } from 'antd';
 
 const formatOption = options => {
-  if (!options || options.length == 0) return [];
+  if (!options || options.length === 0) return [];
 
   return options.map(o => {
-    if (typeof (o['disabled']) == 'string') o['disabled'] = o['disabled'] === 'true';
+    if (typeof (o['disabled']) === 'string') o['disabled'] = o['disabled'] === 'true';
     return o;
   });
 }
@@ -49,7 +49,7 @@ class BirdSelector extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (!util.object.equal(nextProps.data, this.props.data)) {
       this.setState({
         options: nextProps.data

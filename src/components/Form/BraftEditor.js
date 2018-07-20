@@ -12,13 +12,13 @@ const validateFn = (file) => {
 
 const uploadFn = (param) => {
   const serverURL = config.api.upload;
-  const xhr = new XMLHttpRequest;
+  const xhr = new XMLHttpRequest();
   const fd = new FormData();
 
   // libraryId可用于通过mediaLibrary示例来操作对应的媒体内容
   console.log(param.libraryId)
 
-  const successFn = (response) => {
+  const successFn = () => {
     let resp = xhr.response;
     if (typeof (resp) === 'string') {
       resp = JSON.parse(resp);
@@ -35,7 +35,7 @@ const uploadFn = (param) => {
     param.progress(event.loaded / event.total * 100)
   }
 
-  const errorFn = (response) => {
+  const errorFn = () => {
     // 上传发生错误时调用param.error
     param.error({
       msg: 'unable to upload.'
@@ -65,7 +65,7 @@ class BraftEditor extends React.Component {
     this.props.onChange && this.props.onChange(html);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if(nextProps.initValue!==this.props.initValue){
       this.setState({contentId:nextProps.contentId})
     }
@@ -85,7 +85,7 @@ class BraftEditor extends React.Component {
         video: true, // 开启视频插入功能
         audio: true, // 开启音频插入功能
         validateFn: validateFn,
-        uploadFn: uploadFn, // 指定上传函数
+        uploadFn: uploadFn // 指定上传函数
       },
       colors: [
         '#000000', '#333333', '#666666', '#999999', '#cccccc', '#ffffff',

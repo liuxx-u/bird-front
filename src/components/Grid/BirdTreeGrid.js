@@ -56,7 +56,7 @@ BirdTreeGrid.propTypes = {
     textField: PropTypes.string,
     valueField: PropTypes.string,
     parentField: PropTypes.string,
-    initialValue: PropTypes.string,
+    initialValue: PropTypes.string
   }),
   gridOption: PropTypes.object.isRequired
 };

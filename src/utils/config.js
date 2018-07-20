@@ -22,5 +22,5 @@ module.exports =  {
     getDic:`${APIV1}/getdic?key=`,
     upload:`/file/upload`,
     permissions:`${APIV1}/permissions`
-  },
+  }
 }

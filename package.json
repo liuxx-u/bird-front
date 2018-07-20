@@ -46,7 +46,7 @@
   ],
   "scripts": {
     "analyze": "cross-env ANALYZE=1 BABELRC=1 umi build",
-    "start": "cross-env BABELRC=1 COMPILE_ON_DEMAND=none BROWSER=none ESLINT=none HOST=0.0.0.0 umi dev",
+    "start": "cross-env BABELRC=1 COMPILE_ON_DEMAND=none BROWSER=none HOST=0.0.0.0 umi dev",
     "lint": "eslint --fix --ext .js src",
     "build": "cross-env BABELRC=1 umi build",
     "test": "umi test"

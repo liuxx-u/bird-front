@@ -11,10 +11,10 @@ class BirdButton extends React.Component {
   constructor(props) {
     super(props);
 
-    const permissionName = this.props.permissionName;
+    const permission = this.props.permission;
 
     this.state = {
-      hasPermission: permissionName === '' || permission.check(permissionName)
+      hasPermission: permission === '' || permission.check(permission)
     }
   }
 
@@ -24,7 +24,7 @@ class BirdButton extends React.Component {
   render() {
     if (this.state.hasPermission) {
       let props = deepClone(this.props);
-      delete props.permissionName;
+      delete props.permission;
 
       return <Button {...props}>
         {this.props.children}
@@ -36,11 +36,11 @@ class BirdButton extends React.Component {
 }
 
 BirdButton.propTypes = {
-  permissionName:PropTypes.string
+  permission:PropTypes.string
 };
 
 BirdButton.defaultProps = {
-  permissionName:''
+  permission:''
 };
 
 export default BirdButton;

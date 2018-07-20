@@ -13,9 +13,9 @@ class BirdButtonDemoPage extends React.Component {
   render() {
     return (
       <Card>
-        <BirdButton permissionName={'sys:authorize:user:add'} type="primary">权限按钮</BirdButton>
+        <BirdButton permission={'sys:authorize:user:add'} type="primary">权限按钮</BirdButton>
         <div>
-          除permissionName外，其他api与antd的Button组件完全一致
+          除permission外，其他api与antd的Button组件完全一致
         </div>
       </Card>
     )

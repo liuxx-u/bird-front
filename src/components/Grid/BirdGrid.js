@@ -53,7 +53,7 @@ class BirdGrid extends React.Component {
   }
 
   /* 初始化渲染执行之前执行 */
-  componentWillMount () {
+  componentDidMount () {
     let gridOption = this.props.gridOption;
     let p = gridOption.permission;
     let tp = {};
@@ -489,7 +489,7 @@ class BirdGrid extends React.Component {
             action.onClick(checkedValues, checkedDatas);
           }}><Button key={"action_" + index} icon={action.icon} type="primary">{action.name}</Button>
           </Popconfirm> :
-          <Button permissionName={action.permissionName} key={"action_" + index} icon={action.icon} type="primary"
+          <Button permission={action.permissionName} key={"action_" + index} icon={action.icon} type="primary"
             onClick={() => {
               let primaryKey = self.state.primaryKey;
               let checkedValues = self.state.checkedValues;

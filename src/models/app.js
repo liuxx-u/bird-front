@@ -4,7 +4,7 @@
 import { routerRedux } from 'dva/router'
 import { parse } from 'qs'
 import config from 'config'
-import {permission} from 'utils'
+import { permission } from 'utils'
 import { query, logout } from 'services/app'
 import * as menusService from 'services/menus'
 import * as permissionsService from 'services/permissions'
@@ -34,7 +34,7 @@ export default {
   },
   subscriptions: {
 
-    setupHistory ({ dispatch, history }) {
+    setupHistory({ dispatch, history }) {
       history.listen((location) => {
         dispatch({
           type: 'updateState',
@@ -46,7 +46,7 @@ export default {
       })
     },
 
-    setup ({ dispatch }) {
+    setup({ dispatch }) {
       dispatch({ type: 'query' })
       let tid
       window.onresize = () => {
@@ -60,7 +60,7 @@ export default {
   },
   effects: {
 
-    * query ({
+    * query({
       payload,
     }, { call, put, select }) {
       const { success, user } = yield call(query, payload)
@@ -95,27 +95,31 @@ export default {
       }
     },
 
-    * logout ({
+    * logout({
       payload,
     }, { call, put }) {
       const data = yield call(logout, parse(payload))
       if (data.success) {
-        yield put({ type: 'updateState', payload: {
-          user: {},
-          menu: [{
-              id: 1,
-              icon: 'laptop',
-              name: 'Dashboard',
-              router: '/dashboard',
-            }],
-        }})
+        yield put({
+          type: 'updateState', payload: {
+            user: {},
+            menu: [
+              {
+                id: 1,
+                icon: 'laptop',
+                name: 'Dashboard',
+                url: '/dashboard'
+              },
+            ],
+          }
+        })
         yield put({ type: 'query' })
       } else {
         throw (data)
       }
     },
 
-    * changeNavbar (action, { put, select }) {
+    * changeNavbar(action, { put, select }) {
       const { app } = yield (select(_ => _))
       const isNavbar = document.body.clientWidth < 769
       if (isNavbar !== app.isNavbar) {
@@ -132,7 +136,7 @@ export default {
       }
     },
 
-    switchSider (state) {
+    switchSider(state) {
       window.localStorage.setItem(`${prefix}siderFold`, !state.siderFold)
       return {
         ...state,
@@ -140,7 +144,7 @@ export default {
       }
     },
 
-    switchTheme (state) {
+    switchTheme(state) {
       window.localStorage.setItem(`${prefix}darkTheme`, !state.darkTheme)
       return {
         ...state,
@@ -148,21 +152,21 @@ export default {
       }
     },
 
-    switchMenuPopver (state) {
+    switchMenuPopver(state) {
       return {
         ...state,
         menuPopoverVisible: !state.menuPopoverVisible,
       }
     },
 
-    handleNavbar (state, { payload }) {
+    handleNavbar(state, { payload }) {
       return {
         ...state,
         isNavbar: payload,
       }
     },
 
-    handleNavOpenKeys (state, { payload: navOpenKeys }) {
+    handleNavOpenKeys(state, { payload: navOpenKeys }) {
       return {
         ...state,
         ...navOpenKeys,

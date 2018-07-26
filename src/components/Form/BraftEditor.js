@@ -73,7 +73,7 @@ class BraftEditor extends React.Component {
 
   render() {
     const editorProps = {
-      height: 300,
+      height: this.props.height,
       contentFormat: 'html',
       initialContent: this.props.initValue,
       contentId:this.state.contentId,
@@ -100,9 +100,14 @@ class BraftEditor extends React.Component {
   }
 }
 
+BraftEditor.defaultProps={
+  height:300
+}
+
 BraftEditor.propTypes = {
   initValue: PropTypes.string,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  height:PropTypes.number
 }
 
 export default BraftEditor

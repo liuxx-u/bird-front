@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { request, deepClone, util } from 'utils';
 import AutoField from './AutoField';
-import { Form, message, Button, Tabs, Row, Col } from 'antd';
+import BirdButton from './BirdButton';
+import { Form, message, Tabs, Row, Col, Divider } from 'antd';
 
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -25,12 +26,11 @@ class BirdForm extends React.Component {
       group: [],
 
       initValue: initValue,
-      submitting: false,
       isValueChange: false
     }
   }
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
+    if (!util.object.equal(nextProps.value,this.props.value)) {
       let initValue = deepClone(nextProps.value)
       this.setState({
         initValue: initValue
@@ -71,6 +71,15 @@ class BirdForm extends React.Component {
     this.setState({
       initValue: initValue,
       isValueChange: true
+    }, () => {
+      if (this.props.onChange) {
+        let result = this.props.onChange(this.state.initValue);
+        if (result) this.setState({ initValue: result });
+      }
+
+      if (this.props.onFieldChange) {
+        this.props.onFieldChange(key, value);
+      }
     });
   }
 
@@ -86,7 +95,7 @@ class BirdForm extends React.Component {
     let dto = this.getResult();
     //验证数据合法性
     for (let field of this.props.fields) {
-      if (field.isRequired && util.string.isEmpty(dto[field.key])) {
+      if ((field.isRequired || field.required) && util.string.isEmpty(dto[field.key])) {
         message.error('`' + field.name + '`不能为空.');
         return false;
       }
@@ -106,17 +115,13 @@ class BirdForm extends React.Component {
     if (!self.validate()) return;
 
     let dto = self.getResult();
-    self.setState({ submitting: true })
-
     request({
       url: this.props.saveUrl,
       method: "post",
       data: dto
-    }).then(function () {
-      self.setState({ submitting: false });
+    }).then(function (result) {
       message.success('保存成功');
-    }).catch(function () {
-      self.setState({ submitting: false });
+      self.props.afterSave && self.props.afterSave(result);
     });
   }
 
@@ -168,14 +173,13 @@ class BirdForm extends React.Component {
 
     const submitFormLayout = {
       wrapperCol: {
-        xs: { span: 24, offset: 0 },
-        sm: { span: 10, offset: 7 }
+        xs: { span: 20, offset: 2 }
       }
     };
 
-    const button = <Button type="primary" loading={this.state.submitting} icon='save' onClick={() => self.save()}>
+    const button = <BirdButton type="primary" idempotency = {true} icon='save' onClick={() => self.save()}>
       提交
-    </Button>;
+    </BirdButton>;
 
     return (
       self.props.withTab
@@ -191,7 +195,8 @@ class BirdForm extends React.Component {
         </Tabs>
         : <Form>
           {self.getFields(self.props.fields)}
-          {this.props.saveUrl && <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
+          {!this.props.disabled && this.props.saveUrl && <FormItem {...submitFormLayout}>
+            <Divider dashed />
             {button}
           </FormItem>}
         </Form>
@@ -209,7 +214,12 @@ BirdForm.propTypes = {
   tabPosition: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),//tab的位置
 
   saveUrl: PropTypes.string,
-  value: PropTypes.object
+  value: PropTypes.object,
+  disabled: PropTypes.bool,
+
+  onChange: PropTypes.func,
+  onFieldChange: PropTypes.func,
+  afterSave: PropTypes.func
 };
 
 BirdForm.defaultProps = {
@@ -220,7 +230,8 @@ BirdForm.defaultProps = {
   tabPosition: 'top',
 
   saveUrl: '',
-  value: {}
+  value: {},
+  disabled: false
 };
 
 export default BirdForm;

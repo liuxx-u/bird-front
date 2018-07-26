@@ -5,22 +5,22 @@ let database = [
     {
       "label": "选项1",
       "value": "1",
-      "disabled": "false"
+      "disabled": false
     },
     {
       "label": "选项2",
       "value": "2",
-      "disabled": "false"
+      "disabled": false
     },
     {
       "label": "选项3",
       "value": "3",
-      "disabled": "false"
+      "disabled": false
     },
     {
       "label": "选项4不可选",
       "value": "4",
-      "disabled": "true"
+      "disabled": true
     },
   ]
 

@@ -17,10 +17,11 @@ module.exports =  {
     userLogin: `${APIV1}/user/login`,
     userLogout: `${APIV1}/user/logout`,
     user: `${APIV1}/user/:id`,
-
     menus: `${APIV1}/menus`,
     getDic:`${APIV1}/getdic?key=`,
     upload:`/file/upload`,
+    getFileName:`/file/getName?url=`,
+    getOperationToken:`${APIV1}/getOperationToken`,
     permissions:`${APIV1}/permissions`
   }
 }

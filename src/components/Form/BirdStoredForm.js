@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { request } from 'utils';
 import BirdForm from './BirdForm';
-import {Card} from 'antd';
+import { Card } from 'antd';
 
 /**
  * 根据数据库存储的信息渲染的BirdForm组件
@@ -12,14 +12,28 @@ class BirdStoredForm extends React.Component {
     super(props);
 
     this.state = {
-      withTab: false,
-      saveUrl: '',
-      tabType: 'line',
-      tabPosition: 'top',
-      defaultGroupName: '基础信息',
-      lineCapacity:1,
-      fields: []
+      option: {
+        withTab: false,
+        tabType: 'line',
+        tabPosition: 'top',
+        defaultGroupName: '基础信息',
+        lineCapacity: 1,
+        saveUrl: '',
+        fields: []
+      }
     }
+  }
+
+  isValueChanged() {
+    return this.refs.form.isValueChanged();
+  }
+
+  getResult() {
+    return this.refs.form.getResult();
+  }
+
+  validate() {
+    return this.refs.form.validate();
   }
 
   componentDidMount() {
@@ -29,32 +43,40 @@ class BirdStoredForm extends React.Component {
       url: '/sys/form/getFormByKey?key=' + self.props.formKey,
       method: 'get'
     }).then(function (form) {
-      let withTab = form.withTab === 'true';
-      let tabType = form.tabType || self.state.tabType;
-      let tabPosition = form.tabPosition || self.state.tabPosition;
-      let defaultGroupName = form.defaultGroupName || self.state.defaultGroupName;
-      let lineCapacity = form.lineCapacity||self.state.lineCapacity;
-      let saveUrl = self.props.isPreview && form.saveUrl;
+      let defaultFormOption = self.state.option;
+      let formOption = {
+        withTab: form.withTab === 'true',
+        tabType: form.tabType || defaultFormOption.tabType,
+        tabPosition: form.tabPosition || defaultFormOption.tabPosition,
+        defaultGroupName: form.defaultGroupName || defaultFormOption.defaultGroupName,
+        lineCapacity: form.lineCapacity || defaultFormOption.lineCapacity
+      }
+
+      if (!self.props.isPreview) {
+        formOption.saveUrl = form.saveUrl;
+      };
       let fields = [];
       for (let field of form.fields) {
         field.source = {};
-        let arr = field.fieldType.split(":");
-        if (arr.length === 2) {
-          field.fieldType = arr[1];
-        }
+        field.fieldType = field.fieldType.substring(field.fieldType.lastIndexOf(":") + 1)
+
         if (field.optionsKey) {
-          field.source = {key: field.optionsKey};
+          if (field.optionsKey.indexOf("/") === 0 || field.optionsKey.indexOf("http:") === 0) {
+            field.source = { url: field.optionsKey };
+          } else {
+            field.source = { key: field.optionsKey };
+          }
+        }
+        if (self.props.blockFields.includes(field.key)) {
+          field.disabled = true;
         }
         fields.push(field);
       }
+      formOption.fields = fields;
+      self.props.onLoad && self.props.onLoad(formOption);
+
       self.setState({
-        withTab: withTab,
-        saveUrl: saveUrl,
-        tabType: tabType,
-        tabPosition: tabPosition,
-        defaultGroupName: defaultGroupName,
-        lineCapacity:lineCapacity,
-        fields: fields
+        option: formOption
       }, () => {
         self.refs.form.initGroup()
       })
@@ -62,28 +84,42 @@ class BirdStoredForm extends React.Component {
   }
 
   render() {
+    let formOption = {
+      ...this.state.option,
+      value: this.props.value,
+      onChange: this.props.onChange,
+      onFieldChange: this.props.onFieldChange,
+      afterSave: this.props.afterSave,
+      disabled: this.props.disabled
+    }
+
     return (
       <Card>
-        <BirdForm ref='form'
-                  fields={this.state.fields}
-                  defaultGroupName={this.state.defaultGroupName}
-                  tabPosition={this.state.tabPosition}
-                  tabType={this.state.tabType}
-                  withTab={this.state.withTab}
-                  lineCapacity={this.state.lineCapacity}
-                  saveUrl={this.state.saveUrl}/>
+        <BirdForm ref='form' {...formOption} />
       </Card>
     );
   }
 }
 
 BirdStoredForm.propTypes = {
-  formKey:PropTypes.string.isRequired,
-  isPreview:PropTypes.bool
+  formKey: PropTypes.string.isRequired,
+
+  value: PropTypes.object,
+  onChange: PropTypes.func,
+  onFieldChange: PropTypes.func,
+  afterSave: PropTypes.func,
+
+  onLoad: PropTypes.func,
+  blockFields: PropTypes.array,
+  disabled: PropTypes.bool,
+  isPreview: PropTypes.bool
 };
 
 BirdStoredForm.defaultProps = {
-  isPreview: false
+  isPreview: false,
+  blockFields: [],
+  disabled: false,
+  value: {}
 };
 
 export default BirdStoredForm;

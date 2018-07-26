@@ -3,15 +3,6 @@ import PropTypes from 'prop-types';
 import { request, config, util } from 'utils';
 import { Select } from 'antd';
 
-const formatOption = options => {
-  if (!options || options.length === 0) return [];
-
-  return options.map(o => {
-    if (typeof (o['disabled']) === 'string') o['disabled'] = o['disabled'] === 'true';
-    return o;
-  });
-}
-
 class BirdSelector extends React.Component {
   constructor(props) {
     super(props);
@@ -32,7 +23,7 @@ class BirdSelector extends React.Component {
         method: "get"
       }).then(function (result) {
         self.setState({
-          options: formatOption(result)
+          options: result
         })
       });
     } else if (self.props.dicKey) {
@@ -42,7 +33,7 @@ class BirdSelector extends React.Component {
       }).then(function (result) {
         self.setState({
           placeholder: result.placeholder,
-          options: formatOption(result.options)
+          options: result.options
         });
         result.defaultCode && self.onPropsChange(result.defaultCode);
       });
@@ -64,8 +55,13 @@ class BirdSelector extends React.Component {
   render() {
     let self = this;
     return (
-      <Select style={{ width: self.props.width }} getPopupContainer={self.props.getPopupContainer}
-        onChange={value => self.onPropsChange(value)} value={self.props.selectedValue || ''}>
+      <Select style={{ width: self.props.width }}
+        showSearch={self.props.showSearch}
+        filterOption={(input, option) => self.props.filterOption(input, option)}
+        getPopupContainer={self.props.getPopupContainer}
+        disabled={self.props.disabled}
+        onChange={value => self.onPropsChange(value)}
+        value={typeof (self.props.selectedValue) === 'undefined' ? '' : self.props.selectedValue + ''}>
         {this.state.options.map((option, index) => (
           <Select.Option key={'selector_' + self.props.dicKey + '_' + index} value={option.value}
             disabled={option.disabled + '' === 'true'}>{option.label}</Select.Option>
@@ -81,15 +77,22 @@ BirdSelector.propTypes = {
   dicKey: PropTypes.string,
   disabled: PropTypes.bool,
   size: PropTypes.string,
-  selectedValue: PropTypes.string,
+  selectedValue: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
   getPopupContainer: PropTypes.func,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  showSearch: PropTypes.bool,
+  filterOption: PropTypes.func
 };
 
 BirdSelector.defaultProps = {
   width: '100%',
   data: [],
-  getPopupContainer: () => document.body
+  getPopupContainer: () => document.body,
+  showSearch: true,
+  filterOption: (input, option) => { return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0 }
 }
 
 export default BirdSelector;

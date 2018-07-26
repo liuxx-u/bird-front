@@ -4,15 +4,6 @@ import { request, config, util } from 'utils';
 import { Checkbox } from 'antd';
 const CheckboxGroup = Checkbox.Group;
 
-const formatOption = options => {
-  if (!options || options.length === 0) return [];
-
-  return options.map(o => {
-    o['disabled'] = o['disabled'] + '' === 'true';
-    return o;
-  });
-}
-
 class BirdMulti extends React.Component {
   constructor(props) {
     super(props);
@@ -32,7 +23,7 @@ class BirdMulti extends React.Component {
         method: "get"
       }).then(function (result) {
         self.setState({
-          options: formatOption(result)
+          options: result
         })
       });
     } else if (self.props.dicKey) {
@@ -41,13 +32,13 @@ class BirdMulti extends React.Component {
         method: "get"
       }).then(function (result) {
         self.setState({
-          options: formatOption(result.options)
+          options: result.options
         });
         result.defaultCode && self.onPropsChange(result.defaultCode);
       });
     }
   }
-  
+
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (!util.object.equal(nextProps.options, this.props.options)) {
       this.setState({
@@ -57,13 +48,11 @@ class BirdMulti extends React.Component {
   }
 
   checkAll = () => {
-    let enableOptions = this.state.options.filter(o => !o.disabled);
-    if(enableOptions.length === 0) return;
-
-    let allValues = enableOptions.map(p => p.value);
+    let allValues = this.state.options.filter(o => !o.disabled).map(p => p.value);
+    if (allValues.length === 0) return;
 
     let checkedValues = this.props.selectedValue ? this.props.selectedValue.split(',') : [];
-    let isCheckAll = checkedValues.length === enableOptions.length;
+    let isCheckAll = checkedValues.length === this.state.options.length;
     if (isCheckAll) {
       this.onPropsChange('');
     } else {
@@ -77,8 +66,7 @@ class BirdMulti extends React.Component {
 
   render() {
     let checkedValues = this.props.selectedValue ? this.props.selectedValue.split(',') : [];
-    let isCheckAll = checkedValues.length === this.state.options.filter(o => !o.disabled).length;
-    let options = this.state.options.map(option => { option.disabled = option.disabled + ''==='true'; return option });
+    let isCheckAll = checkedValues.length === this.state.options.length;
 
     return (
       <div>
@@ -93,7 +81,7 @@ class BirdMulti extends React.Component {
           <br />
         </div>}
         <CheckboxGroup
-          options={options}
+          options={this.state.options}
           value={checkedValues}
           disabled={this.props.disabled}
           onChange={cvs => {

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { request } from 'utils';
 import { Tree } from 'antd';
-import './BirdTree.less';
 const TreeNode = Tree.TreeNode;
 
 class BirdTree extends React.Component {

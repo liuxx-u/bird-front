@@ -22,6 +22,12 @@ class BirdTreeGrid extends React.Component {
       field: this.props.treeOption.paramName,
       value: clickKey
     }]);
+
+    this.props.treeOption.onSelect&&this.props.treeOption.onSelect(clickKey);
+  }
+
+  getGrid(){
+    return this.refs.grid;
   }
 
   render() {

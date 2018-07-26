@@ -48,7 +48,6 @@ class BirdGrid extends React.Component {
 
       checkedValues: [],
       autoQuery: autoQuery //页面渲染完成之后是否自动查询，默认为true
-
     };
   }
 
@@ -207,7 +206,7 @@ class BirdGrid extends React.Component {
     request({
       url: this.props.gridOption.url.delete + "?id=" + id,
       method: "post"
-    }).then(function () {
+    }).then(() => {
       message.success('删除成功');
       self.query();
     });
@@ -227,6 +226,7 @@ class BirdGrid extends React.Component {
         formConfirmLoading: false
       });
       self.query();
+      self.props.gridOption.afterSave && self.props.gridOption.afterSave()
     });
   }
 
@@ -300,7 +300,7 @@ class BirdGrid extends React.Component {
       this.setState({
         gridDatas: result
       });
-      this.props.gridOption.afterQuery && this.props.gridOption.afterQuery(result);
+      this.props.gridOption.afterQuery && this.props.gridOption.afterQuery(result, this.getFilters());
     });
   }
 
@@ -476,22 +476,18 @@ class BirdGrid extends React.Component {
 
     let actions = self.state.actions.map(function (action, index) {
       if (!permission.check(action.permissionName)) return '';
+
+      let primaryKey = self.state.primaryKey;
+      let checkedValues = self.state.checkedValues;
+      let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
       return action.hideFunc ? '' :
         action.confirm ?
-          <Popconfirm okText={'确定'} cancelText={'返回'} title={'确定要' + action.name + '吗？'} onConfirm={() => {
-            let primaryKey = self.state.primaryKey;
-            let checkedValues = self.state.checkedValues;
-            let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
+          <Popconfirm key={"action_" + index} okText={'确定'} cancelText={'返回'} title={'确定要' + action.name + '吗？'} onConfirm={() => {
             action.onClick(checkedValues, checkedDatas);
-          }}><Button key={"action_" + index} icon={action.icon} type="primary">{action.name}</Button>
+          }}><Button icon={action.icon} type="primary">{action.name}</Button>
           </Popconfirm> :
-          <Button permission={action.permissionName} key={"action_" + index} icon={action.icon} type="primary"
-            onClick={() => {
-              let primaryKey = self.state.primaryKey;
-              let checkedValues = self.state.checkedValues;
-              let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
-              action.onClick(checkedValues, checkedDatas);
-            }}>{action.name}</Button>
+          <Button key={"action_" + index} icon={action.icon} type="primary"
+            onClick={() => { action.onClick(checkedValues, checkedDatas); }}>{action.name}</Button>
     });
 
     let filterGroups = [[]];

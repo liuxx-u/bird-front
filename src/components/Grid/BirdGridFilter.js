@@ -34,6 +34,7 @@ class BirdGridFilter extends React.Component {
     let searchOperators = operators.common;
     switch (field.type) {
       case "number":
+      case "money":
       case "date":
       case "datetime":
         searchOperators = searchOperators.concat(operators.struct);
@@ -58,12 +59,19 @@ class BirdGridFilter extends React.Component {
           style={{ width: '100%' }}
           onChange={(value) => this.onRuleChange('value', value)} />;
         break;
+      case "money":
+        valueField = <InputNumber id={field.data} min={0} value={this.props.rule.value}
+          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={value => value.replace(/\$\s?|(,*)/g, '')}
+          style={{ width: '100%' }}
+          onChange={(value) => this.onRuleChange('value', value)} />;
+        break;
       case "switch":
         valueField = (
-          <Select id={field.data} value={this.props.rule.value} onChange={(value) => this.onRuleChange('value', value)}
+          <Select id={field.data} value={this.props.rule.value} onChange={value => this.onRuleChange("value",value)}
             style={{ width: '100%' }}>
-            <Option value="true">是</Option>
-            <Option value="false">否</Option>
+            <Option value="1">是</Option>
+            <Option value="0">否</Option>
           </Select>
         );
         break;

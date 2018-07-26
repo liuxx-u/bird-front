@@ -6,7 +6,7 @@ const DropdownRender = function (v, source) {
   if (!source) return v;
   if (typeof v === 'undefined' || v === null) return '';
 
-  let item = source[v];
+  let item = source[v + ''];
   return item ? item.label : v;
 };
 
@@ -81,8 +81,10 @@ const FileRender = function (v) {
     </div>
   })
 }
+
 const MoneyRender = function (v) {
-  return `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  let money = (Math.round(v * 100) / 100).toFixed(2);
+  return `${money}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 export { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender, FileRender, MoneyRender }

@@ -117,7 +117,7 @@ class BirdGrid extends React.Component {
           }
         }
         if (url && url.delete && permission.check(tp.delete)) {
-          tdActions.push({ name: '删除', onClick: data => this.deleteClick(data[primaryKey]), confirm: true })
+          tdActions.push({ name: '删除', onClick: data => this.deleteClick(data[this.state.primaryKey]), confirm: true })
         }
         if (tdActions.length === 0) continue;
         col.actions = tdActions;
@@ -145,13 +145,6 @@ class BirdGrid extends React.Component {
     }
     if (url && url.add && permission.check(tp.add)) {
       tableActions.push({ name: "新增", icon: "plus", onClick: () => this.addClick() });
-    }
-    if (queryColumns.length > 0) {
-      tableActions.unshift({
-        name: gridOption.queryText || '查询',
-        icon: 'search',
-        onClick: () => this.query()
-      })
     }
 
     this.setState({
@@ -504,7 +497,7 @@ class BirdGrid extends React.Component {
                   onChange={rule => self.filterChange(index, rule)} />
               </Col>
               <Col span={4}>
-                <Button icon='close' onClick={() => self.removeFilter(index)} />
+                <Button icon='close' type='danger' onClick={() => self.removeFilter(index)} />
               </Col>
             </Row>
           </Col>
@@ -516,21 +509,25 @@ class BirdGrid extends React.Component {
       <Spin spinning={this.state.queryLoading} tip="数据加载中...">
         <Card>
           <Row>
-            <Col span={8}>
+            <Col span={10}>
               {self.state.queryColumns.length > 0 && <Row>
-                <Col span={20}>
+                <Col span={16}>
                   <BirdGridFilter fields={self.state.queryColumns} rule={self.state.filterRules[0]}
                     onChange={rule => self.filterChange(0, rule)} />
                 </Col>
-                <Col span={4}>
-                  <Button icon='plus' onClick={() => self.addFilter()} />
+                <Col span={8}>
+                  <Button.Group>
+                    <Button icon='plus' onClick={() => self.addFilter()} />
+                    <Button icon='search' type="primary" onClick={() => self.query()}>{gridOption.queryText || '查询'}</Button>
+                  </Button.Group>
                 </Col>
               </Row>}
             </Col>
-            <Col span={12} offset={4}>
+            <Col span={14}>
               <div className={styles.action}>
                 <Button.Group>
                   {actions}
+                  <Button icon='sync' type="primary" onClick={() => this.reload()} />
                   <Popover placement="bottomRight" trigger="click" content={this.state.columns.map((col, index) =>
                     <div key={'col_opt_' + col.data}>
                       <Checkbox checked={!col.hide} onChange={() => this.switchColumn(index)}>{col.title}</Checkbox>

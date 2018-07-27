@@ -149,7 +149,7 @@ type | 列类型。text、textarea、number、money、switch、dropdown、multi�
 align | 对齐方式。left、center、right，money类型默认right | string | left
 query | 列是否可查询 | bool | false
 sortDisable | 列是否禁止排序 | bool | false
-hide | 列是否隐藏 | bool | false
+hide | 支持三种层级的列隐藏：no、user、dev | bool/string | 'no'
 render | 列渲染方法 | function(v,d) | 
 source | 当列类型为dropdown（单选）或multi（多选）或cascader（级联选择）时的数据源 | object | 
 actions | 当列类型为command时的操作按钮数组 | array |[编辑,删除]
@@ -158,6 +158,7 @@ maxLength | 类型为text、textarea、richtext时最大显示长度 | number | 
 说明：
 
 - render(v,d){}方法第一个参数表示当前行当前列的数据，第二个参数表示整行的数据。
+- hide层级为no、user的列，用户可选择显示或隐藏
 - scource:{data:[],url:'',key:''}。当类型为`dropdown`或`multi`时，其中data、url、key分别对应`bird-selector`中的data、url、dicKey。当类型为`cascader`时，data、url分别对应`bird-cascader`中的data、url。
 
 #### editor相关API

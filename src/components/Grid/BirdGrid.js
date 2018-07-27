@@ -122,6 +122,10 @@ class BirdGrid extends React.Component {
         if (tdActions.length === 0) continue;
         col.actions = tdActions;
       }
+      //初始化列的隐藏层级：no、user、dev
+      if (col.hide === 'user') { }
+      else if (col.hide && col.hide !== 'no') { col.hide = 'dev'; }
+      else { col.hide = 'no' }
       columns.push(col);
     }
 
@@ -386,15 +390,16 @@ class BirdGrid extends React.Component {
     let columns = this.state.columns;
     if (index < 0 || index >= columns.length) return;
 
-    columns[index].hide = !columns[index].hide;
+    columns[index].hide = columns[index].hide === 'user' ? 'no' : 'user';
     this.setState({ columns: columns });
   }
 
   render() {
     let self = this;
     let gridOption = self.props.gridOption;
+    let primaryKey = self.state.primaryKey;
 
-    let ths = self.state.columns.filter(c => !c.hide).map(function (col, index) {
+    let ths = self.state.columns.filter(c => c.hide === 'no').map(function (col, index) {
       let sortClass = "";
       if (!col.sortDisable && col.type !== "command" && gridOption.url && gridOption.url.read) {
         sortClass = self.state.sortField !== col.data
@@ -406,13 +411,12 @@ class BirdGrid extends React.Component {
       return (<th key={colKey} className={sortClass} onClick={() => self.sortClick(col)}>{col.title}</th>);
     });
     let trs = self.state.gridDatas.items.map(function (data) {
-      let primaryKey = self.state.primaryKey;
       return <tr
         style={gridOption.errorFinder && gridOption.errorFinder(data) ? { backgroundColor: '#fef0ef' } : {}}
         className="ant-table-row  ant-table-row-level-0" key={'tr_' + data[primaryKey]}>
         {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0} onChange={() => self.checkClick(data[primaryKey])} /></td>}
         {
-          self.state.columns.filter(c => !c.hide).map(function (col, index) {
+          self.state.columns.filter(c => c.hide === 'no').map(function (col, index) {
             if (col.type === "command") {
               let tdActions = col.actions || [];
               let colKey = 'tr_' + data[primaryKey] + '_td_command_' + index;
@@ -463,7 +467,6 @@ class BirdGrid extends React.Component {
     });
 
     let actions = self.state.actions.map(function (action, index) {
-      let primaryKey = self.state.primaryKey;
       let checkedValues = self.state.checkedValues;
       let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
       return action.confirm
@@ -529,8 +532,8 @@ class BirdGrid extends React.Component {
                   {actions}
                   <Button icon='sync' type="primary" onClick={() => this.reload()} />
                   <Popover placement="bottomRight" trigger="click" content={this.state.columns.map((col, index) =>
-                    <div key={'col_opt_' + col.data}>
-                      <Checkbox checked={!col.hide} onChange={() => this.switchColumn(index)}>{col.title}</Checkbox>
+                    <div key={'col_opt_' + index}>
+                      {(col.hide !== 'dev') && <Checkbox checked={col.hide === 'no'} onChange={() => this.switchColumn(index)}>{col.title}</Checkbox>}
                     </div>)}>
                     <Button icon='bars' type="primary" />
                   </Popover>

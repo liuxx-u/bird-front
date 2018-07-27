@@ -75,7 +75,7 @@ render() {
 - 全自动树表：[bird-tree-grid](https://github.com/liuxx001/bird-front/blob/master/doc/bird-tree-grid.md)
 - 数据树：[bird-tree](https://github.com/liuxx001/bird-front/blob/master/doc/bird-tree.md)
 - 全自动表单：[bird-form](https://github.com/liuxx001/bird-front/blob/master/doc/bird-form.md)
-- 权限按钮：[bird-button](https://github.com/liuxx001/bird-front/blob/master/doc/bird-button.md)
+- 权限与幂等按钮：[bird-button](https://github.com/liuxx001/bird-front/blob/master/doc/bird-button.md)
 - 下拉选择器：[bird-selector](https://github.com/liuxx001/bird-front/blob/master/doc/bird-selector.md)
 - 多选组件：[bird-multi](https://github.com/liuxx001/bird-front/blob/master/doc/bird-multi.md)
 - 级联组件：[bird-cascader](https://github.com/liuxx001/bird-front/blob/master/doc/bird-cascader.md)

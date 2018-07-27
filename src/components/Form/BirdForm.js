@@ -153,9 +153,7 @@ class BirdForm extends React.Component {
       return <Row key={formKey + '_row_' + index}>
         {row.map(field => {
           let colSpan = field.colSpan || 1;
-          if (colSpan > 4) {
-            colSpan = 4;
-          }
+          if (colSpan > 4) {colSpan = 4;}
           let unit = 24 / self.props.lineCapacity;
           return <Col span={colSpan * unit} key={formKey + '_field_' + field.key}>
             {field.fieldType !== 'empty' &&

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Editor from 'braft-editor'
 import 'braft-editor/dist/braft.css'
-import { config,util } from 'utils';
+import { config, util } from 'utils';
 
 // 不允许上传超过50M的文件
 const validateFn = (file) => {
@@ -57,7 +57,7 @@ class BraftEditor extends React.Component {
     super(props);
 
     this.state = {
-      contentId:util.string.generateRandom(6)
+      contentId: util.string.generateRandom(6)
     }
   }
 
@@ -66,17 +66,18 @@ class BraftEditor extends React.Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if(nextProps.initValue!==this.props.initValue){
-      this.setState({contentId:nextProps.contentId})
+    if (nextProps.initValue !== this.props.initValue) {
+      this.setState({ contentId: nextProps.contentId })
     }
   }
 
   render() {
+    let innerProps = this.props.innerProps || {};
     const editorProps = {
       height: this.props.height,
       contentFormat: 'html',
       initialContent: this.props.initValue,
-      contentId:this.state.contentId,
+      contentId: this.state.contentId,
       // onChange: this.handleChange,
       onHTMLChange: html => this.onChange(html),
       media: {
@@ -95,19 +96,20 @@ class BraftEditor extends React.Component {
     }
 
     return <div style={{ border: "1px solid #bdc8d2", borderRadius: '3px' }}>
-      <Editor {...editorProps} />
+      <Editor {...{ ...editorProps, ...innerProps }} />
     </div>
   }
 }
 
-BraftEditor.defaultProps={
-  height:300
+BraftEditor.defaultProps = {
+  height: 300
 }
 
 BraftEditor.propTypes = {
   initValue: PropTypes.string,
   onChange: PropTypes.func,
-  height:PropTypes.number
+  height: PropTypes.number,
+  innerProps: PropTypes.object
 }
 
 export default BraftEditor

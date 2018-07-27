@@ -102,16 +102,18 @@ class BirdCascader extends React.Component {
 
 
   render() {
+    let innerProps = this.props.innerProps || {};
     let fValue = this.formatValue(this.props.value);
 
-    return <Cascader options={this.state.options}
-      value={fValue}
-      expandTrigger={this.props.expandTrigger}
-      size={this.props.size}
-      disabled={this.props.disabled}
-      getPopupContainer={this.props.getPopupContainer}
-      onChange={value => this.onPropsChange(value)}
-      style={{ width: this.props.width || '100%' }} />
+    return <Cascader {...{
+      value:fValue,
+      onChange:value => this.onPropsChange(value),
+      options:this.state.options,
+      disabled:this.props.disabled,
+      placeholder:this.props.placeholder,
+      style:{ width: this.props.width || '100%' },
+      ...innerProps
+    }} />
   }
 }
 
@@ -120,19 +122,14 @@ BirdCascader.propTypes = {
   data: PropTypes.array,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
-  expandTrigger: PropTypes.string,
   placeholder: PropTypes.string,
-  size: PropTypes.string,
   value: PropTypes.string,
-  getPopupContainer: PropTypes.func
+  innerProps: PropTypes.object
 };
 
 BirdCascader.defaultProps = {
   data: [],
-  expandTrigger: 'click',
-  size: 'default',
-  disabled: false,
-  getPopupContainer: () => document.body
+  disabled: false
 }
 
 

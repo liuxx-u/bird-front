@@ -14,7 +14,7 @@ const FormItem = Form.Item;
 const TextArea = Input.TextArea;
 
 class AutoField extends React.Component {
-  
+
   onChange(value) {
     let fieldOption = this.props.fieldOption;
     let dataKey = fieldOption.key;
@@ -28,41 +28,92 @@ class AutoField extends React.Component {
     }
     if (field.render && typeof (field.render) === 'function') return field.render(field.value);
 
+    let innerProps = field.innerProps || {};
+
     switch (field.fieldType) {
       case "text":
-        return <Input value={field.value} disabled={field.disabled}
-          onChange={e => self.onChange(e.target.value)} placeholder={field.placeholder} />;
+        return <Input {...{
+          value: field.value,
+          onChange: e => self.onChange(e.target.value),
+          disabled: field.disabled,
+          placeholder: field.placeholder,
+          ...innerProps
+        }} />;
       case "textarea":
-        return <TextArea value={field.value} autosize={{ minRows: 4, maxRows: 8 }} disabled={field.disabled}
-          onChange={e => self.onChange(e.target.value)} placeholder={field.placeholder} />
+        return <TextArea {...{
+          value: field.value,
+          onChange: e => self.onChange(e.target.value),
+          disabled: field.disabled,
+          placeholder: field.placeholder,
+          autosize: { minRows: 4, maxRows: 8 },
+          ...innerProps
+        }} />
       case "number":
-        return <InputNumber min={0} step={field.step || 1} precision={field.precision || 0}
-          style={{ width: '100%' }}
-          value={field.value || 0} disabled={field.disabled}
-          onChange={value => self.onChange(util.string.isEmpty(value) ? 0 : value)} placeholder={field.placeholder} />;
+        return <InputNumber {...{
+          value: field.value || 0,
+          onChange: value => self.onChange(util.string.isEmpty(value) ? 0 : value),
+          disabled: field.disabled,
+          placeholder: field.placeholder,
+          min: 0,
+          step: field.step || 1,
+          precision: field.precision || 0,
+          style: { width: '100%' },
+          ...innerProps
+        }} />;
       case "money":
-        return <InputNumber min={0} step={field.step || 1} precision={field.precision || 2}
-          style={{ width: '100%' }}
-          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          parser={value => value.replace(/\$\s?|(,*)/g, '')}
-          value={field.value || 0} disabled={field.disabled}
-          onChange={value => self.onChange(util.string.isEmpty(value) ? 0 : value)} placeholder={field.placeholder} />;
+        return <InputNumber {...{
+          value: field.value || 0,
+          onChange: value => self.onChange(util.string.isEmpty(value) ? 0 : value),
+          disabled: field.disabled,
+          placeholder: field.placeholder,
+          min: 0,
+          step: field.step || 1,
+          precision: field.precision || 2,
+          style: { width: '100%' },
+          formatter: value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+          parser: value => value.replace(/\$\s?|(,*)/g, ''),
+          ...innerProps
+        }} />;
       case "switch":
-        return <Switch disabled={field.disabled}
-          checked={field.value === true}
-          checkedChildren={<Icon type="check" />}
-          unCheckedChildren={<Icon type="cross" />}
-          onChange={value => self.onChange(value ? "1" : "0")} />;
+        return <Switch {...{
+          checked: field.value + '' === "1" || field.value + '' === 'true',
+          onChange: value => self.onChange(value ? "1" : "0"),
+          disabled: field.disabled,
+          checkedChildren: <Icon type="check" />,
+          unCheckedChildren: <Icon type="cross" />,
+          ...innerProps
+        }} />;
       case "dropdown":
-        return <BirdSelector dicKey={field.source.key} data={field.source.data || []} url={field.source.url} disabled={field.disabled}
-          onChange={value => self.onChange(value)} selectedValue={field.value} />;
+        return <BirdSelector {...{
+          selectedValue: field.value,
+          onChange: value => self.onChange(value),
+          disabled: field.disabled,
+          data: field.source.data || [],
+          url: field.source.url,
+          dicKey: field.source.key,
+          innerProps: innerProps
+        }} />;
       case "multi":
-        return <BirdMulti dicKey={field.source.key} options={field.source.data || []} url={field.source.url} disabled={field.disabled}
-          onChange={value => self.onChange(value)} selectedValue={field.value} />
+        return <BirdMulti {...{
+          selectedValue: field.value,
+          onChange: value => self.onChange(value),
+          disabled: field.disabled,
+          options: field.source.data || [],
+          url: field.source.url,
+          dicKey: field.source.key,
+          innerProps: innerProps
+        }} />
 
       case "cascader":
-        return <BirdCascader data={field.source.data || []} url={field.source.url} disabled={field.disabled}
-          onChange={value => self.onChange(value)} value={field.value} placeholder={field.placeholder} />
+        return <BirdCascader {...{
+          value: field.value,
+          onChange: value => self.onChange(value),
+          disabled: field.disabled,
+          data: field.source.data || [],
+          url: field.source.url,
+          placeholder: field.placeholder,
+          innerProps: innerProps
+        }} />
       case "img":
       case "imgs":
       case "file":
@@ -81,17 +132,31 @@ class AutoField extends React.Component {
 
         return <BirdUpload {...fileProps} />;
       case "date":
-        return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
-          format={"YYYY-MM-DD"}
-          style={{ width: '100%' }}
-          onChange={(date, dateString) => self.onChange(dateString)} />;
+        return <DatePicker {...{
+          value: field.value ? moment(field.value) : null,
+          onChange: (date, dateString) => self.onChange(dateString),
+          disabled: field.disabled,
+          format: "YYYY-MM-DD",
+          style: { width: '100%' },
+          ...innerProps
+        }} />;
       case "datetime":
-        return <DatePicker value={field.value ? moment(field.value) : null} disabled={field.disabled}
-          format={"YYYY-MM-DD HH:mm:ss"}
-          style={{ width: '100%' }}
-          onChange={(date, dateString) => self.onChange(dateString)} showTime={true} />;
+        return <DatePicker {...{
+          value: field.value ? moment(field.value) : null,
+          onChange: (date, dateString) => self.onChange(dateString),
+          disabled: field.disabled,
+          showTime: true,
+          format: "YYYY-MM-DD HH:mm:ss",
+          style: { width: '100%' },
+          ...innerProps
+        }} />;
       case "richtext":
-        return <BraftEditor initValue={field.value} contentId={field.key} onChange={value => self.onChange(value)} />;
+        return <BraftEditor {...{
+          initValue: field.value,
+          contentId: field.key,
+          onChange: value => self.onChange(value),
+          innerProps: innerProps
+        }} />;
       default:
         return <span />;
     }

@@ -65,6 +65,7 @@ class BirdMulti extends React.Component {
   }
 
   render() {
+    let innerProps = this.props.innerProps || {};
     let checkedValues = this.props.selectedValue ? this.props.selectedValue.split(',') : [];
     let isCheckAll = checkedValues.length === this.state.options.length;
 
@@ -80,7 +81,13 @@ class BirdMulti extends React.Component {
           </Checkbox>
           <br />
         </div>}
-        <CheckboxGroup
+        <CheckboxGroup {...{
+          value:checkedValues,
+          onChange:cvs => {let fv = cvs.join();this.onPropsChange(fv);},
+          disabled:this.props.disabled,
+          options:this.state.options,
+          ...innerProps
+        }}
           options={this.state.options}
           value={checkedValues}
           disabled={this.props.disabled}
@@ -98,11 +105,11 @@ BirdMulti.propTypes = {
   options: PropTypes.array,
   url: PropTypes.string,
   dicKey: PropTypes.string,
-
   disabled: PropTypes.bool,
   selectedValue: PropTypes.string,//多个值以逗号分隔
   canCheckAll: PropTypes.bool,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  innerProps: PropTypes.object
 };
 
 BirdMulti.defaultProps = {

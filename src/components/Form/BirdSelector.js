@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 import { request, config, util } from 'utils';
 import { Select } from 'antd';
 
+const defaultInnerProps = {
+  showSearch: true,
+  filterOption: (input, option) => { return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0 }
+}
+
 class BirdSelector extends React.Component {
   constructor(props) {
     super(props);
@@ -54,14 +59,16 @@ class BirdSelector extends React.Component {
 
   render() {
     let self = this;
+    let innerProps = this.props.innerProps || {};
     return (
-      <Select style={{ width: self.props.width }}
-        showSearch={self.props.showSearch}
-        filterOption={(input, option) => self.props.filterOption(input, option)}
-        getPopupContainer={self.props.getPopupContainer}
-        disabled={self.props.disabled}
-        onChange={value => self.onPropsChange(value)}
-        value={typeof (self.props.selectedValue) === 'undefined' ? '' : self.props.selectedValue + ''}>
+      <Select {...{
+        value: typeof (self.props.selectedValue) === 'undefined' ? '' : self.props.selectedValue + '',
+        onChange: value => self.onPropsChange(value),
+        disabled: self.props.disabled,
+        style: { width: self.props.width },
+        ...defaultInnerProps,
+        ...innerProps
+      }}>
         {this.state.options.map((option, index) => (
           <Select.Option key={'selector_' + self.props.dicKey + '_' + index} value={option.value}
             disabled={option.disabled + '' === 'true'}>{option.label}</Select.Option>
@@ -76,23 +83,17 @@ BirdSelector.propTypes = {
   url: PropTypes.string,
   dicKey: PropTypes.string,
   disabled: PropTypes.bool,
-  size: PropTypes.string,
   selectedValue: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number
   ]),
-  getPopupContainer: PropTypes.func,
   onChange: PropTypes.func,
-  showSearch: PropTypes.bool,
-  filterOption: PropTypes.func
+  innerProps: PropTypes.object
 };
 
 BirdSelector.defaultProps = {
   width: '100%',
-  data: [],
-  getPopupContainer: () => document.body,
-  showSearch: true,
-  filterOption: (input, option) => { return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0 }
+  data: []
 }
 
 export default BirdSelector;

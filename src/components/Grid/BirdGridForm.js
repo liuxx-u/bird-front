@@ -92,7 +92,8 @@ class BirdGridForm extends React.Component {
         fieldType: field.type,
         value: typeof (self.state.initValue[field.data]) === 'undefined' ? '' : self.state.initValue[field.data] + '',
         disabled: pattern === 'disabled',
-        source: field.source || {}
+        source: field.source || {},
+        innerProps:field.editor.innerProps
       }
       fieldOptions.push(fieldOption);
     }

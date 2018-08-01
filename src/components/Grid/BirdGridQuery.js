@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import BirdSelector from '../Form/BirdSelector';
 import BirdCascader from '../Form/BirdCascader';
-import { Icon, Popover, Form, Select, Col, Row, Button, DatePicker, TimePicker, Input, InputNumber } from 'antd';
+import { Icon, Popover, Form, Select, Col, Row, Button, DatePicker, Input, InputNumber } from 'antd';
 
 const FormItem = Form.Item;
 const Option = Select.Option;

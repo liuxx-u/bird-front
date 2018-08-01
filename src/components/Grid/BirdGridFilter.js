@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import BirdSelector from '../Form/BirdSelector';
 import BirdCascader from '../Form/BirdCascader';
 import moment from 'moment';
-import { Select, Col, Row, DatePicker, Input, InputNumber } from 'antd';
+import { Select, DatePicker, Input, InputNumber } from 'antd';
 
 const Option = Select.Option;
+const InputGroup = Input.Group;
 
 const operators = {
   common: [{ value: "equal", text: "等于" }, { value: "notequal", text: "不等于" }],
@@ -52,48 +53,47 @@ class BirdGridFilter extends React.Component {
       case "text":
       case "textarea":
         valueField =
-          <Input id={field.data} value={this.props.rule.value} onChange={(e) => this.onRuleChange('value', e.target.value)} />;
+          <Input id={field.data} value={this.props.rule.value} style={{ width: '37.5%' }} onChange={(e) => this.onRuleChange('value', e.target.value)} />;
         break;
       case "number":
         valueField = <InputNumber id={field.data} min={0} value={this.props.rule.value}
-          style={{ width: '100%' }}
+          style={{ width: '37.5%' }}
           onChange={(value) => this.onRuleChange('value', value)} />;
         break;
       case "money":
         valueField = <InputNumber id={field.data} min={0} value={this.props.rule.value}
           formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           parser={value => value.replace(/\$\s?|(,*)/g, '')}
-          style={{ width: '100%' }}
+          style={{ width: '37.5%' }}
           onChange={(value) => this.onRuleChange('value', value)} />;
         break;
       case "switch":
         valueField = (
-          <Select id={field.data} value={this.props.rule.value} onChange={value => this.onRuleChange("value",value)}
-            style={{ width: '100%' }}>
+          <Select id={field.data} value={this.props.rule.value} onChange={value => this.onRuleChange("value", value)} style={{ width: '37.5%' }}>
             <Option value="1">是</Option>
             <Option value="0">否</Option>
           </Select>
         );
         break;
       case "dropdown":
-        valueField = <BirdSelector dicKey={field.source.key} data={field.source.data || []}
+        valueField = <BirdSelector dicKey={field.source.key} data={field.source.data || []} width='37.5%'
           onChange={value => this.onRuleChange('value', value)} selectedValue={this.props.rule.value} />;
         break;
       case "cascader":
-        valueField = <BirdCascader data={field.source.data || []} expandTrigger='hover'
+        valueField = <BirdCascader data={field.source.data || []} expandTrigger='hover' width='37.5%'
           onChange={value => this.onRuleChange('value', value)} value={this.props.rule.value} />;
         break;
       case "date":
         valueField =
           <DatePicker id={field.data} value={this.props.rule.value ? moment(this.props.rule.value) : null} format={"YYYY-MM-DD"}
-            style={{ width: '100%' }}
+            style={{ width: '37.5%' }}
             onChange={(date, dateString) => this.onRuleChange('value', dateString)} />;
         break;
       case "datetime":
         valueField =
           <DatePicker id={field.data} value={this.props.rule.value ? moment(this.props.rule.value) : null}
             format={"YYYY-MM-DD HH:mm"}
-            style={{ width: '100%' }}
+            style={{ width: '37.5%' }}
             onChange={(date, dateString) => this.onRuleChange('value', dateString)} />;
         break;
       default:
@@ -102,36 +102,30 @@ class BirdGridFilter extends React.Component {
     }
 
     return (
-      <Row>
-        <Col span={9}>
-          <Select style={{ width: '100%' }}
-            value={this.props.rule.field}
-            onChange={value => this.onRuleChange('field', value)}>
-            {
-              this.props.fields.map(function (item) {
-                return <Option key={'field_option_' + item.data}
-                  value={item.data}>{item.title}</Option>;
-              })
-            }
-          </Select>
-        </Col>
-        <Col span={6}>
-          <Select placeholder="请选择操作符"
-            style={{ width: '100%' }}
-            value={this.props.rule.operate}
-            onChange={operator => this.onRuleChange('operate', operator)}>
-            {
-              searchOperators.map(function (operator) {
-                return <Option key={'operator_option_' + operator.value}
-                  value={operator.value}>{operator.text}</Option>;
-              })
-            }
-          </Select>
-        </Col>
-        <Col span={9}>
-          {valueField}
-        </Col>
-      </Row>
+      <InputGroup compact>
+        <Select style={{ width: '37.5%' }}
+          value={this.props.rule.field}
+          onChange={value => this.onRuleChange('field', value)}>
+          {
+            this.props.fields.map(function (item) {
+              return <Option key={'field_option_' + item.data}
+                value={item.data}>{item.title}</Option>;
+            })
+          }
+        </Select>
+        <Select placeholder="请选择操作符"
+          style={{ width: '25%' }}
+          value={this.props.rule.operate}
+          onChange={operator => this.onRuleChange('operate', operator)}>
+          {
+            searchOperators.map(function (operator) {
+              return <Option key={'operator_option_' + operator.value}
+                value={operator.value}>{operator.text}</Option>;
+            })
+          }
+        </Select>
+        {valueField}
+      </InputGroup>
     );
   }
 }

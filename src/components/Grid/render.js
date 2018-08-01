@@ -83,6 +83,7 @@ const FileRender = function (v) {
 }
 
 const MoneyRender = function (v) {
+  if (isNaN(v)) v = 0;
   let money = (Math.round(v * 100) / 100).toFixed(2);
   return `${money}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }

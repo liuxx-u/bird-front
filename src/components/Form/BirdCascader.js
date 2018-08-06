@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Cascader } from 'antd';
-import { request, util } from 'utils';
+import { request, util,deepClone } from 'utils';
 
 class BirdCascader extends React.Component {
   constructor(props) {
@@ -18,15 +18,14 @@ class BirdCascader extends React.Component {
   }
 
   componentDidMount() {
-    let self = this;
-    if (self.props.data.length > 0) {
-      self.initData(this.props.data);
-    } else {
+    if (this.props.data.length > 0) {
+      this.initData(this.props.data);
+    } else if (this.props.url) {
       request({
-        url: self.props.url,
+        url: this.props.url,
         method: 'GET'
-      }).then(function (data) {
-        self.initData(data);
+      }).then(data => {
+        this.initData(data);
       })
     }
   }
@@ -38,19 +37,19 @@ class BirdCascader extends React.Component {
   }
 
   initData(data) {
-    let self = this;
+    let treeData = deepClone(data);
 
     let folderNodes = [];
     let options = [];
     let hash = {}
-    data.forEach(item => {
+    treeData.forEach(item => {
       hash[item['value']] = item;
       if (item.folder + '' === 'true') {
         folderNodes.push(item);
       }
     });
 
-    data.forEach((item) => {
+    treeData.forEach((item) => {
       let hashVP = hash[item['parentValue']]
       if (hashVP) {
         !hashVP['children'] && (hashVP['children'] = [])
@@ -81,7 +80,7 @@ class BirdCascader extends React.Component {
     }
 
 
-    self.setState({
+    this.setState({
       itemHash: hash,
       options: options
     });
@@ -106,12 +105,12 @@ class BirdCascader extends React.Component {
     let fValue = this.formatValue(this.props.value);
 
     return <Cascader {...{
-      value:fValue,
-      onChange:value => this.onPropsChange(value),
-      options:this.state.options,
-      disabled:this.props.disabled,
-      placeholder:this.props.placeholder,
-      style:{ width: this.props.width || '100%' },
+      value: fValue,
+      onChange: value => this.onPropsChange(value),
+      options: this.state.options,
+      disabled: this.props.disabled,
+      placeholder: this.props.placeholder,
+      style: { width: this.props.width || '100%' },
       ...innerProps
     }} />
   }

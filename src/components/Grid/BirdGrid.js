@@ -334,6 +334,23 @@ class BirdGrid extends React.Component {
     }, this.query);
   }
 
+  setFieldSource(key, data) {
+    let columns = this.state.columns;
+    let sourceKeyMap = this.state.sourceKeyMap;
+
+    let sourceTypes = ['dropdown', 'multi', 'cascader'];
+    for (let col of columns) {
+      if (col.data === key && sourceTypes.includes(col.type)) {
+        col.source = { data: data };
+        sourceKeyMap[key] = arrayToHash(data);
+      }
+    }
+    this.setState({
+      columns: columns,
+      sourceKeyMap: sourceKeyMap
+    })
+  }
+
   setCustomData(data) {
     let customData = this.state.customData;
     for (let filter of data) {
@@ -513,15 +530,15 @@ class BirdGrid extends React.Component {
         <Card>
           <Row>
             <Col span={10}>
-              {self.state.queryColumns.length > 0 && <Row>
+              {this.state.queryColumns.length > 0 && <Row>
                 <Col span={16}>
-                  <BirdGridFilter fields={self.state.queryColumns} rule={self.state.filterRules[0]}
-                    onChange={rule => self.filterChange(0, rule)} />
+                  <BirdGridFilter fields={this.state.queryColumns} rule={this.state.filterRules[0]}
+                    onChange={rule => this.filterChange(0, rule)} />
                 </Col>
                 <Col span={8}>
                   <Button.Group>
                     <Button icon='plus' onClick={() => self.addFilter()} />
-                    <Button icon='search' type="primary" onClick={() => self.query()}>{gridOption.queryText || '查询'}</Button>
+                    <Button icon='search' type="primary" onClick={() => { this.setState({ pageIndex: 1 }, this.query) }}>{gridOption.queryText || '查询'}</Button>
                   </Button.Group>
                 </Col>
               </Row>}

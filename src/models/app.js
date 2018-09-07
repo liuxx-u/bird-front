@@ -1,6 +1,3 @@
-/* global window */
-/* global document */
-/* global location */
 import { routerRedux } from 'dva/router'
 import { parse } from 'qs'
 import config from 'config'

@@ -577,6 +577,7 @@ class BirdGrid extends React.Component {
                 </tbody>
               </table>
               {gridOption.url && gridOption.url.read && <Pagination className={styles.gridPagination}
+                showQuickJumper
                 current={this.state.pageIndex}
                 total={parseInt(this.state.gridDatas.totalCount, 10)}
                 pageSizeOptions={gridOption.pageSizeOptions || ["10", "15", "20", "30", "50", "100"]}

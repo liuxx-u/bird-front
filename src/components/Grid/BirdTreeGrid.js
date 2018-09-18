@@ -18,10 +18,12 @@ class BirdTreeGrid extends React.Component {
 
   //树节点点击事件，不支持点选多个节点
   itemClick(clickKey) {
-    this.refs.grid.setCustomData([{
+    let customRules = this.props.gridOption.customRules||[];
+    customRules.push({
       field: this.props.treeOption.paramName,
       value: clickKey
-    }]);
+    })
+    this.refs.grid.setCustomData(customRules);
 
     this.props.treeOption.onSelect&&this.props.treeOption.onSelect(clickKey);
   }

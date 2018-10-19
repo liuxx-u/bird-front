@@ -16,7 +16,7 @@ class BirdGrid extends React.Component {
     let dataSource = gridOption.dataSource || [];
     let autoQuery = gridOption.autoQuery;
     if (typeof (autoQuery) === 'undefined') {
-      autoQuery = dataSource.length === 0 && gridOption.url && gridOption.url.read;
+      autoQuery = true;
     }
 
     this.state = {
@@ -75,7 +75,7 @@ class BirdGrid extends React.Component {
       if (col.type === 'richtext' && this.state.formWidth === 520) {
         this.setState({ formWidth: 800 });
       }
-      if (url && url.read && col.query) {
+      if (col.query) {
         queryColumns.push(col);
       }
       //初始化下拉选择框的数据源,优先级：data>url>key
@@ -163,14 +163,9 @@ class BirdGrid extends React.Component {
     });
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (!util.object.equal(nextProps.gridOption.dataSource, this.props.gridOption.dataSource)) {
-      this.setState({
-        gridDatas: {
-          totalCount: nextProps.gridOption.dataSource.length,
-          items: nextProps.gridOption.dataSource
-        }
-      })
+  componentWillReceiveProps(nextProps) {
+    if (!(this.props.url && this.props.url.read) && !util.object.equal(nextProps.gridOption.dataSource, this.props.gridOption.dataSource)) {
+      this.setState({pageIndex: 1}, () => this.localQuery(nextProps))
     }
   }
 
@@ -295,28 +290,80 @@ class BirdGrid extends React.Component {
   /* 数据查询 */
   query() {
     let url = this.props.gridOption.url;
-    if (!url || !url.read) return;
+    if (!url || !url.read) { this.localQuery(this.props) }
+    else {
+      this.setState({ queryLoading: true });
+      let dto = {
+        pageIndex: this.state.pageIndex,
+        pageSize: this.state.pageSize,
+        sortField: this.state.sortField,
+        sortDirection: this.state.sortDirection === "asc" ? 0 : 1,
+        filters: this.getFilters()
+      };
 
-    this.setState({ queryLoading: true });
-    let dto = {
-      pageIndex: this.state.pageIndex,
-      pageSize: this.state.pageSize,
-      sortField: this.state.sortField,
-      sortDirection: this.state.sortDirection === "asc" ? 0 : 1,
-      filters: this.getFilters()
-    };
+      request({
+        url: url.read,
+        method: "post",
+        data: dto
+      }).then(result => {
+        if (result === null || typeof (result) === "undefined") {
+          result = { totalCount: 0, items: [] };
+        }
+        this.setState({ gridDatas: result, queryLoading: false });
+        this.props.gridOption.afterQuery && this.props.gridOption.afterQuery(result, this.getFilters());
+      });
+    }
+  }
 
-    request({
-      url: url.read,
-      method: "post",
-      data: dto
-    }).then(result => {
-      if (result === null || typeof (result) === "undefined") {
-        result = { totalCount: 0, items: [] };
+  localQuery(props) {
+    let { pageIndex, pageSize } = this.state;
+    let dataSource = props.gridOption.dataSource;
+
+    let filters = this.getFilters();
+    for (let filter of filters) {
+      if (dataSource.length === 0) break;
+      if (util.string.isEmpty(filter.value)) continue;
+      dataSource = dataSource.filter(p => {
+        let data = p[filter.field];
+        if (typeof (data) === 'undefined' || data === null) return false;
+
+        switch (filter.operate) {
+          case 'equal':
+            return data === filter.value;
+          case 'notequal':
+            return data !== filter.value;
+          case 'less':
+            return data < filter.value;
+          case 'lessorequal':
+            return data <= filter.value;
+          case 'greater':
+            return data > filter.value;
+          case 'greaterorequal':
+            return data >= filter.value;
+          case 'contains':
+            return data.indexOf(filter.value) >= 0;
+          case 'startswith':
+            return data.indexOf(filter.value) === 0;
+          case 'endswith':
+            let subLen = data.length - filter.value.length;
+            return subLen > 0 && data.lastIndexOf(filter.value) === subLen;
+          default:
+            return data === filter.value;
+        }
+      })
+    }
+
+    let start = (pageIndex - 1) * pageSize;
+    let end = start + pageSize;
+    if (end >= dataSource.length) end = dataSource.length;
+
+    let items = dataSource.slice(start, end);
+    this.setState({
+      gridDatas: {
+        totalCount: dataSource.length,
+        items: items
       }
-      this.setState({ gridDatas: result, queryLoading: false });
-      this.props.gridOption.afterQuery && this.props.gridOption.afterQuery(result, this.getFilters());
-    });
+    })
   }
 
   reload() {
@@ -428,8 +475,16 @@ class BirdGrid extends React.Component {
       return (<th key={colKey} className={sortClass} onClick={() => self.sortClick(col)}>{col.title}</th>);
     });
     let trs = self.state.gridDatas.items.map(function (data) {
+      let backColor = "";
+      if (typeof (gridOption.colorRender) === 'function') {
+        backColor = gridOption.colorRender(data);
+        if (backColor === 'success') backColor = "rgba(130,206,75,.4)";
+        else if (backColor === 'warn') backColor = "rgba(255,253,186,.5)";
+        else if (backColor === 'error') backColor = "rgba(255,128,102,.2)";
+      }
+
       return <tr
-        style={gridOption.errorFinder && gridOption.errorFinder(data) ? { backgroundColor: '#fef0ef' } : {}}
+        style={util.string.isEmpty(backColor) ? {} : { backgroundColor: backColor }}
         className="ant-table-row  ant-table-row-level-0" key={'tr_' + data[primaryKey]}>
         {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0} onChange={() => self.checkClick(data[primaryKey])} /></td>}
         {
@@ -471,11 +526,12 @@ class BirdGrid extends React.Component {
                 else formatValue = typeof (data[col.data]) === 'undefined' ? '' : data[col.data];
               }
               let align = col.align || 'left';
+              let widthStyle = col.width ? { width: col.width } : {};
               if (col.type === 'text' || col.type === 'textarea' || col.type === 'richtext') {
                 let maxLength = col.maxLength || 30;
-                return <td style={{ textAlign: align }} title={formatValue} key={colKey}>{util.string.truncate(formatValue, maxLength)}</td>;
+                return <td style={{ textAlign: align, ...widthStyle }} title={formatValue} key={colKey}>{util.string.truncate(formatValue, maxLength)}</td>;
               } else {
-                return <td style={{ textAlign: align }} key={colKey}>{formatValue}</td>
+                return <td style={{ textAlign: align, ...widthStyle }} key={colKey}>{formatValue}</td>
               }
             }
           })
@@ -576,16 +632,16 @@ class BirdGrid extends React.Component {
                   {trs}
                 </tbody>
               </table>
-              {gridOption.url && gridOption.url.read && <Pagination className={styles.gridPagination}
+              <Pagination className={styles.gridPagination}
                 showQuickJumper
                 current={this.state.pageIndex}
                 total={parseInt(this.state.gridDatas.totalCount, 10)}
-                pageSizeOptions={gridOption.pageSizeOptions || ["10", "15", "20", "30", "50", "100"]}
+                pageSizeOptions={gridOption.pageSizeOptions || ["10", "15", "20", "30", "50", "100", "200"]}
                 pageSize={this.state.pageSize}
                 showSizeChanger={true}
                 onChange={(page, pageSize) => this.pageClick(page, pageSize)}
                 onShowSizeChange={(page, pageSize) => this.pageSizeChange(pageSize)}
-                showTotal={total => `共 ${total} 条`} />}
+                showTotal={total => `共 ${total} 条`} />
             </div>
             {/*<div className={styles.changebox2}>占位用</div>*/}
             <Modal title={this.state.formOption.model === 'add' ? '新增' : '编辑'}

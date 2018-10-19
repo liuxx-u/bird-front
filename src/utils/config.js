@@ -13,6 +13,11 @@ module.exports =  {
   apiPrefix: '/api/v1',
   APIV1,
   APIV2,
+  color:{
+    success:'#52c41a',
+    warn:'#E6A23C',
+    error:'#ff4d4f'
+  },
   api: {
     userLogin: `${APIV1}/user/login`,
     userLogout: `${APIV1}/user/logout`,

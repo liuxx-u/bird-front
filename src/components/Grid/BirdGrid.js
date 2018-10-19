@@ -4,6 +4,7 @@ import AutoForm from './BirdGridForm';
 import BirdGridFilter from './BirdGridFilter';
 import { request, config, util, permission, arrayToHash } from 'utils';
 import styles from './BirdGrid.less';
+import BirdButton from '../Form/BirdButton';
 import { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender, FileRender, MoneyRender } from './render';
 import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider, Spin, Popover } from 'antd';
 
@@ -117,7 +118,7 @@ class BirdGrid extends React.Component {
           }
         }
         if (url && url.delete && permission.check(tp.delete)) {
-          tdActions.push({ name: '删除', onClick: data => this.deleteClick(data[this.state.primaryKey]), confirm: true })
+          tdActions.push({ name: '删除',color:'#f78989', onClick: data => this.deleteClick(data[this.state.primaryKey]), confirm: true })
         }
         if (tdActions.length === 0) continue;
         col.actions = tdActions;
@@ -499,11 +500,12 @@ class BirdGrid extends React.Component {
                     if (action.hideFunc && action.hideFunc(data)) return '';
 
                     var actionName = action.nameFormat ? action.nameFormat(data) : action.name;
+                    let color = config.color[action.color] ? config.color[action.color] : action.color;
                     return <span key={'tr_' + data[primaryKey] + '_action_' + aIndex}>
                       {aIndex > 0 && <Divider type="vertical" />}
                       {action.confirm
-                        ? <Popconfirm title={'确定要' + actionName + '吗？'} onConfirm={() => action.onClick(data)}><a href="#">{actionName}</a></Popconfirm>
-                        : <a href="javascript:void(0);" onClick={() => action.onClick(data)}>{actionName}</a>}
+                        ? <Popconfirm title={'确定要' + actionName + '吗？'} onConfirm={() => action.onClick(data)}><a style={util.string.isEmpty(color) ? {} : { color: color }} href="#">{actionName}</a></Popconfirm>
+                        : <a style={util.string.isEmpty(color) ? {} : { color: color }} href="javascript:void(0);" onClick={() => action.onClick(data)}>{actionName}</a>}
                     </span>
                   })
                 }
@@ -543,8 +545,8 @@ class BirdGrid extends React.Component {
       let checkedValues = self.state.checkedValues;
       let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
       return action.confirm
-        ? <Popconfirm key={"action_" + index} okText={'确定'} cancelText={'取消'} title={'确定要' + action.name + '吗？'} onConfirm={() => action.onClick(checkedValues, checkedDatas)}><Button icon={action.icon} type="primary">{action.name}</Button></Popconfirm>
-        : <Button key={"action_" + index} icon={action.icon} type="primary" onClick={() => action.onClick(checkedValues, checkedDatas)}>{action.name}</Button>
+        ? <Popconfirm key={"action_" + index} okText={'确定'} cancelText={'取消'} title={'确定要' + action.name + '吗？'} onConfirm={() => action.onClick(checkedValues, checkedDatas)}><BirdButton color = {action.color} icon={action.icon} type="primary">{action.name}</BirdButton></Popconfirm>
+        : <BirdButton key={"action_" + index} color = {action.color} icon={action.icon} type="primary" onClick={() => action.onClick(checkedValues, checkedDatas)}>{action.name}</BirdButton>
 
     });
 
@@ -593,7 +595,7 @@ class BirdGrid extends React.Component {
                 </Col>
                 <Col span={8}>
                   <Button.Group>
-                    <Button icon='plus' onClick={() => self.addFilter()} />
+                    <BirdButton icon='plus' onClick={() => self.addFilter()} />
                     <Button icon='search' type="primary" onClick={() => { this.setState({ pageIndex: 1 }, this.query) }}>{gridOption.queryText || '查询'}</Button>
                   </Button.Group>
                 </Col>

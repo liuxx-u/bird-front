@@ -44,6 +44,11 @@ class BirdButton extends React.Component {
     delete props.permissionName;
     delete props.idempotency;
 
+    if (this.props.color) {
+      let color = config.color[this.props.color] ? config.color[this.props.color] : this.props.color;
+      props.style = { backgroundColor: color, borderColor: color }
+    }
+
     if (this.props.idempotency && props.onClick) {
       props.loading = this.state.loading;
 
@@ -91,6 +96,7 @@ class BirdButton extends React.Component {
 }
 
 BirdButton.propTypes = {
+  color: PropTypes.string,
   permissionName: PropTypes.string,
   idempotency: PropTypes.bool
 };

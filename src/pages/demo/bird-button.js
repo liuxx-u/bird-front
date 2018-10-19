@@ -12,7 +12,7 @@ class BirdButtonDemoPage extends React.Component {
   render() {
     return (
       <Card>
-        <BirdButton permission={'sys:authorize:user:add'} idempotency={true} type="primary">权限按钮</BirdButton>
+        <BirdButton permission={'sys:authorize:user:add'} idempotency={true} type="primary" color="error">权限按钮</BirdButton>
         <div>
           除permission外，其他api与antd的Button组件完全一致
         </div>

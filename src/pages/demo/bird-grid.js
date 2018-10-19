@@ -19,7 +19,7 @@ class BirdGridDemoPage extends React.Component {
         delete: "/test/delete"
       },
       checkable: true,
-      actions: [{ name: '外部按钮', onClick: function () { } }],
+      actions: [{ name: '外部按钮',color:'error', onClick: function () { } }],
       columns: [
         { title: "编号", data: "id", type: "number" },
         { title: "文本", data: "field-text", type: "text", editor: {}, query: true },
@@ -38,6 +38,7 @@ class BirdGridDemoPage extends React.Component {
         {
           title: "操作选项", type: "command", actions: [{
             name: '行内按钮',
+            color:'#67c23a',
             onClick: (data) => {
               console.log(data);
             }

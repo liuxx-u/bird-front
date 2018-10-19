@@ -19,12 +19,12 @@ class BirdGridDemoPage extends React.Component {
         delete: "/test/delete"
       },
       checkable: true,
-      actions: [{ name: '外部按钮',color:'error', onClick: function () { } }],
+      actions: [{ name: '外部按钮', color: 'error', onClick: function () { } }],
       columns: [
         { title: "编号", data: "id", type: "number" },
         { title: "文本", data: "field-text", type: "text", editor: {}, query: true },
-        { title: "整数", data: "field-number", type: "number", editor: {}, query: true },
-        { title: "小数", data: "field-float", type: "number", editor: { innerProps:{step: 0.1, precision: 2} }, query: true },
+        { title: "数字", data: "field-number", type: "number", editor: {}, colSpan: 2, query: true },
+        { title: "小数", data: "field-float", type: "number", editor: { innerProps: { step: 0.1, precision: 2 } }, colSpan: 0, query: true },
         { title: "布尔值", data: "field-switch", type: "switch", editor: {}, query: true },
         { title: "单选", data: "field-dropdown", type: "dropdown", editor: {}, source: { url: '/api/v1/getOptions' }, query: true },
         { title: "多选", data: "field-multi", type: "multi", editor: {}, source: { key: 'xx' } },
@@ -38,7 +38,7 @@ class BirdGridDemoPage extends React.Component {
         {
           title: "操作选项", type: "command", actions: [{
             name: '行内按钮',
-            color:'#67c23a',
+            color: '#67c23a',
             onClick: (data) => {
               console.log(data);
             }

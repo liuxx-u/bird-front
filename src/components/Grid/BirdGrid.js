@@ -118,7 +118,7 @@ class BirdGrid extends React.Component {
           }
         }
         if (url && url.delete && permission.check(tp.delete)) {
-          tdActions.push({ name: '删除',color:'#f78989', onClick: data => this.deleteClick(data[this.state.primaryKey]), confirm: true })
+          tdActions.push({ name: '删除', color: '#f78989', onClick: data => this.deleteClick(data[this.state.primaryKey]), confirm: true })
         }
         if (tdActions.length === 0) continue;
         col.actions = tdActions;
@@ -166,7 +166,7 @@ class BirdGrid extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (!(this.props.url && this.props.url.read) && !util.object.equal(nextProps.gridOption.dataSource, this.props.gridOption.dataSource)) {
-      this.setState({pageIndex: 1}, () => this.localQuery(nextProps))
+      this.setState({ pageIndex: 1 }, () => this.localQuery(nextProps))
     }
   }
 
@@ -327,29 +327,31 @@ class BirdGrid extends React.Component {
       dataSource = dataSource.filter(p => {
         let data = p[filter.field];
         if (typeof (data) === 'undefined' || data === null) return false;
+        data += '';
+        let value = filter.value + '';
 
         switch (filter.operate) {
           case 'equal':
-            return data === filter.value;
+            return data === value;
           case 'notequal':
-            return data !== filter.value;
+            return data !== value;
           case 'less':
-            return data < filter.value;
+            return data < value;
           case 'lessorequal':
-            return data <= filter.value;
+            return data <= value;
           case 'greater':
-            return data > filter.value;
+            return data > value;
           case 'greaterorequal':
-            return data >= filter.value;
+            return data >= value;
           case 'contains':
-            return data.indexOf(filter.value) >= 0;
+            return data.indexOf(value) >= 0;
           case 'startswith':
-            return data.indexOf(filter.value) === 0;
+            return data.indexOf(value) === 0;
           case 'endswith':
-            let subLen = data.length - filter.value.length;
-            return subLen > 0 && data.lastIndexOf(filter.value) === subLen;
+            let subLen = data.length - value.length;
+            return subLen > 0 && data.lastIndexOf(value) === subLen;
           default:
-            return data === filter.value;
+            return data === value;
         }
       })
     }
@@ -464,7 +466,7 @@ class BirdGrid extends React.Component {
     let gridOption = self.props.gridOption;
     let primaryKey = self.state.primaryKey;
 
-    let ths = self.state.columns.filter(c => c.hide === 'no').map(function (col, index) {
+    let ths = self.state.columns.filter(c => c.hide === 'no' && c.colSpan !== 0).map(function (col, index) {
       let sortClass = "";
       if (!col.sortDisable && col.type !== "command" && gridOption.url && gridOption.url.read) {
         sortClass = self.state.sortField !== col.data
@@ -473,7 +475,7 @@ class BirdGrid extends React.Component {
       }
       let colKey = col.type === 'command' ? 'col_command' : col.data;
       colKey += '_' + index;
-      return (<th key={colKey} className={sortClass} onClick={() => self.sortClick(col)}>{col.title}</th>);
+      return (<th key={colKey} colSpan={col.colSpan || 1} style={col.colSpan > 0 ? { textAlign: 'center' } : {}} className={sortClass} onClick={() => self.sortClick(col)}>{col.title}</th>);
     });
     let trs = self.state.gridDatas.items.map(function (data) {
       let backColor = "";
@@ -545,8 +547,8 @@ class BirdGrid extends React.Component {
       let checkedValues = self.state.checkedValues;
       let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
       return action.confirm
-        ? <Popconfirm key={"action_" + index} okText={'确定'} cancelText={'取消'} title={'确定要' + action.name + '吗？'} onConfirm={() => action.onClick(checkedValues, checkedDatas)}><BirdButton color = {action.color} icon={action.icon} type="primary">{action.name}</BirdButton></Popconfirm>
-        : <BirdButton key={"action_" + index} color = {action.color} icon={action.icon} type="primary" onClick={() => action.onClick(checkedValues, checkedDatas)}>{action.name}</BirdButton>
+        ? <Popconfirm key={"action_" + index} okText={'确定'} cancelText={'取消'} title={'确定要' + action.name + '吗？'} onConfirm={() => action.onClick(checkedValues, checkedDatas)}><BirdButton color={action.color} icon={action.icon} type="primary">{action.name}</BirdButton></Popconfirm>
+        : <BirdButton key={"action_" + index} color={action.color} icon={action.icon} type="primary" onClick={() => action.onClick(checkedValues, checkedDatas)}>{action.name}</BirdButton>
 
     });
 
@@ -595,7 +597,7 @@ class BirdGrid extends React.Component {
                 </Col>
                 <Col span={8}>
                   <Button.Group>
-                    <BirdButton icon='plus' onClick={() => self.addFilter()} />
+                    <Button icon='plus' onClick={() => self.addFilter()} />
                     <Button icon='search' type="primary" onClick={() => { this.setState({ pageIndex: 1 }, this.query) }}>{gridOption.queryText || '查询'}</Button>
                   </Button.Group>
                 </Col>

@@ -25,10 +25,10 @@ class BirdTreeGrid extends React.Component {
     })
     this.refs.grid.setCustomData(customRules);
 
-    this.props.treeOption.onSelect&&this.props.treeOption.onSelect(clickKey);
+    this.props.treeOption.onSelect && this.props.treeOption.onSelect(clickKey);
   }
 
-  getGrid(){
+  getGrid() {
     return this.refs.grid;
   }
 
@@ -43,13 +43,15 @@ class BirdTreeGrid extends React.Component {
     let gridOption = this.props.gridOption;
     gridOption.autoQuery = false;
 
+    let treeSpan = this.props.treeOption.span || 4;
+
     return (<Row type="flex" justify="center">
-      <Col span={4}>
+      <Col span={treeSpan}>
         <Card title={self.props.treeOption.title}>
           <BirdTree treeOption={option} />
         </Card>
       </Col>
-      <Col span={20}>
+      <Col span={24 - treeSpan}>
         <BirdGrid gridOption={gridOption} ref="grid" />
       </Col>
     </Row>)
@@ -64,7 +66,8 @@ BirdTreeGrid.propTypes = {
     textField: PropTypes.string,
     valueField: PropTypes.string,
     parentField: PropTypes.string,
-    initialValue: PropTypes.string
+    initialValue: PropTypes.string,
+    span: PropTypes.number
   }),
   gridOption: PropTypes.object.isRequired
 };

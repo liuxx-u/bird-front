@@ -32,7 +32,7 @@ let database = [
     "url": ""
   },
   {
-    "icon": "",
+    "icon": "share-alt",
     "id": "5",
     "name": "bird-grid示例",
     "parentId": "4",
@@ -40,7 +40,7 @@ let database = [
     "url": "/demo/bird-grid"
   },
   {
-    "icon": "",
+    "icon": "share-alt",
     "id": "6",
     "name": "bird-selector示例",
     "parentId": "4",
@@ -48,7 +48,7 @@ let database = [
     "url": "/demo/bird-selector"
   },
   {
-    "icon": "",
+    "icon": "share-alt",
     "id": "7",
     "name": "bird-multi示例",
     "parentId": "4",
@@ -56,7 +56,7 @@ let database = [
     "url": "/demo/bird-multi"
   },
   {
-    "icon": "",
+    "icon": "share-alt",
     "id": "8",
     "name": "bird-cascader示例",
     "parentId": "4",
@@ -64,7 +64,7 @@ let database = [
     "url": "/demo/bird-cascader"
   },
   {
-    "icon": "",
+    "icon": "share-alt",
     "id": "9",
     "name": "bird-form示例",
     "parentId": "4",
@@ -72,7 +72,7 @@ let database = [
     "url": "/demo/bird-form"
   },
   {
-    "icon": "",
+    "icon": "share-alt",
     "id": "10",
     "name": "bird-tree示例",
     "parentId": "4",
@@ -80,7 +80,7 @@ let database = [
     "url": "/demo/bird-tree"
   },
   {
-    "icon": "",
+    "icon": "share-alt",
     "id": "11",
     "name": "bird-button示例",
     "parentId": "4",

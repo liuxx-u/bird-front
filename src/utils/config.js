@@ -21,7 +21,6 @@ module.exports =  {
   api: {
     userLogin: `${APIV1}/user/login`,
     userLogout: `${APIV1}/user/logout`,
-    user: `${APIV1}/user/:id`,
     menus: `${APIV1}/menus`,
     getDic:`${APIV1}/getdic?key=`,
     upload:`/file/upload`,

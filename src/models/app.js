@@ -1,68 +1,53 @@
+import { config, util, arrayToTree,permission } from 'utils'
 import { routerRedux } from 'dva/router'
-import { parse } from 'qs'
-import config from 'config'
-import { permission } from 'utils'
-import { query, logout } from 'services/app'
-import * as menusService from 'services/menus'
+import * as menuService from 'services/menus'
 import * as permissionsService from 'services/permissions'
 import queryString from 'query-string'
-
-const { prefix } = config
 
 export default {
   namespace: 'app',
   state: {
-    user: {},
-    menu: [
-      {
-        id: 1,
-        icon: 'laptop',
-        name: 'Dashboard',
-        url: '/dashboard'
-      }
-    ],
-    menuPopoverVisible: false,
-    siderFold: window.localStorage.getItem(`${prefix}siderFold`) === 'true',
-    darkTheme: window.localStorage.getItem(`${prefix}darkTheme`) === 'true',
-    isNavbar: document.body.clientWidth < 769,
-    navOpenKeys: JSON.parse(window.localStorage.getItem(`${prefix}navOpenKeys`)) || [],
-    locationPathname: '',
+    cfMenu: {},
+    menus: [],
+    menuHash: {},
+    menuPath: [],
+    openKeys: [],
+    selectedKeys: [],
+    locationPath: '',
     locationQuery: {}
   },
   subscriptions: {
-
     setupHistory({ dispatch, history }) {
       history.listen((location) => {
         dispatch({
           type: 'updateState',
           payload: {
-            locationPathname: location.pathname,
-            locationQuery: location.query
-          }
+            locationPath: location.pathname,
+            locationQuery: location.query,
+          },
         })
       })
     },
 
     setup({ dispatch }) {
       dispatch({ type: 'query' })
-      let tid
-      window.onresize = () => {
-        clearTimeout(tid)
-        tid = setTimeout(() => {
-          dispatch({ type: 'changeNavbar' })
-        }, 300)
-      }
     }
   },
   effects: {
 
-    * query({
-      payload
-    }, { call, put, select }) {
-      const { success, user } = yield call(query, payload)
-      const { locationPathname } = yield select(_ => _.app)
-      if (success && user) {
-        let menu = yield call(menusService.query)
+    * query({ payload }, { call, put, select }) {
+      const { locationPath } = yield select(_ => _.app);
+
+      let user = util.auth.getUser();
+      if (user) {
+        let menus = yield call(menuService.query);
+        let menuHash = {}, openKeys = [];
+        menus.forEach(item => { menuHash[item.id] = item });
+        if (menus.length > 0) {
+          openKeys = [`sMenu_${menus[0].id}`];
+        }
+        let menuTree = arrayToTree(menus, 'id', 'parentId');
+
         let permissions = permission.getPermissions();
         if (!permissions) {
           permissions = yield call(permissionsService.query);
@@ -72,16 +57,14 @@ export default {
         yield put({
           type: 'updateState',
           payload: {
-            user,
-            menu
-          }
+            user: { userName: user.userName },
+            menus: menuTree,
+            cfMenu: menuTree.length > 0 ? menuTree[0] : {},
+            menuHash,
+            openKeys
+          },
         })
-        if (window.location.pathname === '/login') {
-          yield put(routerRedux.push({
-            pathname: '/dashboard'
-          }))
-        }
-      } else if (config.openPages && config.openPages.indexOf(locationPathname) < 0) {
+      }else if(config.openPages && config.openPages.indexOf(locationPath) < 0){
         yield put(routerRedux.push({
           pathname: '/login',
           search: queryString.stringify({
@@ -89,82 +72,13 @@ export default {
           })
         }))
       }
-    },
-
-    * logout({
-      payload
-    }, { call, put }) {
-      const data = yield call(logout, parse(payload))
-      if (data.success) {
-        yield put({
-          type: 'updateState', payload: {
-            user: {},
-            menu: [
-              {
-                id: 1,
-                icon: 'laptop',
-                name: 'Dashboard',
-                url: '/dashboard'
-              }
-            ]
-          }
-        })
-        yield put({ type: 'query' })
-      } else {
-        throw (data)
-      }
-    },
-
-    * changeNavbar(action, { put, select }) {
-      const { app } = yield (select(_ => _))
-      const isNavbar = document.body.clientWidth < 769
-      if (isNavbar !== app.isNavbar) {
-        yield put({ type: 'handleNavbar', payload: isNavbar })
-      }
     }
   },
   reducers: {
     updateState(state, { payload }) {
       return {
         ...state,
-        ...payload
-      }
-    },
-
-    switchSider(state) {
-      window.localStorage.setItem(`${prefix}siderFold`, !state.siderFold)
-      return {
-        ...state,
-        siderFold: !state.siderFold
-      }
-    },
-
-    switchTheme(state) {
-      window.localStorage.setItem(`${prefix}darkTheme`, !state.darkTheme)
-      return {
-        ...state,
-        darkTheme: !state.darkTheme
-      }
-    },
-
-    switchMenuPopver(state) {
-      return {
-        ...state,
-        menuPopoverVisible: !state.menuPopoverVisible
-      }
-    },
-
-    handleNavbar(state, { payload }) {
-      return {
-        ...state,
-        isNavbar: payload
-      }
-    },
-
-    handleNavOpenKeys(state, { payload: navOpenKeys }) {
-      return {
-        ...state,
-        ...navOpenKeys
+        ...payload,
       }
     }
   }

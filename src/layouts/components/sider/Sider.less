@@ -1,0 +1,83 @@
+.sider{
+  background-color: #f0f8fb;
+
+  .logo{
+    width:100%;
+    height:64px;
+    background:#009fe9  ~"url(./line.png)" no-repeat center;
+    background-size:cover;
+    text-align:center;
+    line-height:64px;
+    font-size:30px;
+    color:#fff;
+    overflow:hidden;
+  }
+  .nav{
+    .navTop {
+      padding: 0 16px 0 16px;
+      overflow: hidden;
+      font-size: 16px;
+      line-height: 40px;
+      height: 40px;
+      background: #06a6f1;
+      color: #fff;
+
+      span{
+        font-size: 16px;
+        font-weight: bold;
+        font-family: "Microsoft JhengHei";
+      }
+    }
+  }
+
+  :global{
+    .ant-layout-sider{
+      background-color: #f0f8fb
+    }
+    .ant-layout-sider-children{
+      background:#cbe7f5;
+    }
+    .ant-menu{
+      border-right: solid 1px #bcd7ea;
+    }
+    .ant-menu-item > a{
+      margin-left: -10px;
+    }
+    .ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title{
+      padding:0 !important;
+      text-align:center;
+    }
+    .ant-menu-inline-collapsed{
+      width:42px;
+    }
+
+    .ant-menu-submenu-title{
+      background-color: #cbe6f3;
+      border-bottom: solid 1px #bcd7ea;
+    }
+
+    .ant-menu-submenu-open .ant-menu-submenu-title,
+    .ant-menu-submenu-active .ant-menu-submenu-title{
+      background-color: #cbe6f3;
+      color: #666 !important;
+    }
+
+    .ant-layout-sider-light .ant-layout-sider-trigger{
+      border-top: dotted 1px #bcd7ea;
+      height: 50px;
+      line-height: 50px;
+      background-color: #f0f8fb;
+    }
+
+    .ant-menu-inline .ant-menu-item{
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+    }
+
+    .ant-menu-inline .ant-menu-submenu-title,
+    .ant-menu-vertical .ant-menu-submenu-title{
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+    }
+  }
+}

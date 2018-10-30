@@ -1,0 +1,313 @@
+[
+  {
+    "createTime":"2018-02-28 09:58:30",
+    "icon":"shopping-cart",
+    "id":145,
+    "name":"非融资产品",
+    "parentId":"140",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 09:57:59",
+    "icon":"shopping-cart",
+    "id":144,
+    "name":"融资产品",
+    "parentId":"140",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-12 17:53:22",
+    "icon":"car",
+    "id":184,
+    "name":"先行通一号",
+    "parentId":"140",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-04-02 12:53:54",
+    "icon":"menu-unfold",
+    "id":203,
+    "name":"我的申请",
+    "parentId":"140",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 10:06:08",
+    "icon":"search",
+    "id":152,
+    "name":"账单查询",
+    "parentId":"142",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 10:06:29",
+    "icon":"pay-circle",
+    "id":153,
+    "name":"保证金",
+    "parentId":"142",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 10:06:52",
+    "icon":"file-text",
+    "id":154,
+    "name":"企业信息",
+    "parentId":"143",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-19 14:51:02",
+    "icon":"file-text",
+    "id":198,
+    "name":"个人信息",
+    "parentId":"143",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-12 17:50:48",
+    "icon":"",
+    "id":179,
+    "name":"先行通一号",
+    "parentId":"144",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-19 14:48:02",
+    "icon":"file-text",
+    "id":197,
+    "name":"基础信息",
+    "parentId":"154",
+    "permissionName":"customer.permission",
+    "url":"/synthesis/dashboard",
+    "count":"3"
+
+  },
+  {
+    "createTime":"2018-02-28 10:07:54",
+    "icon":"shopping-cart",
+    "id":157,
+    "name":"已申请产品",
+    "parentId":"154",
+    "permissionName":"customer.permission",
+    "url":"/report/report",
+    "count":"6"
+  },
+  {
+    "createTime":"2018-02-28 10:07:34",
+    "icon":"key",
+    "id":156,
+    "name":"账号管理",
+    "parentId":"154",
+    "permissionName":"customer.permission",
+    "url":"/synthesis/dashboard",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-14 18:12:49",
+    "icon":"book",
+    "id":195,
+    "name":"账号绑定",
+    "parentId":"154",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-04-02 15:03:52",
+    "icon":"question-circle",
+    "id":205,
+    "name":"常见问题",
+    "parentId":"160",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-04-02 15:04:16",
+    "icon":"question-circle-o",
+    "id":206,
+    "name":"在线帮助",
+    "parentId":"160",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-29 15:43:45",
+    "icon":"car",
+    "id":202,
+    "name":"待办卡车辆信息",
+    "parentId":"184",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-12 17:51:18",
+    "icon":"menu-unfold",
+    "id":180,
+    "name":"车辆列表",
+    "parentId":"184",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-12 17:52:24",
+    "icon":"menu-fold",
+    "id":182,
+    "name":"通行记录",
+    "parentId":"184",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-03-12 17:52:31",
+    "icon":"menu-fold",
+    "id":183,
+    "name":"账单",
+    "parentId":"184",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 10:08:04",
+    "icon":"key",
+    "id":161,
+    "name":"个人信息详情",
+    "parentId":"198",
+    "permissionName":"customer.permission",
+    "url":"/user/AgentBackstage/userManagement/personalDetail",
+    "count":""
+  },{
+  "createTime":"2018-02-28 10:08:04",
+  "icon":"key",
+  "id":158,
+  "name":"密码修改",
+  "parentId":"198",
+  "permissionName":"customer.permission",
+  "url":"/user/AgentBackstage/userManagement/changePass",
+  "count":""
+},
+  {
+    "createTime":"2018-04-02 12:54:17",
+    "icon":"",
+    "id":204,
+    "name":"先行通一号",
+    "parentId":"203",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-04-02 15:04:39",
+    "icon":"",
+    "id":207,
+    "name":"登录注册",
+    "parentId":"205",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-04-02 15:05:02",
+    "icon":"",
+    "id":208,
+    "name":"账单查看",
+    "parentId":"205",
+    "permissionName":"customer.permission",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 09:52:19",
+    "icon":"windows",
+    "id":143,
+    "name":"ETC",
+    "parentId":0,
+    "permissionName":"first.parent",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 09:51:33",
+    "icon":"rocket",
+    "id":140,
+    "name":"机票保理",
+    "parentId":0,
+    "permissionName":"first.parent",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 09:51:58",
+    "icon":"pay-circle",
+    "id":142,
+    "name":"运费保理",
+    "parentId":0,
+    "permissionName":"first.parent",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 09:51:58",
+    "icon":"pie-chart",
+    "id":153,
+    "name":"综合统计",
+    "parentId":0,
+    "permissionName":"first.parent",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 09:51:58",
+    "icon":"bar-chart",
+    "id":144,
+    "name":"营销统计",
+    "parentId":0,
+    "permissionName":"first.parent",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 10:08:17",
+    "icon":"pie-chart",
+    "id":159,
+    "name":"报表中心",
+    "parentId":0,
+    "permissionName":"parent.first",
+    "url":"",
+    "count":""
+  },
+  {
+    "createTime":"2018-02-28 10:08:30",
+    "icon":"smile",
+    "id":160,
+    "name":"用户管理",
+    "parentId":0,
+    "permissionName":"parent.first",
+    "url":"",
+    "count":""
+  }
+
+]

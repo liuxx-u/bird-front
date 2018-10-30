@@ -1,6 +1,7 @@
 import store from 'store';
 
 const tokenKey = "sso.token";
+const userKey = 'bird.curUser';
 
 let util = {
   object: {
@@ -198,7 +199,14 @@ let util = {
     },
     removeToken: function () {
       util.store.remove(tokenKey);
-    }
+      util.store.remove(userKey);
+    },
+    getUser: function () {
+      return util.store.get(userKey);
+    },
+    setUser: function (user) {
+      util.store.set(userKey, user);
+    },
   }
 }
 

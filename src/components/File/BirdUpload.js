@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { config, util, request } from 'utils';
-import { Upload, Button, Icon } from 'antd';
+import { Upload, Button, Icon, Drawer } from 'antd';
+import BirdPreview from './BirdPreview';
 
 /**
  * Upload组件
@@ -12,8 +13,17 @@ class BirdUpload extends React.Component {
 
     this.state = {
       fileList: [],
-      fileNameMap: {}
+      fileNameMap: {},
+
+      loading: false,
+
+      previewUrl: '',
+      previewVisible: false
     }
+  }
+
+  closePreview() {
+    this.setState({ previewVisible: false })
   }
 
   onFileChange(file) {
@@ -84,6 +94,13 @@ class BirdUpload extends React.Component {
     });
   }
 
+  onPreview(file) {
+    this.setState({
+      previewVisible: true,
+      previewUrl: file.url
+    })
+  }
+
   initFileFields(value) {
     if (util.string.isEmpty(value)) value = '';
 
@@ -134,6 +151,22 @@ class BirdUpload extends React.Component {
     }
   }
 
+  getUploadButton() {
+    console.log(this)
+    if (this.props.listType === 'picture-card') {
+      return this.props.disabled
+        ? null
+        : <div>
+          <Icon type={this.state.loading ? 'loading' : 'plus'} />
+          <div className="ant-upload-text">点击上传</div>
+        </div>
+    } else {
+      return <Button type="ghost" disabled={this.props.disabled} loading={this.state.loading}>
+        <Icon type="upload" /> 点击上传
+      </Button>
+    }
+  }
+
   render() {
     let fileProps = {
       action: this.props.action || config.api.upload,
@@ -142,15 +175,23 @@ class BirdUpload extends React.Component {
       accept: this.props.accept,
       listType: this.props.listType,
       fileList: this.state.fileList,
+      showUploadList:this.props.showUploadList,
       onChange: file => this.onFileChange(file),
       onRemove: file => this.onFileRemove(file)
     };
 
-    return (<Upload {...fileProps}>
-      <Button type="ghost" disabled={this.props.disabled}>
-        <Icon type="upload" /> 点击上传
-      </Button>
-    </Upload>);
+    if (this.props.preview) {
+      fileProps.onPreview = file => this.onPreview(file);
+    }
+
+    return (<div>
+      <Upload {...fileProps}>
+        {this.getUploadButton()}
+      </Upload>
+      <Drawer visible={this.state.previewVisible} onClose={() => this.closePreview()} destroyOnClose={true} width={1000} closable={false}>
+        <BirdPreview url={this.state.previewUrl} extra={this.props.previewExtra} />
+      </Drawer>
+    </div>);
   }
 }
 
@@ -161,12 +202,18 @@ BirdUpload.propTypes = {
   listType: PropTypes.string,
   accept: PropTypes.string,
   onChange: PropTypes.func,
-  value: PropTypes.string
+  value: PropTypes.string,
+  showUploadList:PropTypes.bool,
+
+  preview: PropTypes.bool,
+  previewExtra:PropTypes.node
 };
 
 BirdUpload.defaultProps = {
   multiple: false,
   disabled: false,
+  showUploadList:true,
+  preview: true,
   listType: 'picture',
   value: ''
 };

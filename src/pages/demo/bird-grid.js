@@ -23,8 +23,8 @@ class BirdGridDemoPage extends React.Component {
       columns: [
         { title: "编号", data: "id", type: "number" },
         { title: "文本", data: "field-text", type: "text", editor: {}, query: true },
-        { title: "数字", data: "field-number", type: "number", editor: {}, colSpan: 2, query: true },
-        { title: "小数", data: "field-float", type: "number", editor: { innerProps: { step: 0.1, precision: 2 } }, colSpan: 0, query: true },
+        { title: "数字", data: "field-number", type: "number", editor: {}, colSpan: 2,sum:true, query: true },
+        { title: "小数", data: "field-float", type: "number", editor: { innerProps: { step: 0.1, precision: 2 } }, colSpan: 0,sum:true, query: true },
         { title: "布尔值", data: "field-switch", type: "switch", editor: {}, query: true },
         { title: "单选", data: "field-dropdown", type: "dropdown", editor: {}, source: { url: '/api/v1/getOptions' }, query: true },
         { title: "多选", data: "field-multi", type: "multi", editor: {}, source: { key: 'xx' } },

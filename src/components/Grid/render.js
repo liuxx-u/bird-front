@@ -1,6 +1,6 @@
-import style from './BirdGrid.less';
 import { util } from 'utils';
-import { Icon } from 'antd';
+import FileIcon from '../File/FileIcon';
+import { Row, Col } from 'antd';
 
 const DropdownRender = function (v, source) {
   if (!source) return v;
@@ -32,53 +32,42 @@ const DateTimeRender = function (v, format) {
   return util.date.format(v, format);
 }
 
-const ImageRender = function (v) {
+const getPreviewExtra = function (rowData) {
+  if (!rowData) return '';
+
+  let datas = []
+  for (let key in rowData) {
+    datas.push(rowData[key])
+  }
+  return <Row>
+    {datas.map((data, index) => {
+      return <Col span={8} key={`preview_${index}`} style={{ height: 22, lineHeight: '22px' }}>
+        <Row>
+          <Col span={8} style={{ textAlign: "right", paddingRight: 5 }}>{`${data.title}:`}</Col>
+          <Col span={16}>{data.formatValue}</Col>
+        </Row>
+      </Col>
+    })}
+  </Row>;
+}
+
+const ImageRender = function (v, rowData) {
   if (!v) v = '';
 
   let images = v.split(',');
   return images.map(path => {
-    return <div key={path} className={style.img_item}>
-      <a href={path} target="_blank" rel="noopener noreferrer">
-        <img src={path} alt="" />
-      </a>
-    </div>
+    let ext = path.substring(path.lastIndexOf('.'));
+    return <FileIcon url={path} width={20} height={20} nameVisible={false} fileName={'file' + ext} previewExtra={getPreviewExtra(rowData)} />
   });
 }
 
-const getFileIcon = function (path) {
-  if (!path || path.length === 0) {
-    return <span />
-  }
-  let ext = path.substring(path.lastIndexOf('.'));
-  switch (ext) {
-    case '.doc':
-    case '.docx':
-      return <Icon type="file-word" />;
-    case '.xls':
-    case '.xlsx':
-      return <Icon type="file-excel" />;
-    case '.ppt':
-    case '.pptx':
-      return <Icon type="file-ppt" />;
-    case '.pdf':
-      return <Icon type="file-pdf" />;
-    case '.txt':
-      return <Icon type="file-text" />;
-    default:
-      return <Icon type="file" />;
-  }
-}
-const FileRender = function (v) {
+const FileRender = function (v, rowData) {
   if (!v) return '';
 
   let files = v.split(',');
   return files.map(path => {
-    return <div key={path}>
-      <span>
-        {getFileIcon(path)}
-        <a href={path} target="_blank" rel="noopener noreferrer" title="file">file</a>
-      </span>
-    </div>
+    let ext = path.substring(path.lastIndexOf('.'));
+    return <FileIcon url={path} mode="inline" width={20} height={20} fileName={'file' + ext} previewExtra={getPreviewExtra(rowData)} />
   })
 }
 

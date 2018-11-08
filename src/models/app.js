@@ -68,7 +68,7 @@ export default {
         yield put(routerRedux.push({
           pathname: '/login',
           search: queryString.stringify({
-            from: locationPathname
+            from: locationPath
           })
         }))
       }

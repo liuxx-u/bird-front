@@ -8,6 +8,8 @@ import BirdButton from '../Form/BirdButton';
 import { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender, FileRender, MoneyRender } from './render';
 import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider, Spin, Popover } from 'antd';
 
+const sourceTypes = ['dropdown', 'multi', 'cascader'];
+
 class BirdGrid extends React.Component {
   constructor(props) {
     super(props);
@@ -23,6 +25,7 @@ class BirdGrid extends React.Component {
     this.state = {
       columns: [],
       queryColumns: [],
+      sumFields: [],
       actions: [],
       pageIndex: 1,
       pageSize: gridOption.pageSize || 15,
@@ -32,7 +35,8 @@ class BirdGrid extends React.Component {
       filterRules: gridOption.filterRules || [],
       gridDatas: {
         totalCount: dataSource.length,
-        items: dataSource
+        items: dataSource,
+        sum: {}
       },
       formVisiable: false,
       formConfirmLoading: false,
@@ -43,6 +47,7 @@ class BirdGrid extends React.Component {
         value: {}
       },
       customData: gridOption.customRules || [],
+      keyTitleMap: {},
       sourceKeyMap: {},//dropdown与cascader类型key与data的hash映射
 
       primaryKey: primaryKey,//标识列名称
@@ -70,41 +75,9 @@ class BirdGrid extends React.Component {
     }
 
     let url = gridOption.url;
-    let columns = [], queryColumns = [];
-    let sourceKeyMap = {};
+    let columns = [], queryColumns = [], sumFields = [];
+    let keyTitleMap = {}, sourceKeyMap = {};
     for (let col of gridOption.columns) {
-      if (col.type === 'richtext' && this.state.formWidth === 520) {
-        this.setState({ formWidth: 800 });
-      }
-      if (col.query) {
-        queryColumns.push(col);
-      }
-      //初始化下拉选择框的数据源,优先级：data>url>key
-      if ((col.type === 'dropdown' || col.type === 'cascader' || col.type === 'multi') && col.source) {
-        if (col.source.data && col.source.data.length > 0) {
-          sourceKeyMap[col.data] = arrayToHash(col.source.data);
-        } else if (col.source.url) {
-          request({ url: col.source.url, method: "get" })
-            .then(result => {
-              col.source.data = result;
-              sourceKeyMap[col.data] = arrayToHash(col.source.data);
-              this.setState({ sourceKeyMap: sourceKeyMap });
-            });
-        } else if (col.source.key && (col.type === 'dropdown' || col.type === 'multi')) {
-          request({ url: config.api.getDic + col.source.key, method: "get" })
-            .then(result => {
-              col.source.data = result.options;
-              sourceKeyMap[col.data] = arrayToHash(col.source.data);
-              this.setState({ sourceKeyMap: sourceKeyMap });
-            });
-        } else {
-          sourceKeyMap[col.data] = {};
-        }
-      }
-      //money类型的列默认向右对齐
-      if (col.type === 'money') {
-        col.align = col.align || 'right';
-      }
       //根据权限初始化行内按钮，没有按钮时移除command列
       if (col.type === 'command') {
         let tdActions = [];
@@ -122,7 +95,45 @@ class BirdGrid extends React.Component {
         }
         if (tdActions.length === 0) continue;
         col.actions = tdActions;
+      } else {
+        keyTitleMap[col.data] = col.title;
+        if (col.type === 'richtext' && this.state.formWidth === 520) {
+          this.setState({ formWidth: 800 });
+        }
+        if (col.query) {
+          queryColumns.push(col);
+        }
+        if ((col.type === 'number' || col.type === 'money') && col.sum) {
+          sumFields.push(col.data);
+        }
+        //初始化下拉选择框的数据源,优先级：data>url>key
+        if (sourceTypes.includes(col.type) && col.source) {
+          if (col.source.data && col.source.data.length > 0) {
+            sourceKeyMap[col.data] = arrayToHash(col.source.data);
+          } else if (col.source.url) {
+            request({ url: col.source.url, method: "get" })
+              .then(result => {
+                col.source.data = result;
+                sourceKeyMap[col.data] = arrayToHash(col.source.data);
+                this.setState({ sourceKeyMap: sourceKeyMap });
+              });
+          } else if (col.source.key && (col.type === 'dropdown' || col.type === 'multi')) {
+            request({ url: config.api.getDic + col.source.key, method: "get" })
+              .then(result => {
+                col.source.data = result.options;
+                sourceKeyMap[col.data] = arrayToHash(col.source.data);
+                this.setState({ sourceKeyMap: sourceKeyMap });
+              });
+          } else {
+            sourceKeyMap[col.data] = {};
+          }
+        }
+        //money类型的列默认向右对齐
+        if (col.type === 'money') {
+          col.align = col.align || 'right';
+        }
       }
+
       //初始化列的隐藏层级：no、user、dev
       if (col.hide === 'user') { }
       else if (col.hide && col.hide !== 'no') { col.hide = 'dev'; }
@@ -155,7 +166,9 @@ class BirdGrid extends React.Component {
     this.setState({
       columns: columns,
       queryColumns: queryColumns,
+      sumFields: sumFields,
       actions: tableActions,
+      keyTitleMap: keyTitleMap,
       sourceKeyMap: sourceKeyMap,
       tablePermission: tp,
       filterRules: filterRules
@@ -241,7 +254,7 @@ class BirdGrid extends React.Component {
     });
   }
 
-  /*弹出框取消事件 */
+  /* 弹出框取消事件 */
   cancelClick() {
     this.setState({
       formVisiable: false,
@@ -299,7 +312,8 @@ class BirdGrid extends React.Component {
         pageSize: this.state.pageSize,
         sortField: this.state.sortField,
         sortDirection: this.state.sortDirection === "asc" ? 0 : 1,
-        filters: this.getFilters()
+        filters: this.getFilters(),
+        sumFields: this.state.sumFields
       };
 
       request({
@@ -316,10 +330,12 @@ class BirdGrid extends React.Component {
     }
   }
 
+  /* 数据查询(本地) */
   localQuery(props) {
     let { pageIndex, pageSize } = this.state;
     let dataSource = props.gridOption.dataSource;
 
+    //筛选
     let filters = this.getFilters();
     for (let filter of filters) {
       if (dataSource.length === 0) break;
@@ -356,6 +372,31 @@ class BirdGrid extends React.Component {
       })
     }
 
+    //合计
+    let sum = {};
+    for (let field of this.state.sumFields) {
+      let fsum = 0;
+      for (let data of dataSource) {
+        let value = isNaN(data[field]) ? 0 : data[field];
+        fsum = util.number.add(fsum, value);
+      }
+      sum[field] = fsum;
+    }
+
+    //排序
+    let compare = (x, y) => {
+      let sortField = this.state.sortField;
+      let sortDirection = this.state.sortDirection;
+      if (x[sortField] === y[sortField]) return 0;
+      if (sortDirection === 'desc') {
+        return x[sortField] > y[sortField] ? -1 : 1;
+      } else {
+        return x[sortField] > y[sortField] ? 1 : -1;
+      }
+    }
+    dataSource.sort(compare);
+
+    //分页
     let start = (pageIndex - 1) * pageSize;
     let end = start + pageSize;
     if (end >= dataSource.length) end = dataSource.length;
@@ -364,7 +405,8 @@ class BirdGrid extends React.Component {
     this.setState({
       gridDatas: {
         totalCount: dataSource.length,
-        items: items
+        items: items,
+        sum: sum
       }
     })
   }
@@ -388,7 +430,6 @@ class BirdGrid extends React.Component {
     let columns = this.state.columns;
     let sourceKeyMap = this.state.sourceKeyMap;
 
-    let sourceTypes = ['dropdown', 'multi', 'cascader'];
     for (let col of columns) {
       if (col.data === key && sourceTypes.includes(col.type)) {
         col.source = { data: data };
@@ -468,14 +509,14 @@ class BirdGrid extends React.Component {
 
     let ths = self.state.columns.filter(c => c.hide === 'no' && c.colSpan !== 0).map(function (col, index) {
       let sortClass = "";
-      if (!col.sortDisable && col.type !== "command" && gridOption.url && gridOption.url.read) {
+      if (!col.sortDisable && col.type !== "command") {
         sortClass = self.state.sortField !== col.data
           ? styles.sorting
           : self.state.sortDirection === 'asc' ? styles.sorting_asc : styles.sorting_desc;
       }
       let colKey = col.type === 'command' ? 'col_command' : col.data;
       colKey += '_' + index;
-      return (<th key={colKey} colSpan={col.colSpan || 1} style={col.colSpan > 0 ? { textAlign: 'center' } : {}} className={sortClass} onClick={() => self.sortClick(col)}>{col.title}</th>);
+      return (<th key={colKey} colSpan={col.colSpan || 1} style={col.colSpan > 1 ? { textAlign: 'center' } : {}} className={sortClass} onClick={() => self.sortClick(col)}>{col.title}</th>);
     });
     let trs = self.state.gridDatas.items.map(function (data) {
       let backColor = "";
@@ -486,15 +527,37 @@ class BirdGrid extends React.Component {
         else if (backColor === 'error') backColor = "rgba(255,128,102,.2)";
       }
 
+      let rowDataMap = {};
+      self.state.columns.filter(c => c.hide === 'no').forEach(col => {
+        if (col.type === 'command') return;
+        let formatValue;
+        let title = self.state.keyTitleMap[col.data];
+        let value = data[col.data];
+        if (col.render) {
+          formatValue = col.render(value, data)
+        } else {
+          if (col.type === 'switch') formatValue = SwitchRender(value);
+          else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(value, self.state.sourceKeyMap[col.data]);
+          else if (col.type === 'multi') formatValue = MultiRender(value, self.state.sourceKeyMap[col.data]);
+          else if (col.type === 'date') formatValue = DateTimeRender(value, 'yyyy-MM-dd');
+          else if (col.type === 'datetime') formatValue = DateTimeRender(value, 'yyyy-MM-dd HH:mm:ss');
+          else if (col.type === 'img' || col.type === 'imgs') formatValue = ImageRender(value);
+          else if (col.type === 'file' || col.type === 'files') formatValue = FileRender(value);
+          else if (col.type === 'money') formatValue = MoneyRender(value);
+          else formatValue = typeof (value) === 'undefined' ? '' : value;
+        }
+        rowDataMap[col.data] = { title, value, formatValue };
+      })
+
       return <tr
         style={util.string.isEmpty(backColor) ? {} : { backgroundColor: backColor }}
-        className="ant-table-row  ant-table-row-level-0" key={'tr_' + data[primaryKey]}>
+        className="ant-table-row  ant-table-row-level-0" key={`tr_${data[primaryKey]}`}>
         {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0} onChange={() => self.checkClick(data[primaryKey])} /></td>}
         {
           self.state.columns.filter(c => c.hide === 'no').map(function (col, index) {
             if (col.type === "command") {
               let tdActions = col.actions || [];
-              let colKey = 'tr_' + data[primaryKey] + '_td_command_' + index;
+              let colKey = `tr_${data[primaryKey]}_td_command_${index}`;
 
               return <td key={colKey}>
                 {
@@ -503,7 +566,7 @@ class BirdGrid extends React.Component {
 
                     var actionName = action.nameFormat ? action.nameFormat(data) : action.name;
                     let color = config.color[action.color] ? config.color[action.color] : action.color;
-                    return <span key={'tr_' + data[primaryKey] + '_action_' + aIndex}>
+                    return <span key={`tr_${data[primaryKey]}_action_${aIndex}`}>
                       {aIndex > 0 && <Divider type="vertical" />}
                       {action.confirm
                         ? <Popconfirm title={'确定要' + actionName + '吗？'} onConfirm={() => action.onClick(data)}><a style={util.string.isEmpty(color) ? {} : { color: color }} href="#">{actionName}</a></Popconfirm>
@@ -514,20 +577,12 @@ class BirdGrid extends React.Component {
               </td>;
             }
             else {
-              let formatValue;
-              let colKey = 'tr_' + data[primaryKey] + '_td_' + col.data + '_' + index;
-              if (col.render) {
-                formatValue = col.render(data[col.data], data)
-              } else {
-                if (col.type === 'switch') formatValue = SwitchRender(data[col.data]);
-                else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(data[col.data], self.state.sourceKeyMap[col.data]);
-                else if (col.type === 'multi') formatValue = MultiRender(data[col.data], self.state.sourceKeyMap[col.data]);
-                else if (col.type === 'date') formatValue = DateTimeRender(data[col.data], 'yyyy-MM-dd');
-                else if (col.type === 'datetime') formatValue = DateTimeRender(data[col.data], 'yyyy-MM-dd HH:mm:ss');
-                else if (col.type === 'img' || col.type === 'imgs') formatValue = ImageRender(data[col.data]);
-                else if (col.type === 'file' || col.type === 'files') formatValue = FileRender(data[col.data]);
-                else if (col.type === 'money') formatValue = MoneyRender(data[col.data]);
-                else formatValue = typeof (data[col.data]) === 'undefined' ? '' : data[col.data];
+              let { value, formatValue } = rowDataMap[col.data];
+              let colKey = `tr_${data[primaryKey]}_td_${col.data}_${index}`;
+              if (col.type === 'img' || col.type === 'imgs') {
+                formatValue = ImageRender(value, rowDataMap)
+              } else if (col.type === 'file' || col.type === 'files') {
+                formatValue = FileRender(value, rowDataMap)
               }
               let align = col.align || 'left';
               let widthStyle = col.width ? { width: col.width } : {};
@@ -542,6 +597,15 @@ class BirdGrid extends React.Component {
         }
       </tr>
     });
+
+    let sumTr = <tr style={{ backgroundColor: '#f7f7f7' }}>{self.state.columns.filter(c => c.hide === 'no').map(function (col, index) {
+      let align = col.align ? col.align : col.type === 'money' ? 'right' : 'left';
+      let key = `sum_col_${index}`
+
+      if (index === 0) return <td key={key} colSpan={gridOption.checkable ? 2 : 1}>合计：</td>;
+      else if (self.state.sumFields.includes(col.data)) return <td key={key} style={{ textAlign: align }}>{self.state.gridDatas.sum[col.data]}</td>;
+      else return <td key={key} style={{ textAlign: 'center' }}>------</td>;
+    })}</tr>;
 
     let actions = self.state.actions.map(function (action, index) {
       let checkedValues = self.state.checkedValues;
@@ -634,6 +698,7 @@ class BirdGrid extends React.Component {
                 </thead>
                 <tbody className={styles.bird_table_body}>
                   {trs}
+                  {self.state.gridDatas.items.length > 0 && self.state.gridDatas.sum && self.state.sumFields.length > 0 && sumTr}
                 </tbody>
               </table>
               <Pagination className={styles.gridPagination}

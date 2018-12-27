@@ -25,6 +25,8 @@ module.exports =  {
     getDic:`${APIV1}/getdic?key=`,
     upload:`/file/upload`,
     getFileName:`/file/getName?url=`,
+    getFileNames:`/file/getNames`,
+    export:`/grid/export`,
     getOperationToken:`${APIV1}/getOperationToken`,
     permissions:`${APIV1}/permissions`
   }

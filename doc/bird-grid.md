@@ -64,11 +64,14 @@ bird-grid是一个简化业务系统增删改查的全自动表格组件。组�
 参数 | 说明 | 类型 | 默认值
 ---|---|---|---
 url | 表格相关服务api配置 | object | {}
+header | 自定义header,为null时不渲染 | ReactNode | 
+footer | 自定义footer,为null时不渲染 | ReactNode | 
 permission | 权限相关配置 | object/string | {}
 primaryKey | 标识列 | string | 第一列的data参数
 columns | 表格列配置 | array | []
 dataSource | 本地数据源，配置后url.read不生效 | array | []
 checkable | 是否添加Checkbox选择框 | bool | false
+import | 是否添加导出按钮 | bool | false
 pageSize | 每页数据条数 | number | 15
 pageSizeOptions | 每页数量选项数组 | array | ["10", "15", "20", "30", "50", "100"]
 sortField | 排序字段 | string | primaryKey
@@ -81,7 +84,7 @@ queryText | 查询按钮文字 | text | '查询'
 autoQuery | 是否根据url自动查询 | bool | true
 afterQuery | 查询结束后执行事件 | function | (result,filters)=>{}
 afterSave | 表单保存后执行事件 | function | ()=>{}
-errorFinder | 定义异常数据查找规则 | function | data=>{}
+colorRender | 自定义行的背景色 | function | data=>{}
 
 设置本地dataSource后，url.read与autoQuery属性不生效，相关的查询也不能生效。
 
@@ -112,6 +115,7 @@ delete | 数据删除url | string | ''
       "value": "string"
     }
   ],
+  "sumFields":["field"],
   "pageIndex": 0,
   "pageSize": 0,
   "sortDirection": 0,
@@ -123,6 +127,9 @@ delete | 数据删除url | string | ''
 ```
 {
     "items": [],
+    "sum":{
+        "field":0
+    },
     "totalCount": "10"
 }
 ```
@@ -147,6 +154,7 @@ title | 列名称 | string |
 data | 对应数据的字段名 | string | 
 type | 列类型。text、textarea、number、money、switch、dropdown、multi、cascader、richtext、img(s)、file(s)、date、datetime、hide、command | string | 
 align | 对齐方式。left、center、right，money类型默认right | string | left
+sum | 是否合计总数 | bool | false
 query | 列是否可查询 | bool | false
 sortDisable | 列是否禁止排序 | bool | false
 hide | 支持三种层级的列隐藏：no、user、dev | bool/string | 'no'
@@ -155,6 +163,7 @@ source | 当列类型为dropdown（单选）或multi（多选）或cascader（�
 actions | 当列类型为command时的操作按钮数组 | array |[编辑,删除]
 editor | 列的编辑设置 | object | null
 maxLength | 类型为text、textarea、richtext时最大显示长度 | number | 30
+colSpan | 指定列宽，默认为1，设为0后，列头不显示 | number | 1
 说明：
 
 - render(v,d){}方法第一个参数表示当前行当前列的数据，第二个参数表示整行的数据。
@@ -172,6 +181,7 @@ isRequired | 是否必填 | bool | false
 validateRegular | 验证的正则表达式 | string |
 step | number类型下的步长 | number | 1
 precision | number类型的精度(小数的位数) | number | 0
+innerProps | 对应antd组件的props | object | {}
 
 
 #### actions相关API
@@ -183,8 +193,10 @@ icon | 按钮图标，只对右上角按钮有效 | string |
 onClick | 点击事件 | function(data){} | (data)=>{}
 nameFormat | 按钮名称渲染方法，根据行数据渲染不同的按钮名 | function(data){} | 
 hideFunc | 根据行数据判断按钮是否显示方法 | function(data){} | 
-permissionName | 所需权限名 | string |
+permissionName | 所需权限名 | string/array |
 confirm | 操作是否需要确认 | bool | false
+color | 按钮颜色 | string |
+render | 自定义按钮渲染方法 | data=>element |
 
 说明：
 
@@ -193,6 +205,7 @@ confirm | 操作是否需要确认 | bool | false
 - hideFunc，只对行内action有效，存在且hideFunc(data)为true时，该按钮隐藏；
 - permissionName实现按钮级权限控制；
 - onClick。右上角按钮：data表示表格选中的值；行内按钮：data表示行数据；
+- render。自定义渲染方法，name、nameFormat、onClick不再生效；
 
 ### customRules相关API
 

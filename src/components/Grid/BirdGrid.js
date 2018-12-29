@@ -383,8 +383,7 @@ class BirdGrid extends React.Component {
   /* 数据查询(本地) */
   localQuery(props) {
     let { pageIndex, pageSize } = this.state;
-    let dataSource = props.gridOption.dataSource;
-
+    let dataSource = deepClone(props.gridOption.dataSource);
     //筛选
     let filters = this.getFilters();
     for (let filter of filters) {
@@ -723,7 +722,7 @@ class BirdGrid extends React.Component {
                 showRowActions = tdActions.slice(0, showRowActionCount - 1).map((action, index) => this.renderRowAction(action, false, data, rowDataMap, index));
                 let shrinkActions = tdActions.slice(showRowActionCount - 1, tdActions.length).map((action, index) => this.renderRowAction(action, true, data, rowDataMap, index));
 
-                let shrinkAction = <span><Divider type="vertical" /><Dropdown overlay={<Menu>{shrinkActions}</Menu>}><a className="ant-dropdown-link" href="#">更多<Icon type="down" /></a></Dropdown></span>
+                let shrinkAction = <span key={`${colKey}_action_more`}><Divider type="vertical" /><Dropdown overlay={<Menu>{shrinkActions}</Menu>}><a className="ant-dropdown-link" href="#">更多<Icon type="down" /></a></Dropdown></span>
                 showRowActions.push(shrinkAction);
               } else {
                 showRowActions = tdActions.map((action, index) => this.renderRowAction(action, false, data, rowDataMap, index));
@@ -757,7 +756,6 @@ class BirdGrid extends React.Component {
       let align = col.align ? col.align : col.type === 'money' ? 'right' : 'left';
       let key = `sum_col_${index}`;
 
-
       if (index === 0) return <td key={key} colSpan={gridOption.checkable ? 2 : 1}>合计：</td>;
       else if (this.state.sumFields.includes(col.data)) {
         let value = this.state.gridDatas.sum[col.data];
@@ -775,7 +773,7 @@ class BirdGrid extends React.Component {
       showActions = this.state.actions.slice(0, showActionCount - 1).map((action, index) => this.renderTableAction(action, false, index));
       let shrinkActions = this.state.actions.slice(showActionCount - 1, this.state.actions.length).map((action, index) => this.renderTableAction(action, true, index));
 
-      let shrinkAction = <Dropdown overlay={<Menu>{shrinkActions}</Menu>}><Button type="primary">更多操作 <Icon type="down" /></Button></Dropdown>
+      let shrinkAction = <Dropdown key={`table_action_more`} overlay={<Menu>{shrinkActions}</Menu>}><Button type="primary">更多操作 <Icon type="down" /></Button></Dropdown>
       showActions.push(shrinkAction);
     } else {
       showActions = this.state.actions.map((action, index) => this.renderTableAction(action, false, index));

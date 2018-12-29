@@ -6,7 +6,7 @@ import { request, config, util, permission, arrayToHash, deepClone } from 'utils
 import styles from './BirdGrid.less';
 import BirdButton from '../Form/BirdButton';
 import { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender, FileRender, MoneyRender } from './render';
-import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider, Spin, Popover } from 'antd';
+import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider, Spin, Popover, Dropdown, Menu, Icon } from 'antd';
 
 const sourceTypes = ['dropdown', 'multi', 'cascader'];
 const fileTypes = ['img', 'imgs', 'file', 'files'];
@@ -162,13 +162,13 @@ class BirdGrid extends React.Component {
     //初始化顶部按钮
     let tableActions = [];
     let optionActions = gridOption.actions || [];
+    if (url && url.add && permission.check(tp.add)) {
+      tableActions.push({ name: "新增", icon: "plus", onClick: () => this.addClick() });
+    }
     for (let action of optionActions) {
       if (permission.check(action.permissionName)) {
         tableActions.push(action);
       }
-    }
-    if (url && url.add && permission.check(tp.add)) {
-      tableActions.push({ name: "新增", icon: "plus", onClick: () => this.addClick() });
     }
     if (url && url.read && gridOption.export && permission.check(tp.export)) {
       tableActions.push({ name: "导出", icon: "export", confirm: true, loading: this.state.exportLoading, onClick: () => this.exportClick() });
@@ -565,7 +565,7 @@ class BirdGrid extends React.Component {
   }
 
   getFilters() {
-    let customRules = this.state.customData.map(function (data) {
+    let customRules = this.state.customData.map(data => {
       return {
         field: data.field,
         operate: data.operate ? data.operate : "equal",
@@ -589,23 +589,93 @@ class BirdGrid extends React.Component {
     this.setState({ columns: columns });
   }
 
-  render() {
-    let self = this;
-    let gridOption = self.props.gridOption;
-    let primaryKey = self.state.primaryKey;
+  renderTableAction(action, shrink, index) {
+    let actionEle;
+    let eleKey = `table_action_${index}`;
 
-    let ths = self.state.columns.filter(c => c.hide === 'no' && c.colSpan !== 0).map(function (col, index) {
+    if (action.render && typeof (action.render) === 'function') {
+      actionEle = action.render();
+    } else {
+      let primaryKey = this.state.primaryKey;
+      let checkedValues = this.state.checkedValues;
+      let checkedDatas = this.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
+
+      let onClick = action.confirm ? () => {
+        Modal.confirm({
+          title: `确定要${action.name}吗？`,
+          maskClosable: true,
+          okText: "确定",
+          cancelText: "取消",
+          onOk: () => action.onClick(checkedValues, checkedDatas)
+        });
+      } : () => action.onClick(checkedValues, checkedDatas)
+
+      actionEle = <BirdButton key={eleKey} style={shrink ? { width: '100%' } : {}} color={action.color} icon={action.icon} loading={action.loading} type="primary" onClick={onClick}>{action.name}</BirdButton>
+    }
+    return shrink ? <Menu.Item key={eleKey}>{actionEle}</Menu.Item> : actionEle;
+  }
+
+  renderRowAction(action, shrink, rowData, formatData, index) {
+    let actionEle;
+    let primaryKey = this.state.primaryKey;
+    let eleKey = `tr_${rowData[primaryKey]}_action_${index}`;
+    if (action.render && typeof (action.render) === 'function') {
+      actionEle = action.render(rowData);
+    } else {
+      var actionName = action.nameFormat ? action.nameFormat(rowData) : action.name;
+      let color = config.color[action.color] ? config.color[action.color] : action.color;
+
+      let onClick = action.confirm ? () => {
+        let fds = []
+        for (let key in formatData) {
+          fds.push(formatData[key])
+        }
+        let content = <Card>
+          {fds.map((data, index) => {
+            return <Row key={`${eleKey}_item_${index}`}>
+              <Col span={8} style={{ textAlign: "right", paddingRight: 5 }}>{`${data.title}:`}</Col>
+              <Col span={16} style={{ color: '#1890ff', fontSize: '14px' }}>{data.formatValue}</Col>
+            </Row>
+          })}
+        </Card>;
+
+        Modal.confirm({
+          title: `确定要${actionName}吗？`,
+          content: content,
+          maskClosable: true,
+          okText: "确定",
+          cancelText: "取消",
+          onOk: () => action.onClick(rowData)
+        });
+      } : () => action.onClick(rowData)
+
+      actionEle = <a style={util.string.isEmpty(color) ? {} : { color: color }} href="javascript:void(0);" onClick={onClick}>{actionName}</a>
+    }
+
+    return shrink
+      ? <Menu.Item key={eleKey}>{actionEle}</Menu.Item>
+      : <span key={eleKey}>
+        {index > 0 && <Divider type="vertical" />}
+        {actionEle}
+      </span>;
+  }
+
+  render() {
+    let gridOption = this.props.gridOption;
+    let primaryKey = this.state.primaryKey;
+
+    let ths = this.state.columns.filter(c => c.hide === 'no' && c.colSpan !== 0).map((col, index) => {
       let sortClass = "";
       if (!col.sortDisable && col.type !== "command") {
-        sortClass = self.state.sortField !== col.data
+        sortClass = this.state.sortField !== col.data
           ? styles.sorting
-          : self.state.sortDirection === 'asc' ? styles.sorting_asc : styles.sorting_desc;
+          : this.state.sortDirection === 'asc' ? styles.sorting_asc : styles.sorting_desc;
       }
       let colKey = col.type === 'command' ? 'col_command' : col.data;
       colKey += '_' + index;
-      return (<th key={colKey} colSpan={col.colSpan || 1} style={col.colSpan > 1 ? { textAlign: 'center' } : {}} className={sortClass} onClick={() => self.sortClick(col)}>{col.title}</th>);
+      return (<th key={colKey} colSpan={col.colSpan || 1} style={col.colSpan > 1 ? { textAlign: 'center' } : {}} className={sortClass} onClick={() => this.sortClick(col)}>{col.title}</th>);
     });
-    let trs = self.state.gridDatas.items.map(function (data) {
+    let trs = this.state.gridDatas.items.map(data => {
       let backColor = "";
       if (typeof (gridOption.colorRender) === 'function') {
         backColor = gridOption.colorRender(data);
@@ -615,21 +685,21 @@ class BirdGrid extends React.Component {
       }
 
       let rowDataMap = {};
-      self.state.columns.filter(c => c.hide === 'no').forEach(col => {
+      this.state.columns.filter(c => c.hide === 'no').forEach(col => {
         if (col.type === 'command') return;
         let formatValue;
-        let title = self.state.keyTitleMap[col.data];
+        let title = this.state.keyTitleMap[col.data];
         let value = data[col.data];
         if (col.render) {
           formatValue = col.render(value, data)
         } else {
           if (col.type === 'switch') formatValue = SwitchRender(value);
-          else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(value, self.state.sourceKeyMap[col.data]);
-          else if (col.type === 'multi') formatValue = MultiRender(value, self.state.sourceKeyMap[col.data]);
+          else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(value, this.state.sourceKeyMap[col.data]);
+          else if (col.type === 'multi') formatValue = MultiRender(value, this.state.sourceKeyMap[col.data]);
           else if (col.type === 'date') formatValue = DateTimeRender(value, 'yyyy-MM-dd');
           else if (col.type === 'datetime') formatValue = DateTimeRender(value, 'yyyy-MM-dd HH:mm:ss');
-          else if (col.type === 'img' || col.type === 'imgs') formatValue = ImageRender(value, self.state.fileNameMap);
-          else if (col.type === 'file' || col.type === 'files') formatValue = FileRender(value, self.state.fileNameMap);
+          else if (col.type === 'img' || col.type === 'imgs') formatValue = ImageRender(value, this.state.fileNameMap);
+          else if (col.type === 'file' || col.type === 'files') formatValue = FileRender(value, this.state.fileNameMap);
           else if (col.type === 'money') formatValue = MoneyRender(value);
           else formatValue = typeof (value) === 'undefined' ? '' : value;
         }
@@ -639,45 +709,35 @@ class BirdGrid extends React.Component {
       return <tr
         style={util.string.isEmpty(backColor) ? {} : { backgroundColor: backColor }}
         className="ant-table-row  ant-table-row-level-0" key={`tr_${data[primaryKey]}`}>
-        {gridOption.checkable && <td><Checkbox checked={self.state.checkedValues.indexOf(data[primaryKey]) >= 0} onChange={() => self.checkClick(data[primaryKey])} /></td>}
+        {gridOption.checkable && <td><Checkbox checked={this.state.checkedValues.indexOf(data[primaryKey]) >= 0} onChange={() => this.checkClick(data[primaryKey])} /></td>}
         {
-          self.state.columns.filter(c => c.hide === 'no').map(function (col, index) {
+          this.state.columns.filter(c => c.hide === 'no').map((col, index) => {
             if (col.type === "command") {
               let tdActions = col.actions || [];
               let colKey = `tr_${data[primaryKey]}_td_command_${index}`;
+              tdActions = tdActions.filter(p => !p.hideFunc || !p.hideFunc(data));
 
-              return <td className={styles.popover} key={colKey}>
-                {
-                  tdActions.map(function (action, aIndex) {
-                    let actionEle;
-                    if (action.hideFunc && action.hideFunc(data)) {
-                      actionEle = null;
-                    } else if (action.render && typeof (action.render) === 'function') {
-                      actionEle = action.render(data);
-                    } else {
-                      var actionName = action.nameFormat ? action.nameFormat(data) : action.name;
-                      let color = config.color[action.color] ? config.color[action.color] : action.color;
-                      actionEle = action.confirm
-                        ? <Popconfirm title={'确定要' + actionName + '吗？'} onConfirm={() => action.onClick(data)}><a style={util.string.isEmpty(color) ? {} : { color: color }} href="#">{actionName}</a></Popconfirm>
-                        : <a style={util.string.isEmpty(color) ? {} : { color: color }} href="javascript:void(0);" onClick={() => action.onClick(data)}>{actionName}</a>
-                    }
+              let showRowActionCount = gridOption.showRowActionCount || 3;
+              let showRowActions = [];
+              if (tdActions.length > showRowActionCount) {
+                showRowActions = tdActions.slice(0, showRowActionCount - 1).map((action, index) => this.renderRowAction(action, false, data, rowDataMap, index));
+                let shrinkActions = tdActions.slice(showRowActionCount - 1, tdActions.length).map((action, index) => this.renderRowAction(action, true, data, rowDataMap, index));
 
+                let shrinkAction = <span><Divider type="vertical" /><Dropdown overlay={<Menu>{shrinkActions}</Menu>}><a className="ant-dropdown-link" href="#">更多<Icon type="down" /></a></Dropdown></span>
+                showRowActions.push(shrinkAction);
+              } else {
+                showRowActions = tdActions.map((action, index) => this.renderRowAction(action, false, data, rowDataMap, index));
+              }
 
-                    return <span key={`tr_${data[primaryKey]}_action_${aIndex}`}>
-                      {aIndex > 0 && actionEle !== null && <Divider type="vertical" />}
-                      {actionEle !== null && actionEle}
-                    </span>
-                  })
-                }
-              </td>;
+              return <td className={styles.popover} key={colKey}>{showRowActions}</td>;
             }
             else {
               let { value, formatValue } = rowDataMap[col.data];
               let colKey = `tr_${data[primaryKey]}_td_${col.data}_${index}`;
               if (col.type === 'img' || col.type === 'imgs') {
-                formatValue = ImageRender(value, self.state.fileNameMap, rowDataMap)
+                formatValue = ImageRender(value, this.state.fileNameMap, rowDataMap)
               } else if (col.type === 'file' || col.type === 'files') {
-                formatValue = FileRender(value, self.state.fileNameMap, rowDataMap)
+                formatValue = FileRender(value, this.state.fileNameMap, rowDataMap)
               }
               let align = col.align || 'left';
               let widthStyle = col.width ? { width: col.width } : {};
@@ -693,14 +753,14 @@ class BirdGrid extends React.Component {
       </tr>
     });
 
-    let sumTr = <tr style={{ backgroundColor: '#f7f7f7' }}>{self.state.columns.filter(c => c.hide === 'no').map(function (col, index) {
+    let sumTr = <tr style={{ backgroundColor: '#f7f7f7' }}>{this.state.columns.filter(c => c.hide === 'no').map((col, index) => {
       let align = col.align ? col.align : col.type === 'money' ? 'right' : 'left';
       let key = `sum_col_${index}`;
 
 
       if (index === 0) return <td key={key} colSpan={gridOption.checkable ? 2 : 1}>合计：</td>;
-      else if (self.state.sumFields.includes(col.data)) {
-        let value = self.state.gridDatas.sum[col.data];
+      else if (this.state.sumFields.includes(col.data)) {
+        let value = this.state.gridDatas.sum[col.data];
         if (col.type === 'money') {
           value = MoneyRender(value);
         }
@@ -709,20 +769,20 @@ class BirdGrid extends React.Component {
       else return <td key={key} style={{ textAlign: 'center' }}>------</td>;
     })}</tr>;
 
-    let actions = self.state.actions.map(function (action, index) {
-      if (action.render && typeof (action.render) === 'function') {
-        return action.render();
-      } else {
-        let checkedValues = self.state.checkedValues;
-        let checkedDatas = self.state.gridDatas.items.filter(item => checkedValues.indexOf(item[primaryKey]) >= 0);
-        return action.confirm
-          ? <Popconfirm key={"action_" + index} okText={'确定'} cancelText={'取消'} title={'确定要' + action.name + '吗？'} onConfirm={() => action.onClick(checkedValues, checkedDatas)}><BirdButton color={action.color} icon={action.icon} type="primary" loading={action.loading}>{action.name}</BirdButton></Popconfirm>
-          : <BirdButton key={"action_" + index} color={action.color} icon={action.icon} loading={action.loading} type="primary" onClick={() => action.onClick(checkedValues, checkedDatas)}>{action.name}</BirdButton>
-      }
-    });
+    let showActionCount = gridOption.showActionCount || 5;
+    let showActions = [];
+    if (this.state.actions.length > showActionCount) {
+      showActions = this.state.actions.slice(0, showActionCount - 1).map((action, index) => this.renderTableAction(action, false, index));
+      let shrinkActions = this.state.actions.slice(showActionCount - 1, this.state.actions.length).map((action, index) => this.renderTableAction(action, true, index));
+
+      let shrinkAction = <Dropdown overlay={<Menu>{shrinkActions}</Menu>}><Button type="primary">更多操作 <Icon type="down" /></Button></Dropdown>
+      showActions.push(shrinkAction);
+    } else {
+      showActions = this.state.actions.map((action, index) => this.renderTableAction(action, false, index));
+    }
 
     let filterGroups = [[]];
-    let filterRules = self.state.filterRules;
+    let filterRules = this.state.filterRules;
 
     for (let i = 1, len = filterRules.length; i < len; i++) {
       let offset = i % 3;
@@ -742,10 +802,10 @@ class BirdGrid extends React.Component {
           return <Col span={8} key={'filter_group_' + gindex + '_rule_' + rindex} style={{ marginBottom: 10 }}>
             <Row>
               <Col span={20}>
-                <BirdGridFilter fields={self.state.queryColumns} rule={rule} onChange={rule => self.filterChange(index, rule)} />
+                <BirdGridFilter fields={this.state.queryColumns} rule={rule} onChange={rule => this.filterChange(index, rule)} />
               </Col>
               <Col span={4}>
-                <Button icon='close' type='danger' onClick={() => self.removeFilter(index)} />
+                <Button icon='close' type='danger' onClick={() => this.removeFilter(index)} />
               </Col>
             </Row>
           </Col>
@@ -763,7 +823,7 @@ class BirdGrid extends React.Component {
             </Col>
             <Col span={8}>
               <Button.Group>
-                <Button icon='plus' onClick={() => self.addFilter()} />
+                <Button icon='plus' onClick={() => this.addFilter()} />
                 <Button type="primary" onClick={() => { this.setState({ pageIndex: 1 }, this.query) }}>{gridOption.queryText || '查询'}</Button>
                 <Button icon='sync' type="primary" onClick={() => this.reload()} />
               </Button.Group>
@@ -773,7 +833,7 @@ class BirdGrid extends React.Component {
         <Col span={14}>
           <div className={styles.action}>
             <Button.Group>
-              {actions}
+              {showActions}
               <Popover placement="bottomRight" trigger="click" content={this.state.columns.map((col, index) =>
                 <div key={'col_opt_' + index}>
                   {(col.hide !== 'dev') && <Checkbox checked={col.hide === 'no'} onChange={() => this.switchColumn(index)}>{col.title}</Checkbox>}
@@ -817,7 +877,7 @@ class BirdGrid extends React.Component {
               </thead>
               <tbody className={styles.bird_table_body}>
                 {trs}
-                {self.state.gridDatas.items.length > 0 && self.state.gridDatas.sum && self.state.sumFields.length > 0 && sumTr}
+                {this.state.gridDatas.items.length > 0 && this.state.gridDatas.sum && this.state.sumFields.length > 0 && sumTr}
               </tbody>
             </table>
             {/*<div className={styles.changebox2}>占位用</div>*/}

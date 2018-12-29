@@ -1,7 +1,11 @@
 .action{
-  text-align: right;
+  :global{
+    .ant-btn-group{
+      display: flex;
+      float:right;
+    }
+  }
 }
-
 .filter{
   text-align: left;
 }
@@ -14,15 +18,15 @@
 .sorting {
   cursor: pointer;
   padding:20px;
-  background: #f7f7f7 ~"url(./sort_both.png)" no-repeat right !important;;
+  background: #f7f7f7 ~"url(./sort_both.png)" no-repeat right !important;
 }
 .sorting_asc {
   cursor: pointer;
-  background: #f7f7f7 ~"url(./sort_asc.png)" no-repeat center right !important;;
+  background: #f7f7f7 ~"url(./sort_asc.png)" no-repeat center right !important;
 }
 .sorting_desc {
   cursor: pointer;
-  background: #f7f7f7 ~"url(./sort_desc.png)" no-repeat center right !important;;
+  background: #f7f7f7 ~"url(./sort_desc.png)" no-repeat center right !important;
 }
 
 :global .ant-select-dropdown-menu-item{
@@ -32,6 +36,14 @@
 :global .ant-divider-vertical{
   background: #ccc;
   margin: 0 3px;
+}
+
+:global{
+  .ant-confirm-body {
+    .ant-confirm-content{
+      margin-left: 0 !important;
+    }
+  }
 }
 
 .bird_table {

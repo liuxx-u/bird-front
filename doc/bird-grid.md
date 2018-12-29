@@ -85,6 +85,8 @@ autoQuery | 是否根据url自动查询 | bool | true
 afterQuery | 查询结束后执行事件 | function | (result,filters)=>{}
 afterSave | 表单保存后执行事件 | function | ()=>{}
 colorRender | 自定义行的背景色 | function | data=>{}
+showActionCount | 顶部按钮数量，超过则收起 | number | 5
+showRowActionCount | 行内按钮数量，超过则收起 | number | 3
 
 设置本地dataSource后，url.read与autoQuery属性不生效，相关的查询也不能生效。
 

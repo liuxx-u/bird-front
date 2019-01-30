@@ -6,7 +6,7 @@ import { request, config, util, permission, arrayToHash, deepClone } from 'utils
 import styles from './BirdGrid.less';
 import BirdButton from '../Form/BirdButton';
 import { DropdownRender, SwitchRender, DateTimeRender, MultiRender, ImageRender, FileRender, MoneyRender } from './render';
-import { Pagination, Modal, Card, Popconfirm, message, Row, Col, Checkbox, Button, Divider, Spin, Popover, Dropdown, Menu, Icon } from 'antd';
+import { Pagination, Modal, Card, message, Row, Col, Checkbox, Button, Divider, Spin, Popover, Dropdown, Menu, Icon } from 'antd';
 
 const sourceTypes = ['dropdown', 'multi', 'cascader'];
 const fileTypes = ['img', 'imgs', 'file', 'files'];
@@ -374,7 +374,7 @@ class BirdGrid extends React.Component {
         if (result === null || typeof (result) === "undefined") {
           result = { totalCount: 0, items: [] };
         }
-        this.setState({ gridDatas: result, queryLoading: false }, this.formatFileName);
+        this.setState({ gridDatas: result, queryLoading: false, checkedValues: [] }, this.formatFileName);
         this.props.gridOption.afterQuery && this.props.gridOption.afterQuery(result, this.getFilters());
       });
     }
@@ -456,7 +456,8 @@ class BirdGrid extends React.Component {
         totalCount: dataSource.length,
         items: items,
         sum: sum
-      }
+      },
+      checkedValues: []
     }, this.formatFileName)
   }
 
@@ -623,12 +624,12 @@ class BirdGrid extends React.Component {
     } else {
       var actionName = action.nameFormat ? action.nameFormat(rowData) : action.name;
       let color = config.color[action.color] ? config.color[action.color] : action.color;
+      let fds = []
+      for (let key in formatData) {
+        fds.push(formatData[key])
+      }
 
       let onClick = action.confirm ? () => {
-        let fds = []
-        for (let key in formatData) {
-          fds.push(formatData[key])
-        }
         let content = <Card>
           {fds.map((data, index) => {
             return <Row key={`${eleKey}_item_${index}`}>
@@ -644,9 +645,9 @@ class BirdGrid extends React.Component {
           maskClosable: true,
           okText: "确定",
           cancelText: "取消",
-          onOk: () => action.onClick(rowData)
+          onOk: () => action.onClick(rowData, fds)
         });
-      } : () => action.onClick(rowData)
+      } : () => action.onClick(rowData, fds)
 
       actionEle = <a style={util.string.isEmpty(color) ? {} : { color: color }} href="javascript:void(0);" onClick={onClick}>{actionName}</a>
     }
@@ -689,8 +690,10 @@ class BirdGrid extends React.Component {
         let formatValue;
         let title = this.state.keyTitleMap[col.data];
         let value = data[col.data];
-        if (col.render) {
-          formatValue = col.render(value, data)
+        if (typeof (col.render) === 'function') {
+          if (sourceTypes.includes(col.type)) formatValue = col.render(value, data, this.state.sourceKeyMap[col.data]);
+          else if (fileTypes.includes(col.type)) formatValue = col.render(value, data, this.state.fileNameMap);
+          else formatValue = col.render(value, data);
         } else {
           if (col.type === 'switch') formatValue = SwitchRender(value);
           else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(value, this.state.sourceKeyMap[col.data]);

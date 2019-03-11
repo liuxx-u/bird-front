@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import AutoForm from './BirdGridForm';
+import BirdForm from '../Form/BirdForm';
 import BirdGridFilter from './BirdGridFilter';
 import { request, config, util, permission, arrayToHash, deepClone } from 'utils';
 import styles from './BirdGrid.less';
@@ -43,11 +43,7 @@ class BirdGrid extends React.Component {
       formVisiable: false,
       formConfirmLoading: false,
       formWidth: gridOption.formWidth || 520,
-      formOption: {
-        saveUrl: "",
-        fields: [],
-        value: {}
-      },
+      formOption: gridOption.formOption || {},
       customData: gridOption.customRules || [],
       keyTitleMap: {},
       sourceKeyMap: {},//dropdown与cascader类型key与data的hash映射
@@ -59,6 +55,8 @@ class BirdGrid extends React.Component {
       checkedValues: [],
       autoQuery: autoQuery //页面渲染完成之后是否自动查询，默认为true
     };
+
+    this.form = React.createRef();
   }
 
   /* 初始化渲染执行之前执行 */
@@ -101,7 +99,7 @@ class BirdGrid extends React.Component {
         col.actions = tdActions;
       } else {
         keyTitleMap[col.data] = col.title;
-        if (col.type === 'richtext' && this.state.formWidth === 520) {
+        if ((this.state.formOption.lineCapacity > 1 || col.type === 'richtext') && this.state.formWidth === 520) {
           this.setState({ formWidth: 800 });
         }
         if (col.query) {
@@ -212,13 +210,32 @@ class BirdGrid extends React.Component {
 
   /* 新增点击事件 */
   addClick() {
-    let formOption = {
-      model: "add",
-      saveUrl: this.props.gridOption.url.add,
-      fields: this.state.columns,
-      value: {},
-      extraParams: this.state.customData
-    };
+    let gridOption = this.props.gridOption;
+    let formOption = this.state.formOption;
+    formOption.model = "add";
+    formOption.saveUrl = gridOption.url.add;
+    formOption.value = formOption.defaultValue || {}
+
+    for (let extra of this.state.customData) {
+      formOption.value[extra.field] = extra.value;
+    }
+    formOption.fields = this.state.columns
+      .filter(c => c.type !== 'command' && c.data !== 'id' && c.editor && c.editor.ap !== 'hide')
+      .map(c => ({
+        name: c.title,
+        key: c.data,
+        tips: c.editor.tips,
+        isRequired: c.editor.isRequired,
+        validateRegular: c.editor.validateRegular,
+        fieldType: c.type,
+        disabled: c.editor.ap === 'disabled',
+        source: c.source || {},
+        groupName: c.editor.groupName,
+        step: c.editor.step,
+        precision: c.editor.precision,
+        innerProps: c.editor.innerProps
+      }));
+
     this.setState({
       formVisiable: true,
       formOption: formOption
@@ -265,13 +282,37 @@ class BirdGrid extends React.Component {
 
   /* 编辑点击事件 */
   editClick(data) {
-    let formOption = {
-      model: "update",
-      saveUrl: this.props.gridOption.url.edit,
-      fields: this.state.columns,
-      value: data,
-      extraParams: this.state.customData
-    };
+    let gridOption = this.props.gridOption;
+    let formOption = this.state.formOption;
+    formOption.model = "update";
+    formOption.saveUrl = gridOption.url.add;
+    formOption.value = data;
+
+    for (let extra of this.state.customData) {
+      formOption.value[extra.field] = extra.value;
+    }
+    formOption.fields = this.state.columns
+      .filter(c => c.type !== 'command' && c.data !== 'id' && c.editor && c.editor.ep !== 'hide')
+      .map(c => ({
+        name: c.title,
+        key: c.data,
+        tips: c.editor.tips,
+        isRequired: c.editor.isRequired,
+        validateRegular: c.editor.validateRegular,
+        fieldType: c.type,
+        disabled: c.editor.ep === 'disabled',
+        source: c.source || {},
+        step: c.editor.step,
+        precision: c.editor.precision,
+        innerProps: c.editor.innerProps
+      }));
+
+    for (let field of formOption.fields) {
+      if (field.fieldType === 'switch') {
+        formOption.value[field.key] = formOption.value[field.data] > 0
+      }
+    }
+
     this.setState({
       formVisiable: true,
       formOption: formOption
@@ -289,18 +330,39 @@ class BirdGrid extends React.Component {
     });
   }
 
+  /**
+   * 表单值改变事件
+   */
+  formChange = value => {
+    let formOption = this.state.formOption;
+    formOption.value = value;
+    this.setState({ formOption: formOption });
+  }
+
   /* 表单保存 */
-  saveClick() {
-    if (!this.refs.autoForm.validate()) return;
+  saveClick = () => {
+    if (!this.form.current.validate()) return;
 
     this.setState({ formConfirmLoading: true });
-    this.refs.autoForm.saveClick(() => {
+    let gridOption = this.props.gridOption;
+    let formOption = this.state.formOption;
+    request({
+      url: formOption.saveUrl,
+      method: "post",
+      data: formOption.value
+    }).then(result => {
+      message.success('保存成功');
       this.setState({
         formVisiable: false,
         formConfirmLoading: false
       });
+
       this.query();
-      this.props.gridOption.afterSave && this.props.gridOption.afterSave()
+      gridOption.afterSave && gridOption.afterSave(result)
+    }).catch(() => {
+      this.setState({
+        formConfirmLoading: false
+      });
     });
   }
 
@@ -662,6 +724,7 @@ class BirdGrid extends React.Component {
 
   render() {
     let gridOption = this.props.gridOption;
+    let formOption = this.state.formOption;
     let primaryKey = this.state.primaryKey;
 
     let ths = this.state.columns.filter(c => c.hide === 'no' && c.colSpan !== 0).map((col, index) => {
@@ -882,14 +945,15 @@ class BirdGrid extends React.Component {
               </tbody>
             </table>
             {/*<div className={styles.changebox2}>占位用</div>*/}
-            <Modal centered title={this.state.formOption.model === 'add' ? '新增' : '编辑'}
+            <Modal centered title={formOption.model === 'add' ? '新增' : '编辑'}
               width={this.state.formWidth}
               visible={this.state.formVisiable}
               onOk={() => this.saveClick()}
               onCancel={() => this.cancelClick()}
               confirmLoading={this.state.formConfirmLoading}
+              destroyOnClose={true}
             >
-              <AutoForm formOption={this.state.formOption} ref="autoForm" />
+              <BirdForm fields={formOption.fields || []} lineCapacity={formOption.lineCapacity || 1} withTab={formOption.withTab} value={formOption.value} onChange={this.formChange} ref={this.form} />
             </Modal>
           </div>
           <div className={styles.bird_footer}>

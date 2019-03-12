@@ -52,6 +52,7 @@ class BirdGrid extends React.Component {
       primaryKey: primaryKey,//标识列名称
       tablePermission: {},
 
+      checkableFilter: typeof(gridOption.checkable) === 'function' ? gridOption.checkable : d => gridOption.checkable === true,
       checkedValues: [],
       autoQuery: autoQuery //页面渲染完成之后是否自动查询，默认为true
     };
@@ -388,10 +389,11 @@ class BirdGrid extends React.Component {
 
   /* 全选点击事件 */
   checkAllClick() {
-    if (this.state.checkedValues.length === this.state.gridDatas.items.length) {
+    let checkableDatas = this.state.gridDatas.items.filter(this.state.checkableFilter);
+    if (this.state.checkedValues.length === checkableDatas.length) {
       this.setState({ checkedValues: [] })
     } else {
-      let checkValues = this.state.gridDatas.items.map(p => p[this.state.primaryKey]);
+      let checkValues = checkableDatas.map(p => p[this.state.primaryKey]);
       this.setState({ checkedValues: checkValues })
     }
   }
@@ -774,7 +776,7 @@ class BirdGrid extends React.Component {
       return <tr
         style={util.string.isEmpty(backColor) ? {} : { backgroundColor: backColor }}
         className="ant-table-row  ant-table-row-level-0" key={`tr_${data[primaryKey]}`}>
-        {gridOption.checkable && <td><Checkbox checked={this.state.checkedValues.indexOf(data[primaryKey]) >= 0} onChange={() => this.checkClick(data[primaryKey])} /></td>}
+        {gridOption.checkable && <td><Checkbox disabled={!this.state.checkableFilter(data)} checked={this.state.checkedValues.indexOf(data[primaryKey]) >= 0} onChange={() => this.checkClick(data[primaryKey])} /></td>}
         {
           this.state.columns.filter(c => c.hide === 'no').map((col, index) => {
             if (col.type === "command") {
@@ -921,6 +923,11 @@ class BirdGrid extends React.Component {
       onShowSizeChange={(page, pageSize) => this.pageSizeChange(pageSize)}
       showTotal={total => `共 ${total} 条`} />
 
+    let checkableDatas = this.state.gridDatas.items;
+    if(gridOption.checkable){
+      checkableDatas = checkableDatas.filter(this.state.checkableFilter);
+    }
+
     return (
       <Spin spinning={this.state.queryLoading} tip="数据加载中...">
         <Card>
@@ -934,7 +941,7 @@ class BirdGrid extends React.Component {
               <thead className={styles.bird_table_thead}>
                 <tr>
                   {gridOption.checkable && <th style={{ width: 15 }}><Checkbox
-                    checked={this.state.checkedValues.length > 0 && this.state.checkedValues.length === this.state.gridDatas.items.length}
+                    checked={this.state.checkedValues.length > 0 && this.state.checkedValues.length === checkableDatas.length}
                     onChange={() => this.checkAllClick()} /></th>}
                   {ths}
                 </tr>

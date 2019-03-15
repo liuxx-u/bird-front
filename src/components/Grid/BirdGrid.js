@@ -52,7 +52,7 @@ class BirdGrid extends React.Component {
       primaryKey: primaryKey,//标识列名称
       tablePermission: {},
 
-      checkableFilter: typeof(gridOption.checkable) === 'function' ? gridOption.checkable : d => gridOption.checkable === true,
+      checkableFilter: typeof (gridOption.checkable) === 'function' ? gridOption.checkable : d => gridOption.checkable === true,
       checkedValues: [],
       autoQuery: autoQuery //页面渲染完成之后是否自动查询，默认为true
     };
@@ -215,7 +215,7 @@ class BirdGrid extends React.Component {
     let formOption = this.state.formOption;
     formOption.model = "add";
     formOption.saveUrl = gridOption.url.add;
-    formOption.value = formOption.defaultValue || {}
+    formOption.value = gridOption.formOption ? gridOption.formOption.defaultValue : {}
 
     for (let extra of this.state.customData) {
       formOption.value[extra.field] = extra.value;
@@ -286,7 +286,7 @@ class BirdGrid extends React.Component {
     let gridOption = this.props.gridOption;
     let formOption = this.state.formOption;
     formOption.model = "update";
-    formOption.saveUrl = gridOption.url.add;
+    formOption.saveUrl = gridOption.url.edit;
     formOption.value = data;
 
     for (let extra of this.state.customData) {
@@ -310,7 +310,7 @@ class BirdGrid extends React.Component {
 
     for (let field of formOption.fields) {
       if (field.fieldType === 'switch') {
-        formOption.value[field.key] = formOption.value[field.data] > 0
+        formOption.value[field.key] = formOption.value[field.key] > 0
       }
     }
 
@@ -924,7 +924,7 @@ class BirdGrid extends React.Component {
       showTotal={total => `共 ${total} 条`} />
 
     let checkableDatas = this.state.gridDatas.items;
-    if(gridOption.checkable){
+    if (gridOption.checkable) {
       checkableDatas = checkableDatas.filter(this.state.checkableFilter);
     }
 

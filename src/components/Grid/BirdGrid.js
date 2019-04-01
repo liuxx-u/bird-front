@@ -215,8 +215,10 @@ class BirdGrid extends React.Component {
     let formOption = this.state.formOption;
     formOption.model = "add";
     formOption.saveUrl = gridOption.url.add;
-    formOption.value = gridOption.formOption ? gridOption.formOption.defaultValue : {}
-
+    formOption.value = {};
+    if (gridOption.formOption && gridOption.formOption.defaultValue) {
+      formOption.value = gridOption.formOption.defaultValue;
+    }
     for (let extra of this.state.customData) {
       formOption.value[extra.field] = extra.value;
     }
@@ -256,8 +258,14 @@ class BirdGrid extends React.Component {
           sortDirection: this.state.sortDirection === "asc" ? 0 : 1,
           filters: this.getFilters()
         }
+        let columns = [];
+        if (gridOption.exportColumns && gridOption.exportColumns.length > 0) {
+          columns = this.state.columns.filter(col => gridOption.exportColumns.contains(col.data));
+        } else {
+          columns = this.state.columns.filter(col => col.hide === 'no' && col.type != 'command');
+        }
 
-        let columns = this.state.columns.filter(col => col.hide === 'no' && col.type != 'command').map(col => {
+        columns = columns.map(col => {
           let column = { field: col.data, name: col.title, type: col.type };
 
           if (col.source && (col.type === 'dropdown' || col.type === 'multi' || col.type === 'cascader')) {
@@ -952,7 +960,7 @@ class BirdGrid extends React.Component {
               </tbody>
             </table>
             {/*<div className={styles.changebox2}>占位用</div>*/}
-            <Modal centered title={formOption.model === 'add' ? '新增' : '编辑'}
+            <Modal centered title={formOption.model === 'add' ? (formOption.addTitle || '新增') : (formOption.editTitle || '编辑')}
               width={this.state.formWidth}
               visible={this.state.formVisiable}
               onOk={() => this.saveClick()}

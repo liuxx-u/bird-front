@@ -1,3 +1,3 @@
-import LayoutTwo from './LayoutTwo'
+import LayoutTwo from './layoutTwo'
 
 export default LayoutTwo;

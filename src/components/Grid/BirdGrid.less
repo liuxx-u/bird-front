@@ -29,20 +29,24 @@
   background: #f7f7f7 ~"url(./sort_desc.png)" no-repeat center right !important;
 }
 
-:global .ant-select-dropdown-menu-item{
-  padding: 7px 10px !important;
-}
-
-:global .ant-divider-vertical{
-  background: #ccc;
-  margin: 0 3px;
-}
-
 :global{
+  .ant-select-dropdown-menu-item{
+    padding: 7px 10px !important;
+  }
+
+  .ant-divider-vertical{
+    background: #ccc;
+    margin: 0 3px;
+  } 
+
   .ant-confirm-body {
     .ant-confirm-content{
       margin-left: 0 !important;
     }
+  }
+
+  .ant-divider-horizontal.ant-divider-with-text::before, .ant-divider-horizontal.ant-divider-with-text-left::before, .ant-divider-horizontal.ant-divider-with-text-right::before, .ant-divider-horizontal.ant-divider-with-text::after, .ant-divider-horizontal.ant-divider-with-text-left::after, .ant-divider-horizontal.ant-divider-with-text-right::after {
+    border-top: 1px solid #b7bbbd !important;
   }
 }
 

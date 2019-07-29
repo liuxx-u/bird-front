@@ -44,7 +44,7 @@
   ],
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
-    "start": "umi dev --port=6000",
+    "start": "umi dev --port=8000",
     "lint": "eslint --fix --ext .js src",
     "build": "umi build",
     "test": "umi test"

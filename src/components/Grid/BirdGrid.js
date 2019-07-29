@@ -84,6 +84,9 @@ class BirdGrid extends React.Component {
     let columns = [], queryColumns = [], sumFields = [], fileFileds = [];
     let keyTitleMap = {}, sourceKeyMap = {};
     for (let col of gridOption.columns) {
+      //过滤没有权限的列
+      if (!permission.check(col.permission)) continue;
+
       //根据权限初始化行内按钮，没有按钮时移除command列
       if (col.type === 'command') {
         let tdActions = [];
@@ -107,12 +110,13 @@ class BirdGrid extends React.Component {
           this.setState({ formWidth: 800 });
         }
         if (col.query) {
+          let queryMode = col.query.mode || col.type;
           queryColumns.push({
             key: col.data,
             title: col.title,
             init: col.query.init,
-            defaultOpt: '',
-            mode: col.query.mode || col.type,
+            defaultOpt: queryMode === 'multi' ? 'in' : 'equal',
+            mode: queryMode,
             source: [],//初始化时，数据源为空，在render中获取col上的数据源
             filters: []
           });
@@ -125,7 +129,7 @@ class BirdGrid extends React.Component {
         }
 
         //初始化下拉选择框的数据源,优先级：data>url>key
-        if (sourceTypes.includes(col.type) && col.source) {
+        if (col.source) {
           if (col.source.data && col.source.data.length > 0) {
             sourceKeyMap[col.data] = arrayToHash(col.source.data);
           } else if (col.source.url) {
@@ -135,7 +139,7 @@ class BirdGrid extends React.Component {
                 sourceKeyMap[col.data] = arrayToHash(col.source.data);
                 this.setState({ sourceKeyMap: sourceKeyMap });
               });
-          } else if (col.source.key && (col.type === 'dropdown' || col.type === 'multi')) {
+          } else if (col.source.key) {
             request({ url: config.api.getDic + col.source.key, method: "get" })
               .then(result => {
                 col.source.data = result.options;
@@ -161,10 +165,11 @@ class BirdGrid extends React.Component {
 
     //初始化查询条件
     let filterRules = this.state.filterRules;
-    if (filterRules.length === 0) {
+    if (filterRules.length === 0 && queryColumns.length > 0) {
+      let firstQuery = queryColumns[0];
       filterRules.push({
-        field: queryColumns.length > 0 ? queryColumns[0]['key'] : '',
-        operate: 'equal',
+        field: firstQuery['key'],
+        operate: firstQuery['defaultOpt'],
         value: ''
       });
     }
@@ -502,6 +507,8 @@ class BirdGrid extends React.Component {
           case 'endswith':
             let subLen = data.length - value.length;
             return subLen > 0 && data.lastIndexOf(value) === subLen;
+          case 'in':
+            return value.split(",").includes(data);
           default:
             return data === value;
         }
@@ -576,24 +583,26 @@ class BirdGrid extends React.Component {
   }
 
   reload = () => {
-    let gridOption = this.props.gridOption;
+    let {gridOption} = this.props;
+    let {queryColumns,columns } = this.state;
     let filterRules = gridOption.filterRules || [];
+
     if (filterRules.length === 0) {
+      let firstQuery = queryColumns[0];
       filterRules.push({
-        field: this.state.queryColumns.length > 0 ? this.state.queryColumns[0]['key'] : '',
-        operate: 'equal',
+        field: firstQuery['key'],
+        operate: firstQuery['defaultOpt'],
         value: ''
-      })
+      });
     } else {
       filterRules = deepClone(filterRules);
     }
-    let queryColumns = this.state.queryColumns;
     queryColumns.forEach(p => p.filters = []);
 
     this.setState({
       pageIndex: 1,
       pageSize: gridOption.pageSize || 15,
-      sortField: gridOption.sortField || this.state.columns[0].data,
+      sortField: gridOption.sortField || columns[0].data,
       sortDirection: gridOption.sortDirection || "desc",
       filterRules: filterRules,
       queryColumns: queryColumns
@@ -787,32 +796,35 @@ class BirdGrid extends React.Component {
       }
 
       let rowDataMap = {};
-      visibleColumns.forEach(col => {
+      columns.forEach(col => {
         if (col.type === 'command') return;
-        let formatValue;
-        let title = keyTitleMap[col.data];
-        let value = data[col.data];
-        if (typeof (col.render) === 'function') {
-          if (sourceTypes.includes(col.type)) formatValue = col.render(value, data, sourceKeyMap[col.data]);
-          else if (fileTypes.includes(col.type)) formatValue = col.render(value, data, fileNameMap);
-          else formatValue = col.render(value, data);
-        } else {
-          if (col.type === 'switch') formatValue = SwitchRender(value);
-          else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(value, sourceKeyMap[col.data]);
-          else if (col.type === 'multi') formatValue = MultiRender(value, sourceKeyMap[col.data]);
-          else if (col.type === 'date') formatValue = DateTimeRender(value, 'yyyy-MM-dd');
-          else if (col.type === 'datetime') formatValue = DateTimeRender(value, 'yyyy-MM-dd HH:mm:ss');
-          else if (col.type === 'img' || col.type === 'imgs') formatValue = ImageRender(value, fileNameMap);
-          else if (col.type === 'file' || col.type === 'files') formatValue = FileRender(value, fileNameMap);
-          else if (col.type === 'money') formatValue = MoneyRender(value);
-          else formatValue = typeof (value) === 'undefined' ? '' : value;
-        }
-
-        if (col.query && sourceTypes.includes(col.type)) {
+        if (col.query) {
           let queryOption = queryColumns.find(p => p.key === col.data);
-          queryOption.source = col.source.data || [];
+          if (sourceTypes.includes(queryOption.mode)) {
+            queryOption.source = col.source.data || [];
+          }
         }
-        rowDataMap[col.data] = { title, value, formatValue };
+        if(col.hide === 'no'){
+          let formatValue;
+          let title = keyTitleMap[col.data];
+          let value = data[col.data];
+          if (typeof (col.render) === 'function') {
+            if (sourceTypes.includes(col.type)) formatValue = col.render(value, data, sourceKeyMap[col.data]);
+            else if (fileTypes.includes(col.type)) formatValue = col.render(value, data, fileNameMap);
+            else formatValue = col.render(value, data);
+          } else {
+            if (col.type === 'switch') formatValue = SwitchRender(value);
+            else if (col.type === 'dropdown' || col.type === 'cascader') formatValue = DropdownRender(value, sourceKeyMap[col.data]);
+            else if (col.type === 'multi') formatValue = MultiRender(value, sourceKeyMap[col.data]);
+            else if (col.type === 'date') formatValue = DateTimeRender(value, 'yyyy-MM-dd');
+            else if (col.type === 'datetime') formatValue = DateTimeRender(value, 'yyyy-MM-dd HH:mm:ss');
+            else if (col.type === 'img' || col.type === 'imgs') formatValue = ImageRender(value, fileNameMap);
+            else if (col.type === 'file' || col.type === 'files') formatValue = FileRender(value, fileNameMap);
+            else if (col.type === 'money') formatValue = MoneyRender(value);
+            else formatValue = typeof (value) === 'undefined' ? '' : value;
+          }
+          rowDataMap[col.data] = { title, value, formatValue };
+        }
       })
 
       let trs = [<tr

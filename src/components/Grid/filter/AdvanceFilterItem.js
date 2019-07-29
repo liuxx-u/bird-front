@@ -11,7 +11,8 @@ const InputGroup = Input.Group;
 const operators = {
   common: [{ value: "equal", text: "等于" }, { value: "notequal", text: "不等于" }],
   struct: [{ value: "less", text: "小于" }, { value: "lessorequal", text: "小于等于" }, { value: "greater", text: "大于" }, { value: "greaterorequal", text: "大于等于" }],
-  text: [{ value: "contains", text: "包含" }, { value: "startswith", text: "开始于" }, { value: "endswith", text: "结束于" }]
+  text: [{ value: "contains", text: "包含" }, { value: "startswith", text: "开始于" }, { value: "endswith", text: "结束于" }],
+  multi: [{ value: "in", text: "包含" }]
 }
 class AdvanceFilterItem extends React.Component {
   constructor(props) {
@@ -24,6 +25,9 @@ class AdvanceFilterItem extends React.Component {
   onRuleChange = (key, value) => {
     let rule = this.props.rule;
     if (key === 'field' && rule[key] !== value) {
+      let { queryColums } = this.props;
+      let queryOption = queryColums.find(f => f.key === value);
+      rule.operate = queryOption.mode === 'multi' ? 'in' : 'equal';
       rule.value = "";
     }
 
@@ -50,6 +54,9 @@ class AdvanceFilterItem extends React.Component {
       case "text":
       case "textarea":
         queryOperators = queryOperators.concat(operators.text);
+        break;
+      case "multi":
+        queryOperators = operators.multi;
         break;
       default:
         break;
@@ -95,6 +102,20 @@ class AdvanceFilterItem extends React.Component {
           onChange: value => this.onRuleChange('value', value),
           selectedValue: rule.value,
           innerProps: queryOption.innerProps
+        }} />;
+        break;
+      case "multi":
+        valueField = <BirdSelector {...{
+          data: queryOption.source || [],
+          width: '37.5%',
+          onChange: value => this.onRuleChange('value', value),
+          selectedValue: rule.value,
+          innerProps: {
+            mode: 'tags',
+            autoClearSearchValue: true,
+            maxTagTextLength: 30,
+            ...queryOption.innerProps
+          }
         }} />;
         break;
       case "cascader":

@@ -5,15 +5,18 @@ import { Select } from 'antd';
 
 const defaultInnerProps = {
   showSearch: true,
+  allowClear: true,
   filterOption: (input, option) => { return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0 }
 }
+
+const multiModes = ['multiple', 'tags'];
 
 class BirdSelector extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      placeholder: '',
+      placeholder: '请选择',
       options: this.props.data || []
     }
   }
@@ -45,7 +48,7 @@ class BirdSelector extends React.Component {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (!util.object.equal(nextProps.data, this.props.data)) {
       this.setState({
         options: nextProps.data
@@ -53,24 +56,37 @@ class BirdSelector extends React.Component {
     }
   }
 
-  onPropsChange(value) {
+  onPropsChange = value => {
+    let {innerProps = {}} = this.props;
+    if (multiModes.includes(innerProps.mode)) {
+      value = value.join();
+    }
+
+    if (typeof (value) === 'undefined') value = '';
     this.props.onChange && this.props.onChange(value);
   }
 
   render() {
-    let self = this;
-    let innerProps = this.props.innerProps || {};
+    let {innerProps = {},selectedValue:value} = this.props;
+    value = typeof (value) === 'undefined' ? '' : value + '';
+
+    if (multiModes.includes(innerProps.mode)) {
+      value = value.split(",").filter(p => !util.string.isEmpty(p));
+    }
+
+
     return (
       <Select {...{
-        value: typeof (self.props.selectedValue) === 'undefined' ? '' : self.props.selectedValue + '',
-        onChange: value => self.onPropsChange(value),
-        disabled: self.props.disabled,
-        style: { width: self.props.width },
+        value: value,
+        onChange: this.onPropsChange,
+        disabled: this.props.disabled,
+        style: { width: this.props.width },
+        placeholder: this.state.placeholder,
         ...defaultInnerProps,
         ...innerProps
       }}>
         {this.state.options.map((option, index) => (
-          <Select.Option key={'selector_' + self.props.dicKey + '_' + index} value={option.value}
+          <Select.Option key={`selector_${index}`} value={option.value}
             disabled={option.disabled + '' === 'true'}>{option.label}</Select.Option>
         ))}
       </Select>
@@ -85,7 +101,8 @@ BirdSelector.propTypes = {
   disabled: PropTypes.bool,
   selectedValue: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.number
+    PropTypes.number,
+    PropTypes.array
   ]),
   onChange: PropTypes.func,
   innerProps: PropTypes.object

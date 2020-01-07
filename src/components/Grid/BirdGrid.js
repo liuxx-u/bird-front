@@ -263,6 +263,10 @@ class BirdGrid extends React.Component {
 
   /** 导出点击事件 */
   exportClick = () => {
+    if (this.state.gridDatas.items.length == 0) {
+      message.warn("无数据！");
+      return;
+    }
     let gridOption = this.props.gridOption;
     if (typeof (gridOption.export) === 'string') {
       window.open(gridOption.export, "_blank");
@@ -628,6 +632,8 @@ class BirdGrid extends React.Component {
   setCustomData = data => {
     let customData = this.state.customData;
     for (let filter of data) {
+      if(util.string.isEmpty(filter.field))continue;
+
       let exsitIndex = customData.findIndex(f => f.field === filter.field);
       if (exsitIndex < 0) {
         customData.push(filter)
@@ -772,6 +778,17 @@ class BirdGrid extends React.Component {
     let { formOption, primaryKey, columns, sortField, sortDirection, gridDatas, keyTitleMap, sourceKeyMap, fileNameMap, checkedValues, sumFields, actions, filterRules, queryColumns, pageIndex, pageSize, queryLoading, formWidth, formVisiable, formConfirmLoading, showAdvance, expandIndexVisibleMap } = this.state;
     let visibleColumns = columns.filter(c => c.hide === 'no');
 
+    /** 每次更新选项类型的数据源 */
+    columns.forEach(col => {
+      if (col.type === 'command') return;
+      if (col.query) {
+        let queryOption = queryColumns.find(p => p.key === col.data);
+        if (sourceTypes.includes(queryOption.mode)) {
+          queryOption.source = col.source.data || [];
+        }
+      }
+    })
+
     /** 获取表头 */
     let ths = visibleColumns.filter(c => c.colSpan !== 0).map((col, index) => {
       let sortClass = "";
@@ -798,12 +815,6 @@ class BirdGrid extends React.Component {
       let rowDataMap = {};
       columns.forEach(col => {
         if (col.type === 'command') return;
-        if (col.query) {
-          let queryOption = queryColumns.find(p => p.key === col.data);
-          if (sourceTypes.includes(queryOption.mode)) {
-            queryOption.source = col.source.data || [];
-          }
-        }
         if(col.hide === 'no'){
           let formatValue;
           let title = keyTitleMap[col.data];
@@ -904,7 +915,7 @@ class BirdGrid extends React.Component {
 
       if (index === 0) return <td key={key} colSpan={sumColSpan}>合计：</td>;
       else if (sumFields.includes(col.data)) {
-        let value = gridDatas.sum[col.data];
+        let value =  typeof (col.sum) === 'function'?col.sum(gridDatas.sum[col.data]):gridDatas.sum[col.data];
         let title = value;
         if (col.type === 'money') {
           value = MoneyRender(value);

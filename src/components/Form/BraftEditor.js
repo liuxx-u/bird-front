@@ -16,7 +16,7 @@ const uploadFn = (param) => {
   const fd = new FormData();
 
   // libraryId可用于通过mediaLibrary示例来操作对应的媒体内容
-  console.log(param.libraryId)
+  // console.log(param.libraryId)
 
   const successFn = () => {
     let resp = xhr.response;

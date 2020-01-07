@@ -6,4 +6,4 @@ import BirdCascader from './BirdCascader';
 import AutoField from './AutoField';
 import BirdMulti from './BirdMulti'
 
-export {BirdForm,BirdSelector,BirdStoredForm,BirdButton,BirdCascader,AutoField,BirdMulti}
+export { BirdForm, BirdSelector, BirdStoredForm, BirdButton, BirdCascader, AutoField, BirdMulti }

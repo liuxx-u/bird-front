@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { request, deepClone, util } from 'utils';
+import { request, deepClone, util, permission } from 'utils';
 import AutoField from './AutoField';
 import BirdButton from './BirdButton';
 import { Form, message, Tabs, Row, Col, Divider } from 'antd';
@@ -30,7 +30,7 @@ class BirdForm extends React.Component {
     }
   }
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (!util.object.equal(nextProps.value,this.props.value)) {
+    if (!util.object.equal(nextProps.value, this.state.initValue)) {
       let initValue = deepClone(nextProps.value)
       this.setState({
         initValue: initValue
@@ -42,12 +42,14 @@ class BirdForm extends React.Component {
     this.initGroup();
   }
 
-  initGroup() {
-    if (!this.props.withTab || this.props.fields.length === 0 || this.state.group.length > 0) return;
+  initGroup = () => {
+    let { withTab, fields, defaultGroupName, activeGroupName } = this.props;
+
+    if (!withTab || fields.length === 0 || this.state.group.length > 0) return;
 
     let group = [];
-    for (let field of this.props.fields) {
-      let groupName = field.groupName || this.props.defaultGroupName;
+    for (let field of fields) {
+      let groupName = field.groupName || defaultGroupName;
 
       let index = group.findIndex(g => g.groupName === groupName);
       if (index < 0) {
@@ -61,11 +63,11 @@ class BirdForm extends React.Component {
     }
     this.setState({
       group: group,
-      activeKey: this.props.activeGroupName || group[0].groupName
+      activeKey: activeGroupName || group[0].groupName
     })
   }
 
-  onFieldChange(key, value) {
+  onFieldChange = (key, value) => {
     let initValue = this.state.initValue;
     initValue[key] = value;
     this.setState({
@@ -83,23 +85,24 @@ class BirdForm extends React.Component {
     });
   }
 
-  isValueChanged() {
+  isValueChanged = () => {
     return this.state.isValueChange
   }
 
-  getResult() {
+  getResult = () => {
     return this.state.initValue;
   }
 
-  validate() {
+  validate = () => {
     let dto = this.getResult();
     //验证数据合法性
     for (let field of this.props.fields) {
-      if ((field.isRequired || field.required) && util.string.isEmpty(dto[field.key])) {
+      let numberTypes = ['number', 'money'];
+      if ((field.isRequired || field.required) && util.string.isEmpty(dto[field.key]) && !numberTypes.includes(field.fieldType)) {
         message.error('`' + field.name + '`不能为空.');
         return false;
       }
-      if (field.validateRegular) {
+      if (dto[field.key] && field.validateRegular) {
         let reg = typeof (field.validateRegular) === 'string' ? new RegExp(field.validateRegular) : field.validateRegular;
         if (reg.test && !reg.test(dto[field.key])) {
           message.error('`' + field.name + '`数据格式不正确.');
@@ -110,7 +113,7 @@ class BirdForm extends React.Component {
     return true;
   }
 
-  save() {
+  save = () => {
     let self = this;
     if (!self.validate()) return;
 
@@ -125,7 +128,7 @@ class BirdForm extends React.Component {
     });
   }
 
-  getFields(fields) {
+  getFields = fields => {
     let self = this;
     let formKey = self.state.formKey;
     let capacity = self.props.lineCapacity;
@@ -134,6 +137,8 @@ class BirdForm extends React.Component {
     let lastRowCapacity = capacity;
 
     for (let field of fields) {
+      if (!permission.check(field.permission)) continue;
+
       field.value = self.state.initValue[field.key] || '';
       //colSpan默认为1，最大为4
       let colSpan = field.colSpan || 1;
@@ -153,7 +158,7 @@ class BirdForm extends React.Component {
       return <Row key={formKey + '_row_' + index}>
         {row.map(field => {
           let colSpan = field.colSpan || 1;
-          if (colSpan > 4) {colSpan = 4;}
+          if (colSpan > 4) { colSpan = 4; }
           let unit = 24 / self.props.lineCapacity;
           return <Col span={colSpan * unit} key={formKey + '_field_' + field.key}>
             {field.fieldType !== 'empty' &&
@@ -175,7 +180,7 @@ class BirdForm extends React.Component {
       }
     };
 
-    const button = <BirdButton type="primary" idempotency = {true} icon='save' onClick={() => self.save()}>
+    const button = <BirdButton type="primary" idempotency={true} icon='save' onClick={this.save}>
       提交
     </BirdButton>;
 

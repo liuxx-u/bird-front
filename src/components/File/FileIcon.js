@@ -72,7 +72,7 @@ class FileIcon extends React.Component {
 
   initFileName(props) {
     if (util.string.isEmpty(props.url) || !props.queryFileName) {
-      this.setState({ fileName: '' })
+      this.setState({ fileName: props.url })
     } else {
       request({
         url: config.api.getFileName + this.props.url,

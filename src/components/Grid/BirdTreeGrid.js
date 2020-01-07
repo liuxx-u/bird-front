@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Row, Col, Card } from 'antd';
 import BirdGrid from './BirdGrid';
 import BirdTree from './BirdTree';
+import {util} from 'utils';
 
 class BirdTreeGrid extends React.Component {
   constructor(props) {
@@ -18,14 +19,22 @@ class BirdTreeGrid extends React.Component {
 
   //树节点点击事件，不支持点选多个节点
   itemClick(clickKey) {
-    let customRules = this.props.gridOption.customRules||[];
-    customRules.push({
-      field: this.props.treeOption.paramName,
-      value: clickKey
-    })
-    this.refs.grid.setCustomData(customRules);
+    let {gridOption,treeOption} = this.props;
+    if(util.string.isEmpty(treeOption.paramName)) return;
 
-    this.props.treeOption.onSelect && this.props.treeOption.onSelect(clickKey);
+    let customRules = gridOption.customRules||[];
+    let rule = customRules.find(p=>p.field === treeOption.paramName);
+    if(rule){
+      rule.value = clickKey
+    }else{
+      customRules.push({
+        field: treeOption.paramName,
+        value: clickKey
+      })
+    }
+    
+    this.refs.grid.setCustomData(customRules);
+    treeOption.onSelect && treeOption.onSelect(clickKey);
   }
 
   getGrid() {

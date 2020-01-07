@@ -47,7 +47,7 @@ class AutoField extends React.Component {
           placeholder: field.placeholder,
           autosize: { minRows: 4, maxRows: 8 },
           ...innerProps
-        }} />
+        }} />;
       case "number":
         return <InputNumber {...{
           value: field.value || 0,
@@ -61,26 +61,31 @@ class AutoField extends React.Component {
           ...innerProps
         }} />;
       case "money":
-        return <InputNumber {...{
-          value: field.value || 0,
-          onChange: value => self.onChange(util.string.isEmpty(value) ? 0 : value),
-          disabled: field.disabled,
-          placeholder: field.placeholder,
-          min: 0,
-          step: field.step || 1,
-          precision: field.precision || 2,
-          style: { width: '100%' },
-          formatter: value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ','),
-          parser: value => value.replace(/\$\s?|(,*)/g, ''),
-          ...innerProps
-        }} />;
+        return <div>
+          <InputNumber {...{
+            value: field.value || 0,
+            onChange: value => self.onChange(util.string.isEmpty(value) ? 0 : value),
+            disabled: field.disabled,
+            placeholder: field.placeholder,
+            min: 0,
+            step: field.step || 1,
+            precision: field.precision || 2,
+            style: { width: '100%' },
+            formatter: value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+            parser: value => value.replace(/\$\s?|(,*)/g, ''),
+            ...innerProps
+          }} />
+          {!innerProps.hideCn && <span>
+            {util.number.cnCurrency(field.value || 0)}
+          </span>}
+        </div>;
       case "switch":
         return <Switch {...{
           checked: field.value + '' === "1" || field.value + '' === 'true',
-          onChange: value => self.onChange(value ? "1" : "0"),
+          onChange: value => self.onChange(value ? true : false),
           disabled: field.disabled,
           checkedChildren: <Icon type="check" />,
-          unCheckedChildren: <Icon type="cross" />,
+          unCheckedChildren: <Icon type="close" />,
           ...innerProps
         }} />;
       case "dropdown":
@@ -102,7 +107,7 @@ class AutoField extends React.Component {
           url: field.source.url,
           dicKey: field.source.key,
           innerProps: innerProps
-        }} />
+        }} />;
 
       case "cascader":
         return <BirdCascader {...{
@@ -113,7 +118,7 @@ class AutoField extends React.Component {
           url: field.source.url,
           placeholder: field.placeholder,
           innerProps: innerProps
-        }} />
+        }} />;
       case "img":
       case "imgs":
       case "file":
@@ -123,7 +128,8 @@ class AutoField extends React.Component {
           disabled: field.disabled,
           listType: field.fieldType === 'img' || field.fieldType === 'imgs' ? 'picture' : 'text',
           value: field.value,
-          onChange: value => self.onChange(value)
+          onChange: value => self.onChange(value),
+          ...innerProps
         };
 
         if (field.fieldType === 'img' || field.fieldType === 'imgs') {
@@ -190,10 +196,10 @@ AutoField.propTypes = {
   fieldOption: PropTypes.object.isRequired,
   labelColSpan: PropTypes.number,
   onChange: PropTypes.func
-}
+};
 
 AutoField.defaultProps = {
   labelColSpan: 6
-}
+};
 
 export default AutoField

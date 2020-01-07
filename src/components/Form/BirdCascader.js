@@ -108,6 +108,7 @@ class BirdCascader extends React.Component {
       value: fValue,
       onChange: value => this.onPropsChange(value),
       options: this.state.options,
+      showSearch: true,
       disabled: this.props.disabled,
       placeholder: this.props.placeholder,
       style: { width: this.props.width || '100%' },
@@ -128,7 +129,8 @@ BirdCascader.propTypes = {
 
 BirdCascader.defaultProps = {
   data: [],
-  disabled: false
+  disabled: false,
+  placeholder:'请选择'
 }
 
 

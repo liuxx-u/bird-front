@@ -26,24 +26,25 @@ class BirdUpload extends React.Component {
     this.setState({ previewVisible: false })
   }
 
-  onFileChange(file) {
-    let fileList = file.fileList;
+  onFileChange({ fileList }) {
     let multiple = this.props.multiple;
     let success = false;
 
     // read from response and show file link
     fileList = fileList.map(file => {
-      if (file.response) {
+      if (file.response && file.status === 'done') {
         // Component will show file.url as link
-        file.url = file.response.path;
+        file.url = file.response.path || file.response.result.path;
       }
       return file;
     });
 
     // filter successfully uploaded files according to response from server
     fileList = fileList.filter(file => {
-      if (file.response) {
-        success = file.response.success;
+      if (file.status === 'error') {
+        return false;
+      } else if (file.response && file.status === 'done') {
+        success = file.response.success || file.response.result.success;
         return success;
       }
       return true;
@@ -67,7 +68,9 @@ class BirdUpload extends React.Component {
       let pathArr = [];
       let fileNameMap = {};
       for (let file of this.state.fileList) {
+        if (file.status === 'uploading') return;
         if (util.string.isEmpty(file.url)) continue;
+
         pathArr.push(file.url);
         fileNameMap[file.url] = file.name;
       }
@@ -86,19 +89,27 @@ class BirdUpload extends React.Component {
     let fileList = this.state.fileList.filter(f => {
       return f.uid !== file.uid;
     });
-    this.setState({
-      fileList: fileList
-    }, () => {
-      let pathArr = this.state.fileList.map(f => f.url);
-      this.props.onChange && this.props.onChange(pathArr.join())
-    });
+    let pathArr = fileList.map(f => f.url);
+    this.props.onChange && this.props.onChange(pathArr.join())
   }
 
   onPreview(file) {
-    this.setState({
-      previewVisible: true,
-      previewUrl: file.url
-    })
+    if (util.string.isEmpty(file.url)) return;
+
+    const previewTypes = ["gif", "jpg", "jpeg", "png", "bmp", "pdf"];
+    // const previewTypes = ["gif", "jpg", "jpeg", "png", "bmp", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"];
+    let arr = file.url.split(".");
+    if (arr.length < 2) return;
+
+    let ext = arr[arr.length - 1].toLowerCase();
+    if (!previewTypes.includes(ext)) {
+      window.open(file.url, "_blank");
+    } else {
+      this.setState({
+        previewVisible: true,
+        previewUrl: file.url
+      })
+    }
   }
 
   initFileFields(value) {
@@ -186,7 +197,7 @@ class BirdUpload extends React.Component {
 
     return (<div>
       <Upload {...fileProps}>
-        {this.getUploadButton()}
+        {this.props.uploadButton || this.getUploadButton()}
       </Upload>
       <Drawer visible={this.state.previewVisible} onClose={() => this.closePreview()} destroyOnClose={true} width={1000} closable={false}>
         <BirdPreview url={this.state.previewUrl} extra={this.props.previewExtra} />
@@ -203,16 +214,17 @@ BirdUpload.propTypes = {
   accept: PropTypes.string,
   onChange: PropTypes.func,
   value: PropTypes.string,
-  showUploadList:PropTypes.bool,
+  showUploadList: PropTypes.bool,
+  uploadButton: PropTypes.element,
 
   preview: PropTypes.bool,
-  previewExtra:PropTypes.node
+  previewExtra: PropTypes.node
 };
 
 BirdUpload.defaultProps = {
   multiple: false,
   disabled: false,
-  showUploadList:true,
+  showUploadList: true,
   preview: true,
   listType: 'picture',
   value: ''

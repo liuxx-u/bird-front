@@ -43,6 +43,7 @@ class BirdStoredForm extends React.Component {
       url: '/sys/form/getFormByKey?key=' + self.props.formKey,
       method: 'get'
     }).then(function (form) {
+      if(!form)return;
       let defaultFormOption = self.state.option;
       let formOption = {
         withTab: form.withTab === 'true',

@@ -17,7 +17,7 @@
     "nprogress": "^0.2.0",
     "path-to-regexp": "^2.4.0",
     "prop-types": "^15.7.2",
-    "qs": "^6.7.0",
+    "qs": "^6.7.3",
     "query-string": "^6.8.2",
     "react-helmet": "^5.2.1",
     "store": "^2.0.12"
